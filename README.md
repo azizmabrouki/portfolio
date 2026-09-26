@@ -76,7 +76,7 @@ The custom domain and Cloudflare Web Analytics are added in Phase 6.
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Workers | In progress |
+| 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Workers | Done |
 | 1. Design system | Tokens, fonts, grid, type scale, drawing components | |
 | 2. Hero | The building draws itself; reduced-motion fallback | |
 | 3. Content and pages | Home sections, case studies, CV, 404, SEO | |
