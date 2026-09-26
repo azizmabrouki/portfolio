@@ -1,0 +1,38 @@
+---
+/**
+ * A link that looks like a button when `href` is set, a real <button> otherwise.
+ * Styles live in global.css (.button), so plain markup can use them too.
+ */
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'text';
+  type?: 'button' | 'submit' | 'reset';
+  arrow?: boolean;
+  class?: string;
+}
+
+const { href, variant = 'primary', type = 'button', arrow = false, class: className } = Astro.props;
+const classes = ['button', variant !== 'primary' && `button--${variant}`, className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes}>
+      <slot />
+      {arrow && (
+        <span class="button__arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </a>
+  ) : (
+    <button type={type} class:list={classes}>
+      <slot />
+      {arrow && (
+        <span class="button__arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </button>
+  )
+}

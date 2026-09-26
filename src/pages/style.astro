@@ -1,0 +1,897 @@
+---
+/**
+ * Drawing standards: every token and component the site may use, in light and dark.
+ * Phase 1's "done when" page. It also compares the three heading-font candidates.
+ */
+import { Font } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BuildingSketch from '@/components/BuildingSketch.astro';
+import Button from '@/components/Button.astro';
+import DimensionLine from '@/components/drawing/DimensionLine.astro';
+import Hatch from '@/components/drawing/Hatch.astro';
+import Rule from '@/components/drawing/Rule.astro';
+import SectionMarker from '@/components/drawing/SectionMarker.astro';
+import TitleBlock from '@/components/drawing/TitleBlock.astro';
+import { palette, paper } from '@/config/palette';
+import { aaLevel, contrastRatio } from '@/lib/contrast';
+
+const swatches = palette.map((swatch) => {
+  const light = contrastRatio(swatch.light, paper.light);
+  const dark = contrastRatio(swatch.dark, paper.dark);
+  return {
+    ...swatch,
+    lightRatio: `${light.toFixed(1)}:1 · ${aaLevel(light)}`,
+    darkRatio: `${dark.toFixed(1)}:1 · ${aaLevel(dark)}`,
+  };
+});
+
+const headingFonts = [
+  {
+    name: 'Fraunces',
+    variable: '--font-fraunces',
+    current: true,
+    note: 'Soft, high-contrast display serif with optical sizes. The most character of the three.',
+  },
+  {
+    name: 'Lora',
+    variable: '--font-lora',
+    current: false,
+    note: 'Calligraphic book serif. Steadier and warmer, less of a display face.',
+  },
+  {
+    name: 'Newsreader',
+    variable: '--font-newsreader',
+    current: false,
+    note: 'Made for long reading, with optical sizes. Quiet and editorial.',
+  },
+];
+
+const typeScale = [
+  { token: '--step-6', size: '47.8 → 68.7px', role: 'Display: the name on the hero', display: true },
+  { token: '--step-5', size: '39.8 → 54.9px', role: 'Page title (h1)', display: true },
+  { token: '--step-4', size: '33.2 → 43.9px', role: 'Section title (h2)', display: true },
+  { token: '--step-3', size: '27.6 → 35.2px', role: 'Pull quote, large figures', display: true },
+  { token: '--step-2', size: '23 → 28.1px', role: 'Subsection (h3), role line', display: true },
+  { token: '--step-1', size: '19.2 → 22.5px', role: 'Lead paragraph, h4', display: true },
+  { token: '--step-0', size: '16 → 18px', role: 'Body text', display: false },
+  { token: '--step--1', size: '13.3 → 14.4px', role: 'Captions, buttons, annotations', display: false },
+  { token: '--step--2', size: '11.1 → 11.5px', role: 'Fine print only', display: false },
+];
+
+const spaceScale = [
+  { token: '--space-3xs', size: '4 → 4.5px' },
+  { token: '--space-2xs', size: '8 → 9px' },
+  { token: '--space-xs', size: '12 → 13.5px' },
+  { token: '--space-s', size: '16 → 18px' },
+  { token: '--space-m', size: '24 → 27px' },
+  { token: '--space-l', size: '32 → 36px' },
+  { token: '--space-xl', size: '48 → 54px' },
+  { token: '--space-2xl', size: '64 → 72px' },
+  { token: '--space-3xl', size: '96 → 108px' },
+];
+
+const lines = [
+  { variant: 'solid', token: '--line-thin · 1px', use: 'Default rule, outlines' },
+  { variant: 'strong', token: '--line-strong · 2px', use: 'Ground lines, sheet borders' },
+  { variant: 'accent', token: '--line-regular · 1.5px', use: 'The vermilion rule: domain layer, emphasis' },
+  { variant: 'planned', token: '--dash-planned · 6 / 5', use: 'Not built yet' },
+  { variant: 'construction', token: '--dash-construction · 2 / 5', use: 'Guides, never content' },
+] as const;
+
+const radii = [
+  { token: '--radius-0', size: '0' },
+  { token: '--radius-s', size: '2px' },
+  { token: '--radius-m', size: '4px' },
+  { token: '--radius-round', size: '999px' },
+];
+
+const motion = [
+  { token: '--duration-quick', value: '180ms', use: 'Hover and focus' },
+  { token: '--duration-moderate', value: '400ms', use: 'Fades, elements settling into place' },
+  { token: '--duration-slow', value: '700ms', use: 'Line draws' },
+  { token: '--duration-deliberate', value: '900ms', use: 'Ceiling for a signature moment' },
+  { token: '--stagger', value: '120ms', use: 'Delay between items drawn in sequence' },
+  { token: '--ease-out', value: 'cubic-bezier(0.16, 1, 0.3, 1)', use: 'Settle: fast start, no bounce' },
+  { token: '--ease-in-out', value: 'cubic-bezier(0.65, 0, 0.35, 1)', use: 'Draw: lines on and off' },
+];
+
+const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-slow', '--duration-deliberate'];
+---
+
+<BaseLayout
+  title="Design system"
+  description="The drawing standards behind Mohamed Aziz Mabrouki's portfolio: colour, type, space, lines, motion and drawing components."
+>
+  <Fragment slot="head">
+    <Font cssVariable="--font-lora" />
+    <Font cssVariable="--font-newsreader" />
+  </Fragment>
+
+  <div class="page sheet-ruled">
+    <header class="page-head container">
+      <a class="label back" href="/">← Back to the sheet</a>
+      <button class="button button--secondary" type="button" data-theme-toggle aria-pressed="false">
+        Dark sheet
+      </button>
+    </header>
+
+    <main id="main">
+      <section class="intro container stack">
+        <SectionMarker as="p" number="00" title="Drawing standards" />
+        <h1 class="display">Design system</h1>
+        <p class="lead prose">
+          Every colour, type size, line and component this site may use. Components read these tokens
+          and nothing else, so the whole look changes from one file: <code>src/styles/tokens.css</code>.
+        </p>
+      </section>
+
+      <!-- 01 Colour -->
+      <section class="section container" aria-labelledby="colour">
+        <SectionMarker as="p" number="01" title="Colour" />
+        <h2 id="colour">Paper, ink and one vermilion</h2>
+        <p class="prose muted">
+          Ratios are measured against the paper of each theme. Vermilion is for lines, fills and text
+          of 24px or more; body-size vermilion text uses the darker text shade.
+        </p>
+
+        <ul class="swatches" role="list">
+          {
+            swatches.map((swatch) => (
+              <li class="swatch">
+                <span class="swatch__chip" style={`background: var(${swatch.token})`}></span>
+                <div class="swatch__body">
+                  <p class="swatch__name">{swatch.name}</p>
+                  <code>{swatch.token}</code>
+                  <p class="annotation">{swatch.use}</p>
+                  <dl class="swatch__values annotation">
+                    <div>
+                      <dt>Light</dt>
+                      <dd>
+                        {swatch.light}
+                        {swatch.text && <span> · {swatch.lightRatio}</span>}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Dark</dt>
+                      <dd>
+                        {swatch.dark}
+                        {swatch.text && <span> · {swatch.darkRatio}</span>}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="annotation">
+          Also: <code>--color-line-faint</code> for construction lines and <code>--color-grid</code> for
+          the sheet grid, both translucent ink, never used for text.
+        </p>
+      </section>
+
+      <!-- 02 Type -->
+      <section class="section container" aria-labelledby="type">
+        <SectionMarker as="p" number="02" title="Type" />
+        <h2 id="type">A serif with character, a clean sans, a drawing-label mono</h2>
+
+        <h3>Heading font: three candidates</h3>
+        <p class="prose muted">
+          Same content, set in each candidate. Fraunces is the current choice; the other two load on this
+          page only.
+        </p>
+        <div class="specimens">
+          {
+            headingFonts.map((font) => (
+              <article
+                class="specimen"
+                style={`--font-display: var(${font.variable}, ui-serif, Georgia, serif)`}
+                aria-label={`${font.name} specimen`}
+              >
+                <p class="label specimen__head">
+                  <span>{font.name}</span>
+                  {font.current && <span class="badge">Current</span>}
+                </p>
+                <p class="specimen__name">Mohamed Aziz Mabrouki</p>
+                <p class="specimen__role">Software engineer, growing into software architecture.</p>
+                <p class="specimen__h">Boundaries first</p>
+                <p class="specimen__body">
+                  A modular monolith with idempotent Stripe webhooks, 609 tests and every decision written
+                  down.
+                </p>
+                <p class="annotation">{font.note}</p>
+              </article>
+            ))
+          }
+        </div>
+
+        <h3>Scale</h3>
+        <p class="prose muted">
+          Fluid between 360px and 1440px wide: ratio 1.2 on phones, 1.25 on desktops.
+        </p>
+        <ol class="scale" role="list">
+          {
+            typeScale.map((step) => (
+              <li class="scale__row">
+                <p class="annotation scale__meta">
+                  <code>{step.token}</code>
+                  <span>{step.size}</span>
+                  <span>{step.role}</span>
+                </p>
+                <p
+                  class:list={['scale__sample', { 'scale__sample--display': step.display }]}
+                  style={`font-size: var(${step.token})`}
+                >
+                  {step.display ? 'Write down the why' : 'Test what matters, ship through CI/CD.'}
+                </p>
+              </li>
+            ))
+          }
+        </ol>
+
+        <h3>Body and labels</h3>
+        <div class="families">
+          <div class="stack">
+            <p class="label">Inter · body, <code>--font-sans</code></p>
+            <p class="prose">
+              Every push to main type-checks, builds, checks links and runs Lighthouse before Cloudflare
+              serves it. A regression fails the build instead of reaching a recruiter’s phone.
+            </p>
+          </div>
+          <div class="stack">
+            <p class="label">JetBrains Mono · annotations, <code>--font-mono</code></p>
+            <p class="label">A / 02 · Domain layer · 1,200 mm</p>
+            <p class="annotation">Annotations stay in sentence case: 25 OpenAPI specs, 0 flaky tests.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 Space, lines, radii -->
+      <section class="section container" aria-labelledby="space">
+        <SectionMarker as="p" number="03" title="Space, lines and radii" />
+        <h2 id="space">Measured, thin and sharp</h2>
+
+        <div class="columns">
+          <div class="stack">
+            <h3>Space</h3>
+            <ul class="space-scale" role="list">
+              {
+                spaceScale.map((space) => (
+                  <li class="space-scale__row">
+                    <code>{space.token}</code>
+                    <span class="space-scale__bar" style={`inline-size: var(${space.token})`}></span>
+                    <span class="annotation">{space.size}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div class="stack">
+            <h3>Lines</h3>
+            <ul class="line-list" role="list">
+              {
+                lines.map((line) => (
+                  <li class="stack line-list__item">
+                    <Rule variant={line.variant} />
+                    <p class="annotation">
+                      <code>{line.token}</code> · {line.use}
+                    </p>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <h3>Radii</h3>
+            <ul class="radii" role="list">
+              {
+                radii.map((radius) => (
+                  <li class="stack radii__item">
+                    <span class="radii__box" style={`border-radius: var(${radius.token})`}></span>
+                    <code>{radius.token}</code>
+                    <span class="annotation">{radius.size}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <h3>Sheet grids</h3>
+        <div class="grids">
+          <figure class="grid-sample">
+            <div class="grid-sample__area sheet-ruled"></div>
+            <figcaption class="annotation"><code>.sheet-ruled</code> · 24px ruled grid</figcaption>
+          </figure>
+          <figure class="grid-sample">
+            <div class="grid-sample__area sheet-dots"></div>
+            <figcaption class="annotation"><code>.sheet-dots</code> · 24px dot grid</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- 04 Motion -->
+      <section class="section container" aria-labelledby="motion">
+        <SectionMarker as="p" number="04" title="Motion" />
+        <h2 id="motion">Motion explains structure</h2>
+        <p class="prose muted">
+          Lines draw on, elements settle, nothing bounces, one thing moves at a time. With reduced motion
+          every duration is zero and the end state shows at once.
+        </p>
+
+        <div class="columns">
+          <div class="table-wrap">
+            <table class="tokens-table">
+              <thead>
+                <tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Used for</th></tr>
+              </thead>
+              <tbody>
+                {
+                  motion.map((row) => (
+                    <tr>
+                      <td><code>{row.token}</code></td>
+                      <td class="annotation">{row.value}</td>
+                      <td>{row.use}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="stack">
+            <div class="draw-demo" data-draw-demo data-drawn>
+              {
+                drawDurations.map((token) => (
+                  <div class="draw-demo__row">
+                    <span class="draw-demo__line" style={`--draw-duration: var(${token})`}></span>
+                    <code>{token}</code>
+                  </div>
+                ))
+              }
+            </div>
+            <p><Button variant="secondary" class="draw-button">Draw the lines again</Button></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 Links and buttons -->
+      <section class="section container" aria-labelledby="links">
+        <SectionMarker as="p" number="05" title="Links and buttons" />
+        <h2 id="links">Two link treatments to choose from</h2>
+
+        <div class="options">
+          <div class="option stack">
+            <p class="label">A · Ink text, vermilion underline <span class="badge">Current</span></p>
+            <p class="prose">
+              Read the <a href="#links">StudioLabCloud case study</a> or the note on
+              <a href="#links">idempotent webhooks</a>. The text keeps full ink contrast; vermilion only
+              draws the line.
+            </p>
+          </div>
+          <div class="option stack">
+            <p class="label">B · Vermilion text, 5.1:1</p>
+            <p class="prose">
+              Read the <a class="link-accent" href="#links">StudioLabCloud case study</a> or the note on
+              <a class="link-accent" href="#links">idempotent webhooks</a>. More colour on the page,
+              using the darker text shade.
+            </p>
+          </div>
+        </div>
+
+        <h3>Buttons</h3>
+        <div class="cluster">
+          <Button href="#links">Download CV</Button>
+          <Button href="#links" variant="secondary">Get in touch</Button>
+          <Button href="#links" variant="text" arrow>Read the case study</Button>
+        </div>
+        <p class="annotation">Press Tab to move through them: every control shows a vermilion focus ring.</p>
+      </section>
+
+      <!-- 06 Drawing components -->
+      <section class="section container" aria-labelledby="components">
+        <SectionMarker as="p" number="06" title="Drawing components" />
+        <h2 id="components">The drawing vocabulary</h2>
+        <p class="prose muted">
+          Every illustration on the site is made from these parts. Each lives in
+          <code>src/components/drawing/</code> and reads only tokens.
+        </p>
+
+        <div class="samples">
+          <figure class="sample">
+            <div class="sample__area stack">
+              <DimensionLine label="1,200" />
+              <DimensionLine label="Domain" tone="accent" length="70%" />
+              <DimensionLine length="40%" />
+            </div>
+            <figcaption class="annotation">
+              <code>&lt;DimensionLine label="1,200" /&gt;</code> · ticks, extension lines, optional label
+            </figcaption>
+          </figure>
+
+          <figure class="sample">
+            <div class="sample__area sample__area--row">
+              <DimensionLine orientation="vertical" label="4 floors" length="11rem" />
+              <DimensionLine orientation="vertical" tone="accent" length="7rem" />
+            </div>
+            <figcaption class="annotation">
+              <code>orientation="vertical"</code> · for heights and stacks
+            </figcaption>
+          </figure>
+
+          <figure class="sample">
+            <div class="sample__area stack">
+              <SectionMarker number="02" title="How I work" />
+              <div class="cluster">
+                <SectionMarker number="02" variant="bubble" />
+                <p class="h3">Domain</p>
+              </div>
+            </div>
+            <figcaption class="annotation">
+              <code>&lt;SectionMarker /&gt;</code> · inline label or section bubble
+            </figcaption>
+          </figure>
+
+          <figure class="sample">
+            <div class="sample__area stack">
+              <Hatch />
+              <Hatch tone="accent" height="2.5rem" gap={10} />
+              <Hatch angle={-45} bordered={false} height="1rem" />
+            </div>
+            <figcaption class="annotation">
+              <code>&lt;Hatch /&gt;</code> · foundations and cut sections
+            </figcaption>
+          </figure>
+
+          <figure class="sample sample--wide">
+            <div class="sample__area">
+              <TitleBlock
+                fields={[
+                  { label: 'Project', value: 'StudioLabCloud' },
+                  { label: 'Drawing', value: 'Context map' },
+                  { label: 'Scale', value: '1:1' },
+                  { label: 'Revision', value: 'C' },
+                ]}
+              />
+            </div>
+            <figcaption class="annotation">
+              <code>&lt;TitleBlock fields=&#123;[…]&#125; /&gt;</code> · the corner of every sheet
+            </figcaption>
+          </figure>
+
+          <figure class="sample sample--wide">
+            <div class="sample__area sample__area--sketch">
+              <BuildingSketch />
+            </div>
+            <figcaption class="annotation">
+              <code>&lt;BuildingSketch /&gt;</code> · the building, all parts together; animated in Phase 2
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <footer class="container page-foot">
+      <TitleBlock
+        fields={[
+          { label: 'Project', value: 'Portfolio' },
+          { label: 'Sheet', value: 'A / 00 — Standards' },
+          { label: 'Phase', value: '01 — Design system' },
+          { label: 'Status', value: 'For review' },
+        ]}
+      />
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  // Dark-sheet preview. Site-wide dark mode, following the system setting, arrives in Phase 5.
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      const root = document.documentElement;
+      const dark = root.getAttribute('data-theme') !== 'dark';
+      if (dark) root.setAttribute('data-theme', 'dark');
+      else root.removeAttribute('data-theme');
+      toggle.setAttribute('aria-pressed', String(dark));
+    });
+  }
+
+  // Replays the line-draw demo: jump to undrawn without a transition, then draw.
+  const demo = document.querySelector<HTMLElement>('[data-draw-demo]');
+  const redraw = document.querySelector<HTMLButtonElement>('.draw-button');
+  if (demo && redraw) {
+    redraw.addEventListener('click', () => {
+      demo.classList.add('is-resetting');
+      demo.removeAttribute('data-drawn');
+      void demo.offsetWidth;
+      demo.classList.remove('is-resetting');
+      demo.setAttribute('data-drawn', '');
+    });
+  }
+</script>
+
+<style>
+  .page {
+    min-block-size: 100vh;
+    padding-block: var(--space-m) var(--space-2xl);
+  }
+
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-block-end: var(--space-s);
+    border-block-end: var(--line-thin) solid var(--color-ink);
+  }
+
+  .back {
+    color: var(--color-ink);
+  }
+
+  .intro {
+    --stack-gap: var(--space-m);
+
+    padding-block: var(--space-2xl) var(--space-xl);
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    padding-block: var(--space-xl);
+    border-block-start: var(--line-thin) solid var(--color-ink);
+  }
+
+  .section h3 {
+    margin-block-start: var(--space-s);
+  }
+
+  .badge {
+    display: inline-block;
+    margin-inline-start: var(--space-2xs);
+    padding: 0.1em 0.5em;
+    border: var(--line-thin) solid var(--color-accent);
+    border-radius: var(--radius-s);
+    color: var(--color-ink);
+  }
+
+  /* Colour */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--space-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .swatch__chip {
+    display: block;
+    block-size: 5rem;
+    border-block-end: var(--line-thin) solid var(--color-ink);
+  }
+
+  .swatch__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    padding: var(--space-xs);
+  }
+
+  .swatch__name {
+    font-weight: 600;
+  }
+
+  .swatch__body code {
+    align-self: flex-start;
+  }
+
+  .swatch__values {
+    display: grid;
+    gap: var(--space-3xs);
+    margin: var(--space-2xs) 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .swatch__values div {
+    display: flex;
+    gap: var(--space-2xs);
+  }
+
+  .swatch__values dt {
+    min-inline-size: 2.75rem;
+  }
+
+  .swatch__values dd {
+    margin: 0;
+    color: var(--color-ink);
+  }
+
+  /* Type */
+  .specimens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: var(--space-s);
+  }
+
+  .specimen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .specimen__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block-end: var(--space-xs);
+    border-block-end: var(--line-thin) solid var(--color-ink);
+    color: var(--color-ink);
+  }
+
+  .specimen__name {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-display);
+    text-wrap: balance;
+  }
+
+  .specimen__role {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-style: italic;
+    line-height: var(--leading-snug);
+  }
+
+  .specimen__h {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: var(--leading-tight);
+  }
+
+  .specimen__body {
+    font-size: var(--step--1);
+  }
+
+  .scale {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .scale__row {
+    display: grid;
+    gap: var(--space-2xs);
+    padding-block: var(--space-s);
+    border-block-end: var(--line-thin) solid var(--color-line-faint);
+  }
+
+  @media (min-width: 860px) {
+    .scale__row {
+      grid-template-columns: 18rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  .scale__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-xs);
+  }
+
+  .scale__sample {
+    line-height: var(--leading-tight);
+    overflow-wrap: anywhere;
+  }
+
+  .scale__sample--display {
+    font-family: var(--font-display);
+    letter-spacing: var(--tracking-display);
+  }
+
+  .families,
+  .columns,
+  .options,
+  .grids {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: var(--space-l);
+  }
+
+  /* Space, lines, radii */
+  .space-scale,
+  .line-list,
+  .radii {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .space-scale {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .space-scale__row {
+    display: grid;
+    grid-template-columns: 7.5rem auto 1fr;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .space-scale__bar {
+    display: block;
+    block-size: 0.75rem;
+    background: var(--color-accent);
+  }
+
+  .line-list {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .line-list__item {
+    --stack-gap: var(--space-2xs);
+  }
+
+  .radii {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+  }
+
+  .radii__item {
+    --stack-gap: var(--space-3xs);
+  }
+
+  .radii__box {
+    display: block;
+    inline-size: 3.5rem;
+    aspect-ratio: 1;
+    border: var(--line-regular) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .grid-sample {
+    margin: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .grid-sample__area {
+    block-size: 8rem;
+    border: var(--line-thin) solid var(--color-ink);
+  }
+
+  /* Motion */
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .tokens-table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+  }
+
+  .tokens-table th {
+    padding: var(--space-2xs) var(--space-xs) var(--space-2xs) 0;
+    border-block-end: var(--line-thin) solid var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-align: start;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .tokens-table td {
+    padding: var(--space-2xs) var(--space-xs) var(--space-2xs) 0;
+    border-block-end: var(--line-thin) solid var(--color-line-faint);
+    vertical-align: top;
+  }
+
+  .draw-demo {
+    display: grid;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .draw-demo__row {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .draw-demo__line {
+    display: block;
+    block-size: var(--line-regular);
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--draw-duration) var(--ease-in-out);
+  }
+
+  [data-drawn] .draw-demo__line {
+    transform: scaleX(1);
+  }
+
+  .is-resetting .draw-demo__line {
+    transition: none;
+  }
+
+  /* Links */
+  .option {
+    padding: var(--space-m);
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .option .label {
+    color: var(--color-ink);
+  }
+
+  /* Components */
+  .samples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-s);
+  }
+
+  .sample {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .sample--wide {
+    grid-column: 1 / -1;
+  }
+
+  .sample__area {
+    --stack-gap: var(--space-m);
+
+    flex: 1;
+    padding: var(--space-l) var(--space-m);
+  }
+
+  .sample__area--row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2xl);
+  }
+
+  .sample__area--sketch {
+    max-inline-size: 30rem;
+    margin-inline: auto;
+    inline-size: 100%;
+  }
+
+  .sample figcaption {
+    padding: var(--space-xs) var(--space-m);
+    border-block-start: var(--line-thin) solid var(--color-ink);
+  }
+
+  .page-foot {
+    padding-block-start: var(--space-xl);
+  }
+</style>

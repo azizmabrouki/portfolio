@@ -1,0 +1,47 @@
+---
+/**
+ * A line from the drawing vocabulary.
+ * solid: the default rule · strong: ground lines, title blocks · accent: the vermilion rule
+ * planned: dashed, something not built yet · construction: faint dashes, guides only
+ */
+interface Props {
+  variant?: 'solid' | 'strong' | 'accent' | 'planned' | 'construction';
+  class?: string;
+}
+
+const { variant = 'solid', class: className } = Astro.props;
+---
+
+<hr class:list={['rule', `rule--${variant}`, className]} />
+
+<style>
+  .rule {
+    margin: 0;
+    border: 0;
+    block-size: var(--line-thin);
+    background: var(--color-ink);
+  }
+
+  .rule--strong {
+    block-size: var(--line-strong);
+  }
+
+  .rule--accent {
+    block-size: var(--line-regular);
+    background: var(--color-accent);
+  }
+
+  .rule--planned {
+    --on: calc(var(--dash-planned-on) * 1px);
+    --period: calc((var(--dash-planned-on) + var(--dash-planned-off)) * 1px);
+
+    background: repeating-linear-gradient(90deg, var(--color-ink-muted) 0 var(--on), transparent 0 var(--period));
+  }
+
+  .rule--construction {
+    --on: calc(var(--dash-construction-on) * 1px);
+    --period: calc((var(--dash-construction-on) + var(--dash-construction-off)) * 1px);
+
+    background: repeating-linear-gradient(90deg, var(--color-line-faint) 0 var(--on), transparent 0 var(--period));
+  }
+</style>

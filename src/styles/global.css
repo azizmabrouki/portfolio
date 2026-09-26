@@ -1,0 +1,294 @@
+/*
+ * Base styles, typography, links, buttons and layout utilities.
+ * Reads only tokens from tokens.css.
+ */
+
+/* ─── Reset ───────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  max-inline-size: 100%;
+}
+
+::selection {
+  background: var(--color-selection);
+}
+
+/* ─── Typography ──────────────────────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4,
+.display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.display {
+  font-size: var(--step-6);
+}
+
+h1,
+.h1 {
+  font-size: var(--step-5);
+}
+
+h2,
+.h2 {
+  font-size: var(--step-4);
+}
+
+h3,
+.h3 {
+  font-size: var(--step-2);
+  letter-spacing: -0.01em;
+}
+
+h4,
+.h4 {
+  font-size: var(--step-1);
+  letter-spacing: 0;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.lead {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: var(--leading-snug);
+}
+
+.prose {
+  max-inline-size: var(--measure);
+}
+
+.muted {
+  color: var(--color-ink-muted);
+}
+
+small,
+.small {
+  font-size: var(--step--1);
+}
+
+/* Drawing labels: small, uppercase, letter-spaced monospace. */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* Annotations: monospace notes that stay in sentence case. */
+.annotation {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+:not(pre) > code {
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-s);
+  background: var(--color-paper-sunk);
+}
+
+/* ─── Links ───────────────────────────────────────────────────────────────── */
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: var(--line-regular);
+  text-underline-offset: 0.3em;
+  transition:
+    color var(--duration-quick) var(--ease-out),
+    text-decoration-thickness var(--duration-quick) var(--ease-out);
+}
+
+a:hover {
+  color: var(--color-accent-text);
+  text-decoration-thickness: var(--line-strong);
+}
+
+/* Alternative treatment, compared on /style: the text itself in vermilion. */
+.link-accent {
+  color: var(--color-accent-text);
+  text-decoration-color: currentColor;
+}
+
+.link-accent:hover {
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: var(--line-strong) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-s);
+  inset-block-start: -4rem;
+  z-index: 10;
+  padding: var(--space-2xs) var(--space-xs);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  inset-block-start: var(--space-s);
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────────────── */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  min-block-size: 2.75rem;
+  padding: 0.625em 1.25em;
+  border: var(--line-regular) solid var(--color-ink);
+  border-radius: var(--radius-s);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-quick) var(--ease-out),
+    border-color var(--duration-quick) var(--ease-out),
+    color var(--duration-quick) var(--ease-out);
+}
+
+.button:hover {
+  border-color: var(--color-accent-text);
+  background: var(--color-accent-text);
+  color: var(--color-paper);
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.button--secondary:hover {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.button--text {
+  padding-inline: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.button--text:hover {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-accent-text);
+}
+
+.button__arrow {
+  transition: transform var(--duration-quick) var(--ease-out);
+}
+
+.button:hover .button__arrow {
+  transform: translateX(0.25em);
+}
+
+/* ─── Layout utilities ────────────────────────────────────────────────────── */
+.container {
+  inline-size: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--stack-gap, var(--space-s));
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cluster-gap, var(--space-s));
+}
+
+.visually-hidden {
+  position: absolute !important;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Sheet backgrounds: a faint ruled grid or dot grid, aligned to --grid-cell. */
+.sheet-ruled {
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: var(--grid-cell) var(--grid-cell);
+  background-position: -1px -1px;
+}
+
+.sheet-dots {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(var(--color-line-faint) 1px, transparent 1.5px);
+  background-size: var(--grid-cell) var(--grid-cell);
+  background-position: calc(var(--grid-cell) / -2) calc(var(--grid-cell) / -2);
+}

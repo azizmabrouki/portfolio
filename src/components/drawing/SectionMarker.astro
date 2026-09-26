@@ -1,0 +1,93 @@
+---
+/**
+ * Section marker, numbered like a drawing set.
+ * inline: "A / 01 ── Title", the label that opens a section.
+ * bubble: the circular section symbol, number over sheet letter, e.g. beside a heading.
+ */
+interface Props {
+  number: string;
+  sheet?: string;
+  title?: string;
+  variant?: 'inline' | 'bubble';
+  as?: 'div' | 'p' | 'span';
+}
+
+const { number, sheet = 'A', title, variant = 'inline', as: Tag = 'div' } = Astro.props;
+---
+
+<Tag class:list={['marker', `marker--${variant}`]}>
+  {
+    variant === 'bubble' ? (
+      <span class="marker__bubble">
+        <span>{number}</span>
+        <span>{sheet}</span>
+      </span>
+    ) : (
+      <span class="marker__code">
+        {sheet} / {number}
+      </span>
+    )
+  }
+  {title && <span class="marker__title">{title}</span>}
+</Tag>
+
+<style>
+  .marker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+
+  .marker__code {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .marker__title {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-ink-muted);
+  }
+
+  .marker--inline .marker__title::before {
+    content: '';
+    inline-size: 2.5rem;
+    border-block-start: var(--line-regular) solid var(--color-accent);
+  }
+
+  .marker__bubble {
+    display: inline-grid;
+    grid-template-rows: 1fr 1fr;
+    flex: none;
+    inline-size: 2.75rem;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: var(--line-regular) solid var(--color-ink);
+    border-radius: var(--radius-round);
+    letter-spacing: 0.04em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .marker__bubble > span {
+    display: grid;
+    place-items: center;
+  }
+
+  .marker__bubble > span:first-child {
+    padding-block-start: 0.2em;
+    border-block-end: var(--line-thin) solid var(--color-ink);
+  }
+
+  .marker__bubble > span:last-child {
+    padding-block-end: 0.2em;
+  }
+</style>

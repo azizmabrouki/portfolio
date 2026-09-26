@@ -1,40 +1,35 @@
 ---
 /**
- * Minimal 404 so Cloudflare Pages returns a real 404 status instead of
- * falling back to index.html (its behaviour when no 404.html exists).
+ * Served with a real 404 status by Cloudflare (not_found_handling: "404-page").
  * The designed "missing floor" version arrives in Phase 3.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import SectionMarker from '@/components/drawing/SectionMarker.astro';
 ---
 
 <BaseLayout title="Page not found" description="This page does not exist on the drawing.">
-  <main id="main" class="missing">
-    <p class="label">Error · 404</p>
-    <h1>This floor hasn’t been drawn.</h1>
-    <p><a href="/">Back to the entrance</a></p>
+  <main id="main" class="missing sheet-ruled">
+    <div class="stack">
+      <SectionMarker as="p" number="404" title="Not on the drawing" />
+      <h1>This floor hasn’t been drawn.</h1>
+      <p><Button href="/" variant="secondary">Back to the entrance</Button></p>
+    </div>
   </main>
 </BaseLayout>
 
 <style>
   .missing {
-    min-height: 100vh;
-    min-height: 100dvh;
     display: grid;
     align-content: center;
-    gap: 1.25rem;
-    padding: clamp(1rem, 4vw, 3rem);
-    max-width: 44rem;
+    min-block-size: 100vh;
+    min-block-size: 100dvh;
+    padding: var(--gutter);
   }
 
-  .label {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-ink-muted);
-  }
+  .stack {
+    --stack-gap: var(--space-m);
 
-  h1 {
-    font-size: clamp(2rem, 6vw, 3.5rem);
+    max-inline-size: 44rem;
   }
 </style>

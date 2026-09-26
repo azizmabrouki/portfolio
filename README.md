@@ -9,7 +9,8 @@ The site has two jobs: show how I think about systems, and be a working example 
 | Layer | Choice |
 | --- | --- |
 | Framework | [Astro](https://astro.build) 7, TypeScript (strict) |
-| Styling | CSS custom properties as design tokens (`src/styles/tokens.css`) |
+| Styling | CSS custom properties as design tokens (`src/styles/tokens.css`), shown on `/style` |
+| Fonts | Fraunces, Inter, JetBrains Mono via Astro's fonts API: self-hosted, preloaded, metric-matched fallbacks |
 | Motion (from Phase 2) | GSAP + ScrollTrigger, Lenis, Astro View Transitions |
 | Content (from Phase 3) | Markdown/MDX content collections with Zod schemas |
 | CI | GitHub Actions: type-check, build, link check, Lighthouse CI |
@@ -21,7 +22,11 @@ The site has two jobs: show how I think about systems, and be a working example 
 
 **Astro over Next.js.** Content collections, View Transitions and zero-JS-by-default cover everything this site needs. Next.js would only be worth it if the site became app-like (shared state or persistent 3D across pages).
 
-**Design tokens as the only source of style.** Colours, type, spacing and motion timings live in one file; components read custom properties and never hard-code values. Re-theming the site means editing `tokens.css`.
+**Design tokens as the only source of style.** Colours, type, spacing, lines and motion timings live in one file; components read custom properties and never hard-code values. Re-theming the site means editing `tokens.css`, and `/style` shows every token and component in light and dark.
+
+**Fonts through Astro's fonts API, not font packages.** Files are fetched from Fontsource at build time and served from the site itself, like `@fontsource` would, but Astro also preloads them and generates metric-matched fallbacks, so text does not jump when the real font arrives. No extra dependencies.
+
+**Contrast is designed, not checked afterwards.** Every text colour passes WCAG AA (4.5:1) in both themes. Vermilion at 3.8:1 is kept for lines, fills and large text; body-size vermilion uses a darker text shade (5.1:1).
 
 **Quality gates in CI, not in good intentions.** Every pull request and every push to `main` must type-check, build, have no broken links, and score 95+ on all four Lighthouse categories. A regression fails the build.
 
@@ -34,10 +39,14 @@ The site has two jobs: show how I think about systems, and be a working example 
 ```text
 src/
   config/site.ts        name, role, links, navigation
-  styles/tokens.css     colours, type, lines (full scale in Phase 1)
-  layouts/              BaseLayout: <head>, meta, global base styles
-  components/           drawing components (BuildingSketch for now)
-  pages/                index, 404 (case studies and notes from Phase 3)
+  config/palette.ts     colour tokens as data, for swatches and contrast ratios on /style
+  styles/tokens.css     colour (light and dark), type scale, space, lines, radii, motion
+  styles/global.css     base styles, typography, links, buttons, layout utilities
+  layouts/              BaseLayout: <head>, meta, fonts
+  components/drawing/   Rule, DimensionLine, SectionMarker, Hatch, TitleBlock
+  components/           Button, BuildingSketch
+  lib/contrast.ts       WCAG contrast ratios, computed at build
+  pages/                index, style (design system), 404
 public/
   favicon.svg
   _headers              security headers and long-term caching for /_astro/*
@@ -77,7 +86,7 @@ The custom domain and Cloudflare Web Analytics are added in Phase 6.
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Workers | Done |
-| 1. Design system | Tokens, fonts, grid, type scale, drawing components | |
+| 1. Design system | Tokens, fonts, grid, type scale, drawing components | In review |
 | 2. Hero | The building draws itself; reduced-motion fallback | |
 | 3. Content and pages | Home sections, case studies, CV, 404, SEO | |
 | 4. Signature motion | Floor-by-floor scroll, blueprint cards, View Transitions | |

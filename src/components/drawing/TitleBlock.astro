@@ -1,0 +1,64 @@
+---
+/**
+ * The title block of a drawing sheet: labelled fields in a ruled grid.
+ * Hairlines come from 1px gaps that let the ink background show through.
+ */
+interface Field {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  fields: Field[];
+  class?: string;
+}
+
+const { fields, class: className } = Astro.props;
+---
+
+<dl class:list={['title-block', className]}>
+  {
+    fields.map((field) => (
+      <div>
+        <dt>{field.label}</dt>
+        <dd>{field.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .title-block {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--line-thin);
+    margin: 0;
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 720px) {
+    .title-block {
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    }
+  }
+
+  .title-block div {
+    padding: var(--space-2xs) var(--space-xs);
+    background: var(--color-paper);
+  }
+
+  dt {
+    color: var(--color-ink-muted);
+  }
+
+  dd {
+    margin: var(--space-3xs) 0 0;
+    color: var(--color-ink);
+    letter-spacing: 0.06em;
+  }
+</style>
