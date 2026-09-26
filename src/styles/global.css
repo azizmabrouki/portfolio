@@ -150,16 +150,6 @@ a:hover {
   text-decoration-thickness: var(--line-strong);
 }
 
-/* Alternative treatment, compared on /style: the text itself in vermilion. */
-.link-accent {
-  color: var(--color-accent-text);
-  text-decoration-color: currentColor;
-}
-
-.link-accent:hover {
-  color: var(--color-ink);
-}
-
 :focus-visible {
   outline: var(--line-strong) solid var(--color-focus);
   outline-offset: 3px;

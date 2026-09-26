@@ -1,9 +1,8 @@
 ---
 /**
  * Drawing standards: every token and component the site may use, in light and dark.
- * Phase 1's "done when" page. It also compares the three heading-font candidates.
+ * Phase 1's "done when" page.
  */
-import { Font } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import BuildingSketch from '@/components/BuildingSketch.astro';
 import Button from '@/components/Button.astro';
@@ -25,25 +24,10 @@ const swatches = palette.map((swatch) => {
   };
 });
 
-const headingFonts = [
-  {
-    name: 'Fraunces',
-    variable: '--font-fraunces',
-    current: true,
-    note: 'Soft, high-contrast display serif with optical sizes. The most character of the three.',
-  },
-  {
-    name: 'Lora',
-    variable: '--font-lora',
-    current: false,
-    note: 'Calligraphic book serif. Steadier and warmer, less of a display face.',
-  },
-  {
-    name: 'Newsreader',
-    variable: '--font-newsreader',
-    current: false,
-    note: 'Made for long reading, with optical sizes. Quiet and editorial.',
-  },
+const displayWeights = [
+  { weight: 300, label: 'Fraunces 300', note: 'Light: large display settings only.' },
+  { weight: 400, label: 'Fraunces 400 · default', note: 'Every heading on the site.' },
+  { weight: 600, label: 'Fraunces 600', note: 'Emphasis inside headings, sparingly.' },
 ];
 
 const typeScale = [
@@ -102,11 +86,6 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
   title="Design system"
   description="The drawing standards behind Mohamed Aziz Mabrouki's portfolio: colour, type, space, lines, motion and drawing components."
 >
-  <Fragment slot="head">
-    <Font cssVariable="--font-lora" />
-    <Font cssVariable="--font-newsreader" />
-  </Fragment>
-
   <div class="page sheet-ruled">
     <header class="page-head container">
       <a class="label back" href="/">← Back to the sheet</a>
@@ -175,31 +154,20 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
         <SectionMarker as="p" number="02" title="Type" />
         <h2 id="type">A serif with character, a clean sans, a drawing-label mono</h2>
 
-        <h3>Heading font: three candidates</h3>
+        <h3>Headings: Fraunces</h3>
         <p class="prose muted">
-          Same content, set in each candidate. Fraunces is the current choice; the other two load on this
-          page only.
+          Chosen over Lora and Newsreader. A soft, high-contrast serif with optical sizes: it sharpens
+          at display sizes and opens up when small.
         </p>
         <div class="specimens">
           {
-            headingFonts.map((font) => (
-              <article
-                class="specimen"
-                style={`--font-display: var(${font.variable}, ui-serif, Georgia, serif)`}
-                aria-label={`${font.name} specimen`}
-              >
-                <p class="label specimen__head">
-                  <span>{font.name}</span>
-                  {font.current && <span class="badge">Current</span>}
-                </p>
+            displayWeights.map((variant) => (
+              <article class="specimen" style={`--specimen-weight: ${variant.weight}`} aria-label={variant.label}>
+                <p class="label specimen__head">{variant.label}</p>
                 <p class="specimen__name">Mohamed Aziz Mabrouki</p>
                 <p class="specimen__role">Software engineer, growing into software architecture.</p>
                 <p class="specimen__h">Boundaries first</p>
-                <p class="specimen__body">
-                  A modular monolith with idempotent Stripe webhooks, 609 tests and every decision written
-                  down.
-                </p>
-                <p class="annotation">{font.note}</p>
+                <p class="annotation">{variant.note}</p>
               </article>
             ))
           }
@@ -358,25 +326,13 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
       <!-- 05 Links and buttons -->
       <section class="section container" aria-labelledby="links">
         <SectionMarker as="p" number="05" title="Links and buttons" />
-        <h2 id="links">Two link treatments to choose from</h2>
-
-        <div class="options">
-          <div class="option stack">
-            <p class="label">A · Ink text, vermilion underline <span class="badge">Current</span></p>
-            <p class="prose">
-              Read the <a href="#links">StudioLabCloud case study</a> or the note on
-              <a href="#links">idempotent webhooks</a>. The text keeps full ink contrast; vermilion only
-              draws the line.
-            </p>
-          </div>
-          <div class="option stack">
-            <p class="label">B · Vermilion text, 5.1:1</p>
-            <p class="prose">
-              Read the <a class="link-accent" href="#links">StudioLabCloud case study</a> or the note on
-              <a class="link-accent" href="#links">idempotent webhooks</a>. More colour on the page,
-              using the darker text shade.
-            </p>
-          </div>
+        <h2 id="links">Ink text, a vermilion line</h2>
+        <div class="option stack">
+          <p class="prose">
+            Read the <a href="#links">StudioLabCloud case study</a> or the note on
+            <a href="#links">idempotent webhooks</a>. The text keeps full ink contrast; vermilion only draws
+            the underline, and hover turns the text to the vermilion text shade.
+          </p>
         </div>
 
         <h3>Buttons</h3>
@@ -644,6 +600,7 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
   .specimen__name {
     font-family: var(--font-display);
     font-size: var(--step-4);
+    font-weight: var(--specimen-weight, 400);
     line-height: var(--leading-tight);
     letter-spacing: var(--tracking-display);
     text-wrap: balance;
@@ -659,11 +616,8 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
   .specimen__h {
     font-family: var(--font-display);
     font-size: var(--step-2);
+    font-weight: var(--specimen-weight, 400);
     line-height: var(--leading-tight);
-  }
-
-  .specimen__body {
-    font-size: var(--step--1);
   }
 
   .scale {
@@ -706,7 +660,6 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
 
   .families,
   .columns,
-  .options,
   .grids {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
@@ -842,10 +795,6 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
     padding: var(--space-m);
     border: var(--line-thin) solid var(--color-ink);
     background: var(--color-paper-raised);
-  }
-
-  .option .label {
-    color: var(--color-ink);
   }
 
   /* Components */
