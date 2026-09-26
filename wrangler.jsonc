@@ -1,0 +1,12 @@
+// Cloudflare Workers config. The site is fully static: Workers serves the Astro build
+// from dist/ as static assets, with no server code.
+// `name` must match the Worker's name in the Cloudflare dashboard, or builds fail.
+{
+  "name": "aziz-mabrouki",
+  "compatibility_date": "2026-09-26",
+  "assets": {
+    "directory": "./dist",
+    // Serve dist/404.html with a real 404 status for unknown URLs.
+    "not_found_handling": "404-page"
+  }
+}

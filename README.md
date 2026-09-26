@@ -13,7 +13,7 @@ The site has two jobs: show how I think about systems, and be a working example 
 | Motion (from Phase 2) | GSAP + ScrollTrigger, Lenis, Astro View Transitions |
 | Content (from Phase 3) | Markdown/MDX content collections with Zod schemas |
 | CI | GitHub Actions: type-check, build, link check, Lighthouse CI |
-| Hosting | Cloudflare Pages, deployed on every push to `main` |
+| Hosting | Cloudflare Workers (static assets), deployed on every push to `main` |
 
 ## Decisions
 
@@ -25,7 +25,9 @@ The site has two jobs: show how I think about systems, and be a working example 
 
 **Quality gates in CI, not in good intentions.** Every pull request and every push to `main` must type-check, build, have no broken links, and score 95+ on all four Lighthouse categories. A regression fails the build.
 
-**Hosting decoupled from CI.** Cloudflare Pages builds and deploys from Git on its own; GitHub Actions verifies. Every branch gets its own preview URL, `main` is production.
+**Hosting decoupled from CI.** Cloudflare builds and deploys from Git on its own; GitHub Actions verifies. Every branch gets its own preview URL, `main` is production.
+
+**Workers over Pages.** The plan started on Cloudflare Pages, but Cloudflare now presents Pages as its legacy workflow. Workers static assets serves the same pre-built files, honours the same `_headers` file and a real 404 page, and is where new platform features land. The cost is one config file, `wrangler.jsonc`.
 
 ## Project structure
 
@@ -43,7 +45,8 @@ public/
   workflows/ci.yml      verification pipeline
   dependabot.yml        weekly dependency updates
 lighthouserc.json       Lighthouse CI thresholds
-.nvmrc                  Node version, read by CI and Cloudflare Pages
+wrangler.jsonc          Cloudflare Workers config: serve dist/ as static assets
+.nvmrc                  Node version, read by CI and Cloudflare
 ```
 
 ## Running locally
@@ -58,12 +61,14 @@ npm run build     # static output in dist/
 npm run preview   # serve dist/
 ```
 
-## Deployment (Cloudflare Pages)
+## Deployment (Cloudflare Workers)
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create application** → **Pages** → **Import an existing Git repository**.
-2. Pick `azizmabrouki/portfolio`. Name the project `aziz-mabrouki` so the URL is `aziz-mabrouki.pages.dev`.
-3. Build settings: framework preset **Astro**, build command `npm run build`, output directory `dist`, production branch `main`. The Node version comes from `.nvmrc`.
-4. **Save and Deploy**. Then set `site` in `astro.config.mjs` to the `*.pages.dev` URL (canonical and Open Graph URLs switch on automatically).
+1. Cloudflare dashboard → **Workers & Pages** → **Create application** → **Continue with GitHub**.
+2. Pick `azizmabrouki/portfolio`. Name the Worker `aziz-mabrouki`: it must match `name` in `wrangler.jsonc`.
+3. Build command `npm run build`, deploy command `npx wrangler deploy`, non-production branch deploy command `npx wrangler versions upload`. The Node version comes from `.nvmrc`.
+4. **Deploy**. Then set `site` in `astro.config.mjs` to the `*.workers.dev` URL (canonical and Open Graph URLs switch on automatically).
+
+Pushes to `main` deploy to production; other branches get a preview URL, posted on their pull request.
 
 The custom domain and Cloudflare Web Analytics are added in Phase 6.
 
@@ -71,7 +76,7 @@ The custom domain and Cloudflare Web Analytics are added in Phase 6.
 
 | Phase | Scope | Status |
 | --- | --- | --- |
-| 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Pages | In progress |
+| 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Workers | In progress |
 | 1. Design system | Tokens, fonts, grid, type scale, drawing components | |
 | 2. Hero | The building draws itself; reduced-motion fallback | |
 | 3. Content and pages | Home sections, case studies, CV, 404, SEO | |

@@ -1,5 +1,5 @@
-# Cloudflare Pages response headers.
-# https://developers.cloudflare.com/pages/configuration/headers/
+# Response headers for the static assets (Cloudflare Workers; same syntax as Pages).
+# https://developers.cloudflare.com/workers/static-assets/headers/
 
 /*
   X-Content-Type-Options: nosniff
