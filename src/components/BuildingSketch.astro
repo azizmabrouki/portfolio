@@ -1,0 +1,161 @@
+---
+/**
+ * Phase 0 placeholder for the hero drawing: the building with only its
+ * foundation and infrastructure floor drawn, the upper floors still dashed.
+ * Replaced by the animated BuildingDrawing component in Phase 2.
+ */
+interface Floor {
+  n: string;
+  name: string;
+  y: number;
+  built: boolean;
+  accent?: boolean;
+}
+
+const left = 60;
+const right = 250;
+const floorHeight = 70;
+const ground = 380;
+
+const floors: Floor[] = [
+  { n: '04', name: 'Presentation', y: ground - floorHeight * 4, built: false },
+  { n: '03', name: 'Application', y: ground - floorHeight * 3, built: false },
+  { n: '02', name: 'Domain', y: ground - floorHeight * 2, built: false, accent: true },
+  { n: '01', name: 'Infrastructure', y: ground - floorHeight, built: true },
+];
+
+const top = ground - floorHeight * floors.length;
+const boundaries = [...floors.map((f) => f.y), ground];
+const windows = [76, 120, 164, 208];
+---
+
+<svg
+  class="sketch"
+  viewBox="0 0 440 430"
+  role="img"
+  aria-labelledby="sketch-title sketch-desc"
+>
+  <title id="sketch-title">A building drawn as a software architecture</title>
+  <desc id="sketch-desc">
+    Four floors named presentation, application, domain and infrastructure. The foundation and the
+    infrastructure floor are drawn in solid lines; the three floors above are dashed, still planned.
+  </desc>
+
+  <defs>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" class="hatch-line"></line>
+    </pattern>
+  </defs>
+
+  <!-- construction lines -->
+  <g class="construction">
+    <line x1={left} y1="30" x2={left} y2="415"></line>
+    <line x1={right} y1="30" x2={right} y2="415"></line>
+    <line x1="14" y1={top} x2="432" y2={top}></line>
+  </g>
+
+  <!-- foundation -->
+  <rect x={left} y={ground} width={right - left} height="24" fill="url(#hatch)" class="foundation"></rect>
+  <line x1="10" y1={ground} x2="432" y2={ground} class="ground"></line>
+
+  <!-- floors -->
+  {
+    floors.map((floor) => (
+      <g class:list={['floor', { 'floor--built': floor.built, 'floor--accent': floor.accent }]}>
+        <rect x={left} y={floor.y} width={right - left} height={floorHeight} />
+        <text x={right + 16} y={floor.y + floorHeight / 2 + 4} class="label">
+          {floor.n} · {floor.name.toUpperCase()}
+        </text>
+      </g>
+    ))
+  }
+
+  <!-- windows on the built floor -->
+  <g class="windows">
+    {windows.map((x) => <rect x={x} y={ground - floorHeight + 22} width="22" height="26" />)}
+  </g>
+
+  <!-- dimension line with architectural ticks -->
+  <g class="dimension">
+    <line x1="30" y1={top} x2="30" y2={ground}></line>
+    {boundaries.map((y) => <line x1="25" y1={y + 5} x2="35" y2={y - 5} />)}
+  </g>
+</svg>
+
+<style>
+  .sketch {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .sketch line,
+  .sketch rect {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .construction line {
+    stroke: var(--color-ink);
+    stroke-opacity: 0.22;
+    stroke-width: var(--line-thin);
+    stroke-dasharray: 2 5;
+  }
+
+  .ground {
+    stroke: var(--color-ink);
+    stroke-width: var(--line-regular);
+  }
+
+  .foundation {
+    stroke: var(--color-ink);
+    stroke-width: var(--line-thin);
+  }
+
+  .hatch-line {
+    stroke: var(--color-ink);
+    stroke-width: 1;
+    stroke-opacity: 0.55;
+  }
+
+  .floor rect {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: var(--line-thin);
+    stroke-dasharray: 6 5;
+    stroke-opacity: 0.5;
+  }
+
+  .floor--accent rect {
+    stroke: var(--color-accent);
+    stroke-opacity: 0.9;
+  }
+
+  .floor--built rect {
+    stroke-dasharray: none;
+    stroke-opacity: 1;
+    stroke-width: var(--line-regular);
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    fill: var(--color-ink-muted);
+  }
+
+  .floor--built .label {
+    fill: var(--color-ink);
+  }
+
+  .windows rect {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: var(--line-thin);
+  }
+
+  .dimension line {
+    stroke: var(--color-ink);
+    stroke-width: var(--line-thin);
+  }
+</style>

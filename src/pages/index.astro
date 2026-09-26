@@ -1,0 +1,226 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BuildingSketch from '@/components/BuildingSketch.astro';
+import { site, contactLinks } from '@/config/site';
+
+const links = contactLinks();
+---
+
+<BaseLayout>
+  <main id="main" class="sheet">
+    <header class="sheet-meta">
+      <span>A / 00</span>
+      <span>Sheet 00 — Setup</span>
+    </header>
+
+    <section class="intro" aria-labelledby="name">
+      <p class="label">Portfolio · drawing in progress</p>
+      <h1 id="name">{site.name}</h1>
+      <p class="role">{site.role}.</p>
+      <p class="note">
+        This site is being built in public, one phase at a time. The foundations are laid: repository,
+        continuous integration and deployment. The floors above come next.
+      </p>
+
+      <ul class="links" aria-label="Links">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href} rel="me">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href={site.repo}>Source of this site</a></li>
+      </ul>
+    </section>
+
+    <figure class="drawing">
+      <BuildingSketch />
+      <figcaption class="legend">
+        <span class="legend-item"><span class="swatch swatch--solid" aria-hidden="true"></span>Built</span>
+        <span class="legend-item"><span class="swatch swatch--dashed" aria-hidden="true"></span>Planned</span>
+      </figcaption>
+    </figure>
+
+    <footer class="title-block">
+      <dl>
+        <div><dt>Project</dt><dd>Portfolio</dd></div>
+        <div><dt>Phase</dt><dd>00 — Setup</dd></div>
+        <div><dt>Status</dt><dd>Foundations laid</dd></div>
+        <div><dt>Based</dt><dd>{site.availability}</dd></div>
+      </dl>
+    </footer>
+  </main>
+</BaseLayout>
+
+<style>
+  .sheet {
+    --gutter: clamp(1rem, 4vw, 3rem);
+
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'meta'
+      'intro'
+      'drawing'
+      'title';
+    gap: clamp(2rem, 5vw, 3.5rem);
+    padding: var(--gutter);
+    background-image:
+      linear-gradient(var(--color-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: -1px -1px;
+  }
+
+  @media (min-width: 860px) {
+    .sheet {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        'meta meta'
+        'intro drawing'
+        'title title';
+      align-items: center;
+    }
+  }
+
+  .sheet-meta,
+  .label,
+  .legend,
+  .title-block {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .sheet-meta {
+    grid-area: meta;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+    border-bottom: var(--line-thin) solid var(--color-ink);
+  }
+
+  .intro {
+    grid-area: intro;
+    display: grid;
+    gap: 1.25rem;
+    max-width: 38rem;
+  }
+
+  .label {
+    color: var(--color-ink-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .label::before {
+    content: '';
+    width: 2.5rem;
+    border-top: var(--line-regular) solid var(--color-accent);
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 7vw, 4.75rem);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .role {
+    font-family: var(--font-serif);
+    font-size: clamp(1.25rem, 2.4vw, 1.625rem);
+    font-style: italic;
+    line-height: 1.3;
+  }
+
+  .note {
+    color: var(--color-ink-muted);
+    max-width: 34rem;
+  }
+
+  .links {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.75rem;
+  }
+
+  .links a {
+    display: inline-block;
+    padding-block: 0.25rem;
+  }
+
+  .drawing {
+    grid-area: drawing;
+    margin: 0;
+    width: 100%;
+    max-width: 30rem;
+    justify-self: center;
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    color: var(--color-ink-muted);
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .swatch {
+    width: 1.75rem;
+    border-top: var(--line-regular) solid var(--color-ink);
+  }
+
+  .swatch--dashed {
+    border-top-style: dashed;
+    opacity: 0.6;
+  }
+
+  .title-block {
+    grid-area: title;
+  }
+
+  /* Hairlines come from the 1px gaps showing the ink background through. */
+  .title-block dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--line-thin);
+    background: var(--color-ink);
+    border: var(--line-thin) solid var(--color-ink);
+  }
+
+  @media (min-width: 720px) {
+    .title-block dl {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .title-block div {
+    padding: 0.625rem 0.875rem;
+    background: var(--color-paper);
+  }
+
+  .title-block dt {
+    color: var(--color-ink-muted);
+  }
+
+  .title-block dd {
+    margin: 0.25rem 0 0;
+    letter-spacing: 0.06em;
+  }
+</style>

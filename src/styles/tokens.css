@@ -1,0 +1,26 @@
+/*
+ * Design tokens — the only place colours, type and motion are defined.
+ * Components read these custom properties and never hard-code values.
+ *
+ * Phase 0 stub: palette and font stacks only.
+ * Phase 1 adds the full scale (spacing, type scale, radii, motion durations and easings)
+ * and swaps the system font stacks for self-hosted @fontsource fonts.
+ */
+
+:root {
+  /* Palette — "the architect's drawing" */
+  --color-paper: #efeae1; /* background */
+  --color-ink: #262420; /* text and lines */
+  --color-ink-muted: #5c574f; /* secondary text, 6.0:1 on paper */
+  --color-accent: #c2532b; /* vermilion: lines, rules, large text only (3.8:1 on paper) */
+  --color-grid: rgb(38 36 32 / 0.07);
+
+  /* Type — system stacks until Phase 1 */
+  --font-serif: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Lines */
+  --line-thin: 1px;
+  --line-regular: 1.5px;
+}

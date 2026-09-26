@@ -1,0 +1,40 @@
+---
+/**
+ * Minimal 404 so Cloudflare Pages returns a real 404 status instead of
+ * falling back to index.html (its behaviour when no 404.html exists).
+ * The designed "missing floor" version arrives in Phase 3.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="This page does not exist on the drawing.">
+  <main id="main" class="missing">
+    <p class="label">Error · 404</p>
+    <h1>This floor hasn’t been drawn.</h1>
+    <p><a href="/">Back to the entrance</a></p>
+  </main>
+</BaseLayout>
+
+<style>
+  .missing {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    align-content: center;
+    gap: 1.25rem;
+    padding: clamp(1rem, 4vw, 3rem);
+    max-width: 44rem;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+  }
+</style>
