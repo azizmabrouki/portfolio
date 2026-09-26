@@ -26,7 +26,15 @@ The site has two jobs: show how I think about systems, and be a working example 
 
 **Fonts through Astro's fonts API, not font packages.** Files are fetched from Fontsource at build time and served from the site itself, like `@fontsource` would, and Astro generates metric-matched fallbacks, so text does not jump when the real font arrives. No extra dependencies.
 
-**Fonts are not preloaded.** The first version preloaded three font files (~340 KB). Lighthouse CI measured mobile LCP at 3.2 s and a performance score of 0.94, below the 0.95 gate: the preloads competed with the stylesheet on a slow connection. Without preloads, and with the few KB of CSS inlined, text paints immediately in the metric-matched fallback and swaps to the real font without layout shift.
+**Font bytes are the performance budget.** Lighthouse CI measured three versions of the font setup (mobile, simulated slow 4G):
+
+| Setup | Font bytes | LCP | Performance |
+| --- | --- | --- | --- |
+| Three families + Fraunces italic, preloaded | ~377 KB | 3.2 s | 0.94 |
+| Same, not preloaded (fonts found in CSS get "VeryHigh" priority, which Lighthouse treats as render-blocking) | ~377 KB | 3.0 s, first paint 3.0 s | 0.89 |
+| Upright Fraunces only, preloaded, CSS inlined | ~230–260 KB | measured in CI | ≥ 0.95 gate |
+
+So the italic face went (it served one line of text), fonts stay preloaded, and the few KB of CSS are inlined so no stylesheet request blocks the first paint.
 
 **Contrast is designed, not checked afterwards.** Every text colour passes WCAG AA (4.5:1) in both themes. Vermilion at 3.8:1 is kept for lines, fills and large text; body-size vermilion uses a darker text shade (5.1:1).
 

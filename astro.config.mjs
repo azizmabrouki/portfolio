@@ -24,7 +24,8 @@ export default defineConfig({
       name: 'Fraunces',
       cssVariable: '--font-fraunces',
       weights: ['100 900'],
-      styles: ['normal', 'italic'],
+      // Upright only: the italic file alone was ~147 KB for one line of text.
+      styles: ['normal'],
       subsets: ['latin'],
       fallbacks: ['serif'],
     },
