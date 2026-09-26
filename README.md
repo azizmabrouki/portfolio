@@ -10,7 +10,7 @@ The site has two jobs: show how I think about systems, and be a working example 
 | --- | --- |
 | Framework | [Astro](https://astro.build) 7, TypeScript (strict) |
 | Styling | CSS custom properties as design tokens (`src/styles/tokens.css`), shown on `/style` |
-| Fonts | Fraunces, Inter, JetBrains Mono via Astro's fonts API: self-hosted, preloaded, metric-matched fallbacks |
+| Fonts | Fraunces, Inter, JetBrains Mono via Astro's fonts API: self-hosted, metric-matched fallbacks |
 | Motion (from Phase 2) | GSAP + ScrollTrigger, Lenis, Astro View Transitions |
 | Content (from Phase 3) | Markdown/MDX content collections with Zod schemas |
 | CI | GitHub Actions: type-check, build, link check, Lighthouse CI |
@@ -24,7 +24,9 @@ The site has two jobs: show how I think about systems, and be a working example 
 
 **Design tokens as the only source of style.** Colours, type, spacing, lines and motion timings live in one file; components read custom properties and never hard-code values. Re-theming the site means editing `tokens.css`, and `/style` shows every token and component in light and dark.
 
-**Fonts through Astro's fonts API, not font packages.** Files are fetched from Fontsource at build time and served from the site itself, like `@fontsource` would, but Astro also preloads them and generates metric-matched fallbacks, so text does not jump when the real font arrives. No extra dependencies.
+**Fonts through Astro's fonts API, not font packages.** Files are fetched from Fontsource at build time and served from the site itself, like `@fontsource` would, and Astro generates metric-matched fallbacks, so text does not jump when the real font arrives. No extra dependencies.
+
+**Fonts are not preloaded.** The first version preloaded three font files (~340 KB). Lighthouse CI measured mobile LCP at 3.2 s and a performance score of 0.94, below the 0.95 gate: the preloads competed with the stylesheet on a slow connection. Without preloads, and with the few KB of CSS inlined, text paints immediately in the metric-matched fallback and swaps to the real font without layout shift.
 
 **Contrast is designed, not checked afterwards.** Every text colour passes WCAG AA (4.5:1) in both themes. Vermilion at 3.8:1 is kept for lines, fills and large text; body-size vermilion uses a darker text shade (5.1:1).
 

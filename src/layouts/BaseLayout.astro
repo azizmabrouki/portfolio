@@ -33,8 +33,10 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     {canonical && <meta property="og:url" content={canonical} />}
     <meta name="twitter:card" content="summary" />
 
-    <Font cssVariable="--font-fraunces" preload />
-    <Font cssVariable="--font-inter" preload />
+    {/* Not preloaded on purpose: ~340 KB of font preloads delayed mobile LCP to 3.2 s.
+        Metric-matched fallbacks let text paint immediately and swap without shifting. */}
+    <Font cssVariable="--font-fraunces" />
+    <Font cssVariable="--font-inter" />
     <Font cssVariable="--font-jetbrains-mono" />
     <slot name="head" />
   </head>

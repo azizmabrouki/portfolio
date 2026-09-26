@@ -11,11 +11,13 @@ export default defineConfig({
   build: {
     // /notes/foo/index.html style URLs, served by Cloudflare without redirects.
     format: 'directory',
+    // The CSS is a few KB per page: inline it so no stylesheet request blocks first paint.
+    inlineStylesheets: 'always',
   },
 
   // Downloaded from Fontsource at build time and self-hosted from /_astro/fonts.
-  // Astro generates a metric-matched fallback per family, so text does not jump when
-  // the real font arrives. Each family becomes a CSS variable that tokens.css reads.
+  // Astro generates a metric-matched fallback per family, so text paints at once in the
+  // fallback and swaps with no layout shift. Each family becomes a CSS variable in tokens.css.
   fonts: [
     {
       provider: fontProviders.fontsource(),
