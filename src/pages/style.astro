@@ -441,16 +441,25 @@ const drawDurations = ['--duration-quick', '--duration-moderate', '--duration-sl
 </BaseLayout>
 
 <script>
-  // Dark-sheet preview. Site-wide dark mode, following the system setting, arrives in Phase 5.
+  // Dark-sheet switch: same behaviour as the header's. The page may open dark (system
+  // setting or an earlier choice), so the button reads its state from <html> and keeps up.
   const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
   if (toggle) {
+    const root = document.documentElement;
+    const isDark = () => root.getAttribute('data-theme') === 'dark';
+    const sync = () => toggle.setAttribute('aria-pressed', String(isDark()));
+    sync();
     toggle.addEventListener('click', () => {
-      const root = document.documentElement;
-      const dark = root.getAttribute('data-theme') !== 'dark';
-      if (dark) root.setAttribute('data-theme', 'dark');
+      const next = isDark() ? 'light' : 'dark';
+      if (next === 'dark') root.setAttribute('data-theme', 'dark');
       else root.removeAttribute('data-theme');
-      toggle.setAttribute('aria-pressed', String(dark));
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        // Storage blocked: the switch still works for this page.
+      }
     });
+    new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   }
 
   // Replays the line-draw demo: jump to undrawn without a transition, then draw.

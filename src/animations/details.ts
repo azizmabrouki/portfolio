@@ -2,10 +2,12 @@
  * Small details that make the site feel like a drawing board. No GSAP: a few hundred bytes.
  * Loaded only when the visitor has not asked for reduced motion.
  *
- * - Section markers count up (A / 00 → A / 03) the first time they scroll into view.
  * - In-page links (the header's sections) scroll smoothly and move keyboard focus.
- * - Drawing surfaces show the pointer's coordinates, like a CAD readout (desktop only).
+ * - Where the signature motion runs (MOTION_QUERY: desktops): section markers count up
+ *   (A / 00 → A / 03) the first time they scroll into view. Phones keep them still.
+ * - Drawing surfaces show the pointer's coordinates, like a CAD readout (fine pointers only).
  */
+import { MOTION_QUERY } from './query';
 
 const pad = (value: number, width: number) => String(Math.max(0, Math.round(value))).padStart(width, '0');
 
@@ -98,7 +100,7 @@ function coordinates(): void {
 }
 
 export function initDetails(): void {
-  countUpMarkers();
   smoothInPageLinks();
+  if (window.matchMedia(MOTION_QUERY).matches) countUpMarkers();
   coordinates();
 }
