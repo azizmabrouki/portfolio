@@ -32,16 +32,19 @@ decisions:
     over: Microservices from the first release.
     why: One team, one database and a first release to ship. Contracts give most of the separation microservices promise, without the network hops, the extra deployments and the distributed failures.
     tradeoff: Nothing but discipline stops a module from reaching into another one. Architecture decision records write down why each boundary exists, so it survives the next deadline.
+    node: contracts
   - title: Webhooks that may arrive twice
     chose: Idempotent webhook processing, so each payment event is recorded and applied once.
     over: Trusting every webhook to arrive exactly once.
     why: Payment providers retry deliveries, and a replayed event must never charge a client twice.
     tradeoff: One more piece of state to store and check on every event, and tests written for the replay cases.
+    node: billing
   - title: An assistant that knows when to stop
     chose: A separate Python RAG assistant behind a handover contract that escalates to a human agent.
     over: An assistant inside the PHP application, or one that tries to answer everything.
     why: Python has the retrieval and model tooling. The contract says when the bot passes the conversation to a person, so a wrong answer is never the last word.
     tradeoff: A second runtime to deploy and monitor, and a contract to keep in step on both sides.
+    node: assistant
 diagram:
   title: StudioLabCloud, simplified
   description: Clients and support agents use one Laravel application split into modules. The billing module talks to Stripe and receives its webhooks; the support module hands conversations to and from a separate Python assistant. Everything runs on Kubernetes, watched by Grafana.

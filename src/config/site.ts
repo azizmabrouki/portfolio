@@ -28,6 +28,11 @@ export interface SiteConfig {
     cv: string;
   };
   nav: SiteLink[];
+  /**
+   * Cloudflare Web Analytics: cookie-free, no consent banner needed. Paste the token from
+   * the dashboard (Analytics & Logs → Web Analytics → Add a site) to switch it on.
+   */
+  analytics: { cloudflareToken: string };
 }
 
 export const site: SiteConfig = {
@@ -56,6 +61,8 @@ export const site: SiteConfig = {
     { label: 'Notes', href: '#notes' },
     { label: 'Contact', href: '#contact' },
   ],
+
+  analytics: { cloudflareToken: '' },
 };
 
 /** Links that are actually set, in display order. */

@@ -26,3 +26,11 @@ const { home = false, ...meta } = Astro.props;
   </main>
   <SiteFooter />
 </BaseLayout>
+
+<script>
+  // Smooth in-page links, plus on desktops the counting markers and the coordinate
+  // readout: only for visitors who haven't asked for reduced motion (see details.ts).
+  if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    void import('@/animations/details').then(({ initDetails }) => initDetails());
+  }
+</script>

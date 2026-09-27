@@ -7,17 +7,28 @@
  * Wide drawings scroll sideways on small screens, and the same information is always
  * available as a plain list under the drawing.
  */
-import { describeEdges, layoutDiagram, toPath, type DiagramSpec, type PlacedNode } from '@/lib/diagram';
+import {
+  describeEdges,
+  layoutDiagram,
+  placeCallouts,
+  toPath,
+  type Callout,
+  type DiagramSpec,
+  type PlacedNode,
+} from '@/lib/diagram';
 
 interface Props {
   spec: DiagramSpec;
   /** Unique on the page: prefixes the SVG ids. */
   id: string;
   figure?: string;
+  /** Numbered markers for the key decisions, each pointing at a box. */
+  callouts?: Callout[];
 }
 
-const { spec, id, figure = '1' } = Astro.props;
+const { spec, id, figure = '1', callouts = [] } = Astro.props;
 const layout = layoutDiagram(spec);
+const markers = placeCallouts(layout, callouts);
 const pad = 24;
 const viewBox = `${-pad} ${-pad / 2} ${layout.width + pad * 2} ${layout.height + pad}`;
 const titleId = `${id}-title`;
@@ -37,7 +48,7 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
 ---
 
 <figure class="diagram" data-diagram>
-  <div class="diagram__scroll" tabindex="0" role="region" aria-label={`${spec.title}: drawing, scrolls sideways on small screens`}>
+  <div class="diagram__scroll" data-coords tabindex="0" role="region" aria-label={`${spec.title}: drawing, scrolls sideways on small screens`}>
     <svg
       viewBox={viewBox}
       role="img"
@@ -112,12 +123,35 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
       {
         layout.edges.map((edge) => (
           <g class:list={['diagram__edge', { 'diagram__edge--dashed': edge.dashed }]} data-diagram-part="edge">
-            <path d={toPath(edge.points)} marker-end={`url(#${arrowId})`} />
+            <path d={toPath(edge.points)} marker-end={`url(#${arrowId})`} data-edge-line />
             {edge.label && (
-              <text x={edge.labelAt.x} y={edge.labelAt.y} text-anchor={edge.labelAt.anchor} class="diagram__edge-label">
+              <text
+                x={edge.labelAt.x}
+                y={edge.labelAt.y}
+                text-anchor={edge.labelAt.anchor}
+                class="diagram__edge-label"
+                data-edge-label
+              >
                 {edge.label}
               </text>
             )}
+          </g>
+        ))
+      }
+
+      {
+        markers.map((marker) => (
+          <g class="diagram__callout" data-diagram-part="callout" data-callout={marker.label}>
+            <line
+              x1={marker.leader[0].x}
+              y1={marker.leader[0].y}
+              x2={marker.leader[1].x}
+              y2={marker.leader[1].y}
+            />
+            <circle cx={marker.x} cy={marker.y} r={marker.r} />
+            <text x={marker.x} y={marker.y + 4} text-anchor="middle">
+              {marker.label}
+            </text>
           </g>
         ))
       }
@@ -127,6 +161,11 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
   <figcaption>
     <span class="label">Fig. {figure}</span>
     <span>{spec.description}</span>
+    {
+      markers.length > 0 && (
+        <span>Numbered markers point at the key decisions below.</span>
+      )
+    }
   </figcaption>
 
   <details class="diagram__text">
@@ -136,6 +175,19 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
     </ul>
   </details>
 </figure>
+
+<script>
+  import { MOTION_QUERY } from '@/animations/query';
+
+  // The drawing assembles itself as it scrolls into view, on desktops that allow motion.
+  // Elsewhere it is simply there, finished.
+  const diagrams = document.querySelectorAll<HTMLElement>('[data-diagram]');
+  if (diagrams.length > 0 && window.matchMedia(MOTION_QUERY).matches) {
+    void import('@/animations/diagramAssemble')
+      .then(({ assembleDiagrams }) => assembleDiagrams([...diagrams]))
+      .catch((error: unknown) => console.error('Diagram animation unavailable.', error));
+  }
+</script>
 
 <style>
   .diagram {
@@ -255,6 +307,24 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
     max-inline-size: var(--measure);
     font-size: var(--step--1);
     color: var(--color-ink-muted);
+  }
+
+  .diagram__callout line {
+    stroke: var(--color-accent);
+    stroke-width: var(--line-thin);
+  }
+
+  .diagram__callout circle {
+    fill: var(--color-paper);
+    stroke: var(--color-accent);
+    stroke-width: var(--line-regular);
+  }
+
+  .diagram__callout text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    fill: var(--color-accent-text);
   }
 
   .diagram__text summary {

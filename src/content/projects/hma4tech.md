@@ -25,16 +25,19 @@ decisions:
     over: Server-side sessions.
     why: Any instance of the API can check a request on its own, which keeps it simple to run in containers and to scale out. Roles map directly to who may read or change what.
     tradeoff: A token stays valid until it expires, so expiry times and roles have to be designed with care.
+    node: jwt
   - title: The same container everywhere
     chose: Docker images for every back-end service.
     over: Setting up each machine by hand.
     why: The environment ships with the code, so what runs on one machine runs on the next. Environment-related deployment issues dropped by about 40%.
     tradeoff: Image builds become part of the workflow, and one more tool for the team to learn.
+    node: api
   - title: Fix the query before adding hardware
     chose: Tuning the PostgreSQL queries behind the slow endpoints.
     over: A caching layer or a bigger server.
     why: Average API response time went down 20–30% with no new component to run or keep in sync.
     tradeoff: Gains come one query at a time, and they need watching as the data grows.
+    node: postgres
 diagram:
   title: The HMA4Tech back end, simplified
   description: Platform clients call a Spring Boot API that runs in Docker. Requests pass a JWT filter, then REST controllers, services with role checks and repositories backed by PostgreSQL. Services read the anomalies found by the AI team’s models.

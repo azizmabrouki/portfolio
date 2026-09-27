@@ -25,16 +25,19 @@ decisions:
     over: A single-page app in Next.js or React.
     why: A portfolio is read far more than it is used. Pre-rendered HTML is the fastest thing to load and the simplest thing to host.
     tradeoff: Anything dynamic, like a contact form, will need a small Worker later.
+    node: assets
   - title: Motion is an enhancement
     chose: The finished drawing is written into the page; the pinned, animated version switches on only where motion is welcome and the script loads.
     over: An animation-first page that needs JavaScript to show its content.
     why: Phones, reduced-motion settings, no-JS visitors and failed downloads all get a complete page. GSAP never even loads on a phone.
     tradeoff: Two layouts of the hero to build and to test.
+    node: gsap
   - title: Quality gates in CI
     chose: Every pull request must type-check, build, have no broken links and score 95+ on performance, accessibility, best practices and SEO.
     over: Checking by hand before launch.
     why: A regression fails the build instead of reaching visitors, and the rules hold when I’m tired or in a hurry.
     tradeoff: Slower pull requests, and some wishes lose. The italic serif went to pass the performance gate.
+    node: ci
 differently: I would put a number on font weight from the first commit. Lighthouse failed twice on fonts before it was clear that total font bytes, not preloading tricks, were the lever.
 links:
   - label: Source on GitHub
