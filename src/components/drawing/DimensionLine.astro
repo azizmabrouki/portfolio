@@ -1,0 +1,126 @@
+---
+/**
+ * An architectural dimension line: extension lines and 45° ticks at both ends,
+ * with an optional measurement label in the middle.
+ * `length` is any CSS length along the measured axis; it defaults to the full
+ * width (horizontal) or height (vertical) of the parent.
+ */
+interface Props {
+  label?: string;
+  orientation?: 'horizontal' | 'vertical';
+  length?: string;
+  tone?: 'ink' | 'accent';
+  class?: string;
+}
+
+const { label, orientation = 'horizontal', length, tone = 'ink', class: className } = Astro.props;
+---
+
+<div
+  class:list={['dim', `dim--${orientation}`, `dim--${tone}`, className]}
+  style={length ? `--dim-length: ${length}` : undefined}
+>
+  <span class="dim__end" aria-hidden="true"></span>
+  <span class="dim__line" aria-hidden="true"></span>
+  {label && <span class="dim__label">{label}</span>}
+  <span class="dim__line" aria-hidden="true"></span>
+  <span class="dim__end" aria-hidden="true"></span>
+</div>
+
+<style>
+  .dim {
+    display: flex;
+    align-items: center;
+    color: var(--color-ink);
+  }
+
+  .dim--accent {
+    color: var(--color-accent);
+  }
+
+  .dim--horizontal {
+    inline-size: var(--dim-length, 100%);
+  }
+
+  .dim--vertical {
+    flex-direction: column;
+    block-size: var(--dim-length, 100%);
+    inline-size: max-content;
+  }
+
+  .dim__line {
+    flex: 1 1 0;
+  }
+
+  .dim--horizontal .dim__line {
+    border-block-start: var(--line-thin) solid currentColor;
+  }
+
+  .dim--vertical .dim__line {
+    border-inline-start: var(--line-thin) solid currentColor;
+  }
+
+  /* Zero-size anchor at each end; the tick and extension line are centred on it. */
+  .dim__end {
+    position: relative;
+    flex: none;
+  }
+
+  .dim--horizontal .dim__end {
+    inline-size: 0;
+    block-size: calc(var(--tick-size) * 1.5);
+  }
+
+  .dim--vertical .dim__end {
+    inline-size: calc(var(--tick-size) * 1.5);
+    block-size: 0;
+  }
+
+  .dim__end::before,
+  .dim__end::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    border: 0 solid currentColor;
+  }
+
+  /* 45° tick */
+  .dim__end::before {
+    inline-size: var(--tick-size);
+    border-block-start-width: var(--line-regular);
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  /* extension line, perpendicular to the dimension line */
+  .dim--horizontal .dim__end::after {
+    block-size: calc(var(--tick-size) * 1.5);
+    border-inline-start-width: var(--line-thin);
+    transform: translate(-50%, -50%);
+  }
+
+  .dim--vertical .dim__end::after {
+    inline-size: calc(var(--tick-size) * 1.5);
+    border-block-start-width: var(--line-thin);
+    transform: translate(-50%, -50%);
+  }
+
+  .dim__label {
+    padding-inline: var(--space-2xs);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .dim--vertical .dim__label {
+    padding-inline: 0;
+    padding-block: var(--space-2xs);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+</style>

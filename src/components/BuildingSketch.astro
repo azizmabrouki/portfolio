@@ -1,7 +1,7 @@
 ---
 /**
- * Phase 0 placeholder for the hero drawing: the building with only its
- * foundation and infrastructure floor drawn, the upper floors still dashed.
+ * Placeholder for the hero drawing: the building with only its foundation and
+ * infrastructure floor drawn, the upper floors still dashed.
  * Replaced by the animated BuildingDrawing component in Phase 2.
  */
 interface Floor {
@@ -96,10 +96,9 @@ const windows = [76, 120, 164, 208];
   }
 
   .construction line {
-    stroke: var(--color-ink);
-    stroke-opacity: 0.22;
+    stroke: var(--color-line-faint);
     stroke-width: var(--line-thin);
-    stroke-dasharray: 2 5;
+    stroke-dasharray: var(--dash-construction-on) var(--dash-construction-off);
   }
 
   .ground {
@@ -122,8 +121,8 @@ const windows = [76, 120, 164, 208];
     fill: none;
     stroke: var(--color-ink);
     stroke-width: var(--line-thin);
-    stroke-dasharray: 6 5;
-    stroke-opacity: 0.5;
+    stroke-dasharray: var(--dash-planned-on) var(--dash-planned-off);
+    stroke-opacity: 0.55;
   }
 
   .floor--accent rect {
@@ -139,7 +138,7 @@ const windows = [76, 120, 164, 208];
 
   .label {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: var(--text-label);
     letter-spacing: 0.08em;
     fill: var(--color-ink-muted);
   }

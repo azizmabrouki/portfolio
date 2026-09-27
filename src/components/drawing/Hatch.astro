@@ -1,0 +1,60 @@
+---
+/**
+ * Hatching, used for foundations and cut sections. Decorative, so hidden from
+ * assistive technology. Drawn with a CSS gradient: no SVG ids to keep unique.
+ */
+interface Props {
+  height?: string;
+  angle?: number;
+  /** distance between hatch lines, px */
+  gap?: number;
+  tone?: 'ink' | 'accent';
+  bordered?: boolean;
+  class?: string;
+}
+
+const {
+  height = '1.5rem',
+  angle = 45,
+  gap,
+  tone = 'ink',
+  bordered = true,
+  class: className,
+} = Astro.props;
+
+const style = [
+  `--hatch-height: ${height}`,
+  `--hatch-angle: ${angle}deg`,
+  gap === undefined ? '' : `--hatch-gap: ${gap}px`,
+]
+  .filter(Boolean)
+  .join('; ');
+---
+
+<div
+  class:list={['hatch', `hatch--${tone}`, { 'hatch--bordered': bordered }, className]}
+  style={style}
+  aria-hidden="true"
+>
+</div>
+
+<style>
+  .hatch {
+    --hatch-color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+
+    block-size: var(--hatch-height);
+    background-image: repeating-linear-gradient(
+      var(--hatch-angle),
+      var(--hatch-color) 0 1px,
+      transparent 1px var(--hatch-gap)
+    );
+  }
+
+  .hatch--accent {
+    --hatch-color: var(--color-accent);
+  }
+
+  .hatch--bordered {
+    border: var(--line-thin) solid var(--color-ink);
+  }
+</style>

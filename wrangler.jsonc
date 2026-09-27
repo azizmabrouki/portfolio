@@ -8,5 +8,8 @@
     "directory": "./dist",
     // Serve dist/404.html with a real 404 status for unknown URLs.
     "not_found_handling": "404-page"
-  }
+  },
+  // Branches other than main deploy with `npx wrangler preview` (Workers Previews, beta),
+  // which requires this block. Empty is fine: assets and settings above are inherited.
+  "previews": {}
 }
