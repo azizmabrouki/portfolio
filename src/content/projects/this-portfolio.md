@@ -2,7 +2,7 @@
 title: This portfolio
 summary: A static site that behaves like a set of technical drawings, shipped through CI with performance and accessibility gates. The code is public.
 sheet: '03'
-period: 2026
+period: '2026'
 role: Design, code and deployment
 stack:
   - Astro
