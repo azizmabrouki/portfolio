@@ -1,0 +1,362 @@
+---
+/**
+ * The home page hero: the building and one section per floor.
+ *
+ * Still layout (default: phones, reduced motion, no JS): the exploded building, then the
+ * sections as a normal page; on wide screens the building stays in view beside them.
+ * Motion layout (html.motion-ok): the stage is pinned while you scroll and
+ * src/animations/heroSequence.ts plays the drawing, the tilt and the floors one by one.
+ */
+import BuildingDrawing from '@/components/hero/BuildingDrawing.astro';
+import SectionMarker from '@/components/drawing/SectionMarker.astro';
+import { stepPositions } from '@/animations/timing';
+import { floors } from '@/config/building';
+import { contactLinks, site } from '@/config/site';
+
+const links = contactLinks();
+const [introAt = 0, ...floorAts] = stepPositions(floors.length);
+---
+
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="hero__pin sheet-ruled">
+    <div class="hero__stage">
+      <BuildingDrawing />
+      <p class="sheet-note label">
+        <span>Sheet A / 00 · Scale 1:1</span>
+        <span
+          >View: <strong data-view-name
+            ><span class="when-motion">Front elevation</span><span class="when-still"
+              >Axonometric, exploded</span
+            ></strong
+          ></span
+        >
+      </p>
+    </div>
+
+    <div class="hero__panels">
+      <nav class="rail" aria-label="Floors of the building">
+        <span class="rail__track" aria-hidden="true"><span class="rail__fill" data-rail-fill></span></span>
+        <ol class="rail__steps" role="list">
+          <li style={`--at: ${introAt}`}>
+            <a href="#hero-title" data-rail-step="intro" aria-label="Portfolio: the top of the drawing">00</a>
+          </li>
+          {
+            floors.map((floor, index) => (
+              <li style={`--at: ${floorAts[index] ?? 0}`}>
+                <a href={`#layer-${floor.id}`} data-rail-step={floor.id} aria-label={`${floor.layer}: ${floor.title}`}>
+                  {floor.number}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <article class="panel panel--intro" data-panel="intro">
+        <SectionMarker as="p" number="00" title="Portfolio" />
+        <h1 id="hero-title" class="display">{site.name}</h1>
+        <p class="role">{site.role}.</p>
+        <ul class="links cluster" aria-label="Links">
+          {
+            links.map((link) => (
+              <li>
+                <a href={link.href} rel="me">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+          <li><a href={site.repo}>Source of this site</a></li>
+        </ul>
+        <p class="label">
+          <span class="when-motion">Scroll to open the building, or pick a floor</span>
+          <span class="when-still">Pick a floor to jump to its section</span>
+        </p>
+      </article>
+
+      {
+        floors.map((floor) => (
+          <article
+            class="panel"
+            id={`layer-${floor.id}`}
+            data-panel={floor.id}
+            aria-labelledby={`layer-${floor.id}-title`}
+          >
+            <SectionMarker as="p" number={floor.number} title={floor.layer} />
+            <h2 id={`layer-${floor.id}-title`}>{floor.title}</h2>
+            {floor.lead && <p class="prose">{floor.lead}</p>}
+            {floor.items && (
+              <ol class="items" role="list">
+                {floor.items.map((item, index) => (
+                  <li>
+                    <span class="items__n">{String(index + 1).padStart(2, '0')}</span>
+                    <span>
+                      <strong>{item.title}</strong>
+                      {item.text ? ` ${item.text}` : ''}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
+            {floor.meta && <p class="muted">{floor.meta}</p>}
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import { MOTION_QUERY } from '@/animations/query';
+
+  // GSAP is only downloaded where the motion runs; phones and reduced motion never load it.
+  const root = document.querySelector<HTMLElement>('[data-hero]');
+  if (root) {
+    const query = window.matchMedia(MOTION_QUERY);
+    let loaded = false;
+    const load = () => {
+      if (loaded || !query.matches) return;
+      loaded = true;
+      void import('@/animations/heroSequence').then(({ initHeroSequence }) => initHeroSequence(root));
+    };
+    load();
+    query.addEventListener('change', load);
+  }
+</script>
+
+<style>
+  /* ─── Still layout (default) ──────────────────────────────────────────────── */
+  .hero__pin {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__stage {
+    position: relative;
+    block-size: clamp(26rem, 110vw, 36rem);
+    overflow: hidden;
+  }
+
+  .sheet-note {
+    position: absolute;
+    inset-inline-start: var(--gutter);
+    inset-block-end: var(--space-m);
+    display: grid;
+    gap: 2px;
+    margin: 0;
+  }
+
+  .sheet-note strong {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  .hero__panels {
+    display: grid;
+    gap: var(--space-2xl);
+    padding: var(--space-xl) var(--gutter) var(--space-2xl);
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    max-inline-size: 38rem;
+    scroll-margin-block-start: var(--space-l);
+  }
+
+  .panel--intro {
+    gap: var(--space-m);
+  }
+
+  .role {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 300;
+    line-height: var(--leading-snug);
+  }
+
+  .links {
+    --cluster-gap: var(--space-xs) var(--space-l);
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .items {
+    display: grid;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .items li {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: var(--space-2xs);
+    padding-block-start: var(--space-xs);
+    border-block-start: var(--line-thin) solid var(--color-line-faint);
+  }
+
+  .items__n {
+    padding-block-start: 0.2em;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    color: var(--color-ink-muted);
+  }
+
+  .items strong {
+    font-weight: 600;
+  }
+
+  .when-motion {
+    display: none;
+  }
+
+  /* Progress rail: a vertical dimension line that fills as you scroll. Motion layout only. */
+  .rail {
+    display: none;
+  }
+
+  .rail__track {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0.75rem;
+    inline-size: var(--line-thin);
+    background: var(--color-line-faint);
+  }
+
+  .rail__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: -0.25px;
+    inline-size: var(--line-regular);
+    background: var(--color-accent);
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+
+  .rail__steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rail__steps li {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: calc(var(--at) * 100%);
+    transform: translateY(-50%);
+  }
+
+  .rail__steps a {
+    position: relative;
+    display: block;
+    padding: var(--space-3xs) 1.5rem var(--space-3xs) var(--space-3xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    transition: color var(--duration-quick) var(--ease-out);
+  }
+
+  /* the tick, crossing the rail */
+  .rail__steps a::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: calc(0.75rem - 4px);
+    inline-size: 9px;
+    border-block-start: var(--line-thin) solid currentColor;
+    transition:
+      inline-size var(--duration-quick) var(--ease-out),
+      border-color var(--duration-quick) var(--ease-out);
+  }
+
+  .rail__steps a:hover,
+  .rail__steps a[aria-current='step'] {
+    color: var(--color-ink);
+  }
+
+  .rail__steps a[aria-current='step']::after {
+    inset-inline-end: calc(0.75rem - 6px);
+    inline-size: 13px;
+    border-color: var(--color-accent);
+  }
+
+  /* Wide screens without motion: the building stays in view while the sections scroll past. */
+  @media (min-width: 860px) {
+    .hero__pin {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .hero__stage {
+      position: sticky;
+      inset-block-start: 0;
+      block-size: 100vh;
+      block-size: 100dvh;
+    }
+
+    .hero__panels {
+      gap: 40vh;
+      padding-block: 24vh 30vh;
+    }
+  }
+
+  /* ─── Motion layout: pinned stage, sections take turns ─────────────────────── */
+  :global(.motion-ok) .hero {
+    block-size: 420vh;
+  }
+
+  :global(.motion-ok) .hero__pin {
+    position: sticky;
+    inset-block-start: 0;
+    block-size: 100vh;
+    block-size: 100dvh;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  :global(.motion-ok) .hero__stage {
+    position: relative;
+    block-size: auto;
+  }
+
+  :global(.motion-ok) .hero__panels {
+    position: relative;
+    align-items: center;
+    gap: 0;
+    padding: 0 var(--gutter) 0 4.5rem;
+  }
+
+  :global(.motion-ok) .panel {
+    grid-area: 1 / 1;
+  }
+
+  :global(.motion-ok) .panel:not(.panel--intro) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :global(.motion-ok) .when-motion {
+    display: inline;
+  }
+
+  :global(.motion-ok) .rail {
+    display: block;
+    position: absolute;
+    inset-block: 22%;
+    inset-inline-start: 0;
+    inline-size: 3.5rem;
+  }
+
+  :global(.motion-ok) .when-still {
+    display: none;
+  }
+</style>

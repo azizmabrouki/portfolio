@@ -1,162 +1,33 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import BuildingSketch from '@/components/BuildingSketch.astro';
 import Button from '@/components/Button.astro';
-import SectionMarker from '@/components/drawing/SectionMarker.astro';
 import TitleBlock from '@/components/drawing/TitleBlock.astro';
-import { site, contactLinks } from '@/config/site';
-
-const links = contactLinks();
+import HeroSequence from '@/components/hero/HeroSequence.astro';
+import { site } from '@/config/site';
 ---
 
 <BaseLayout>
-  <main id="main" class="sheet sheet-ruled">
-    <header class="sheet-meta label">
-      <span>A / 00</span>
-      <span>Sheet 01 — Design system</span>
-    </header>
+  <main id="main">
+    <HeroSequence />
 
-    <section class="intro stack" aria-labelledby="name">
-      <SectionMarker as="p" number="00" title="Portfolio · drawing in progress" />
-      <h1 id="name" class="display">{site.name}</h1>
-      <p class="role">{site.role}.</p>
-      <p class="note muted prose">
-        This site is being built in public, one phase at a time. The foundations and the drawing
-        standards are in place: repository, CI, deployment and the design system. The floors above
-        come next.
-      </p>
-
-      <ul class="links cluster" aria-label="Links">
-        {
-          links.map((link) => (
-            <li>
-              <a href={link.href} rel="me">
-                {link.label}
-              </a>
-            </li>
-          ))
-        }
-        <li><a href={site.repo}>Source of this site</a></li>
-      </ul>
-
-      <p><Button href="/style/" variant="text" arrow>See the drawing standards</Button></p>
-    </section>
-
-    <figure class="drawing">
-      <BuildingSketch />
-      <figcaption class="legend label">
-        <span class="legend-item"><span class="swatch" aria-hidden="true"></span>Built</span>
-        <span class="legend-item"><span class="swatch swatch--planned" aria-hidden="true"></span>Planned</span>
-      </figcaption>
-    </figure>
-
-    <footer class="footer">
+    <footer class="footer container">
       <TitleBlock
         fields={[
           { label: 'Project', value: 'Portfolio' },
-          { label: 'Phase', value: '01 — Design system' },
-          { label: 'Status', value: 'Standards drawn' },
+          { label: 'Phase', value: '02 — Hero' },
+          { label: 'Status', value: 'Motion drawn' },
           { label: 'Based', value: site.availability },
         ]}
       />
+      <p><Button href="/style/" variant="text" arrow>See the drawing standards</Button></p>
     </footer>
   </main>
 </BaseLayout>
 
 <style>
-  .sheet {
-    min-block-size: 100vh;
-    min-block-size: 100dvh;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      'meta'
-      'intro'
-      'drawing'
-      'footer';
-    gap: var(--space-xl);
-    padding: var(--gutter);
-  }
-
-  @media (min-width: 860px) {
-    .sheet {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      grid-template-rows: auto 1fr auto;
-      grid-template-areas:
-        'meta meta'
-        'intro drawing'
-        'footer footer';
-      align-items: center;
-    }
-  }
-
-  .sheet-meta {
-    grid-area: meta;
-    display: flex;
-    justify-content: space-between;
-    padding-block-end: var(--space-xs);
-    border-block-end: var(--line-thin) solid var(--color-ink);
-    color: var(--color-ink);
-  }
-
-  .intro {
-    --stack-gap: var(--space-m);
-
-    grid-area: intro;
-    max-inline-size: 40rem;
-  }
-
-  .role {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    font-weight: 300;
-    line-height: var(--leading-snug);
-  }
-
-  .links {
-    --cluster-gap: var(--space-xs) var(--space-l);
-
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .links a {
-    display: inline-block;
-    padding-block: var(--space-3xs);
-  }
-
-  .drawing {
-    grid-area: drawing;
-    inline-size: 100%;
-    max-inline-size: 30rem;
-    margin: 0;
-    justify-self: center;
-  }
-
-  .legend {
-    display: flex;
-    gap: var(--space-m);
-    margin-block-start: var(--space-s);
-  }
-
-  .legend-item {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2xs);
-  }
-
-  .swatch {
-    inline-size: 1.75rem;
-    border-block-start: var(--line-regular) solid var(--color-ink);
-  }
-
-  .swatch--planned {
-    border-block-start-style: dashed;
-    border-block-start-color: var(--color-ink-muted);
-  }
-
   .footer {
-    grid-area: footer;
+    display: grid;
+    gap: var(--space-m);
+    padding-block: var(--space-xl) var(--space-2xl);
   }
 </style>
