@@ -132,6 +132,17 @@ import { rich } from '@/lib/rich';
     margin: 0;
   }
 
+  /* Stack filter: a matching role's name gets the highlight band; the others keep their
+     text and only lose the vermilion tick. */
+  .role:global(.is-match) h3 {
+    background: linear-gradient(transparent 58%, var(--color-mark) 58%);
+    inline-size: fit-content;
+  }
+
+  .role:global(.is-dimmed)::before {
+    border-color: var(--color-line-faint);
+  }
+
   .role__stack {
     color: var(--color-structure);
   }

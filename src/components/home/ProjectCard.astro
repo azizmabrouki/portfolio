@@ -140,6 +140,20 @@ const href = `/projects/${project.id}/`;
     }
   }
 
+  /* Stack filter. Not selected: the sheet turns dashed, like a planned element, and keeps
+     its text at full contrast. Selected: a vermilion outline. */
+  .card:global(.is-dimmed) {
+    border-style: dashed;
+    border-color: var(--color-line-faint);
+    background: var(--color-paper);
+    box-shadow: none;
+  }
+
+  .card:global(.is-match) {
+    outline: var(--line-strong) solid var(--color-accent);
+    outline-offset: 4px;
+  }
+
   .card__cta {
     margin: 0;
     color: var(--color-structure);

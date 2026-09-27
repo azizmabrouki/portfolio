@@ -164,7 +164,16 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
     <span>{spec.description}</span>
     {
       markers.length > 0 && (
-        <span>Numbered markers point at the key decisions below.</span>
+        <span>
+          Numbered markers point at the key decisions:{' '}
+          {markers.map((marker, index) => (
+            <>
+              {index > 0 && ', '}
+              <a href={`#decision-${marker.label}`}>{marker.label}</a>
+            </>
+          ))}
+          .
+        </span>
       )
     }
   </figcaption>
