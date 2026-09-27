@@ -114,10 +114,24 @@ const [introAt = 0, ...floorAts] = stepPositions(floors.length);
   if (root) {
     const query = window.matchMedia(MOTION_QUERY);
     let loaded = false;
+
+    // The motion layout hides every section but the intro until the animation shows them.
+    // If the code never arrives (network error, a stale deploy) or cannot start, go back to
+    // the still layout so the whole page stays readable.
+    const fallBack = (error: unknown) => {
+      console.error('Hero animation unavailable, showing the still drawing.', error);
+      document.documentElement.classList.add('motion-off');
+      document.documentElement.classList.remove('motion-ok');
+    };
+
     const load = () => {
       if (loaded || !query.matches) return;
       loaded = true;
-      void import('@/animations/heroSequence').then(({ initHeroSequence }) => initHeroSequence(root));
+      import('@/animations/heroSequence')
+        .then(({ initHeroSequence }) => {
+          if (!initHeroSequence(root)) throw new Error('Hero markup is incomplete.');
+        })
+        .catch(fallBack);
     };
     load();
     query.addEventListener('change', load);

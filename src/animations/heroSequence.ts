@@ -28,23 +28,31 @@ function viewName(time: number): string {
   return 'Axonometric, exploded';
 }
 
-export function initHeroSequence(root: HTMLElement): void {
-  const mm = gsap.matchMedia();
+/**
+ * Starts the sequence. Returns false when the markup it animates is missing, so the caller
+ * can fall back to the still layout instead of leaving hidden sections behind.
+ */
+export function initHeroSequence(root: HTMLElement): boolean {
+  const scene = root.querySelector<HTMLElement>('[data-scene]');
+  const intro = root.querySelector<HTMLElement>('[data-panel="intro"]');
+  const floors = [...root.querySelectorAll<HTMLElement>('[data-floor]')];
+  const found = floors.map((floor) =>
+    root.querySelector<HTMLElement>(`[data-panel="${floor.dataset.floor ?? ''}"]`),
+  );
+  if (!scene || !intro || floors.length === 0 || found.some((panel) => !panel)) return false;
 
-  mm.add(MOTION_QUERY, () => {
-    const scene = root.querySelector<HTMLElement>('[data-scene]');
-    const intro = root.querySelector<HTMLElement>('[data-panel="intro"]');
-    const floors = [...root.querySelectorAll<HTMLElement>('[data-floor]')];
-    const panels = floors.map((floor) =>
-      root.querySelector<HTMLElement>(`[data-panel="${floor.dataset.floor ?? ''}"]`),
-    );
-    const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-floor-link], [data-rail-step]')];
-    const steps = [...root.querySelectorAll<HTMLAnchorElement>('[data-rail-step]')];
-    const railFill = root.querySelector<HTMLElement>('[data-rail-fill]');
-    const label = root.querySelector<HTMLElement>('[data-view-name]');
-    if (!scene || !intro || panels.some((panel) => !panel)) return;
+  const panels = found as HTMLElement[];
+  const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-floor-link], [data-rail-step]')];
+  const steps = [...root.querySelectorAll<HTMLAnchorElement>('[data-rail-step]')];
+  const railFill = root.querySelector<HTMLElement>('[data-rail-fill]');
+  const label = root.querySelector<HTMLElement>('[data-view-name]');
 
-    const allPanels = [intro, ...(panels as HTMLElement[])];
+  // A floor named in the URL (#layer-domain): a shared or bookmarked link to a section.
+  const floorFromHash = (): number =>
+    floors.findIndex((floor) => `#layer-${floor.dataset.floor ?? ''}` === window.location.hash);
+
+  gsap.matchMedia().add(MOTION_QUERY, () => {
+    const allPanels = [intro, ...panels];
     const settle = ease('--ease-out');
     const draw = ease('--ease-in-out', 'power2.inOut');
     const total = sequenceLength(floors.length);
@@ -145,7 +153,8 @@ export function initHeroSequence(root: HTMLElement): void {
 
     // Intro: the front elevation draws itself from the ground up, once, at the top of the page.
     const introDraw = gsap.timeline({ paused: true });
-    if (window.scrollY < 10) {
+    const linkedFloor = floorFromHash();
+    if (window.scrollY < 10 && linkedFloor < 0) {
       const fronts = floors
         .map((floor) => floor.querySelector<HTMLElement>('.face--front'))
         .filter((front): front is HTMLElement => front !== null);
@@ -200,13 +209,23 @@ export function initHeroSequence(root: HTMLElement): void {
     });
 
     // Clickable floors and rail steps, and keyboard focus: go to that step in the sequence.
-    const scrollToTime = (time: number) => {
+    const scrollToTime = (time: number, behavior: ScrollBehavior = 'smooth') => {
       const trigger = sequence.scrollTrigger;
       if (!trigger) return;
       const top = trigger.start + (trigger.end - trigger.start) * (time / sequence.duration());
-      window.scrollTo({ top, behavior: 'smooth' });
+      window.scrollTo({ top, behavior });
     };
-    const scrollToFloor = (index: number) => scrollToTime(floorAt(index) + PANEL_REST);
+    const scrollToFloor = (index: number, behavior?: ScrollBehavior) =>
+      scrollToTime(floorAt(index) + PANEL_REST, behavior);
+
+    // Every section sits in the same pinned spot, so the browser's own jump to #layer-…
+    // lands on the intro. Translate the hash into its moment in the sequence instead.
+    if (linkedFloor >= 0) scrollToFloor(linkedFloor, 'instant');
+    const onHashChange = () => {
+      const index = floorFromHash();
+      if (index >= 0) scrollToFloor(index);
+    };
+    window.addEventListener('hashchange', onHashChange);
 
     const onLinkClick = (event: MouseEvent) => {
       const link = event.currentTarget as HTMLAnchorElement;
@@ -229,16 +248,19 @@ export function initHeroSequence(root: HTMLElement): void {
     };
 
     links.forEach((link) => link.addEventListener('click', onLinkClick));
-    panels.forEach((panel) => panel?.addEventListener('focusin', onPanelFocus));
+    panels.forEach((panel) => panel.addEventListener('focusin', onPanelFocus));
 
     // Cleanup when the media query stops matching (resize to mobile, reduced motion turned on):
     // gsap.matchMedia reverts every tween and ScrollTrigger made above.
     return () => {
       skipIntro.kill();
+      window.removeEventListener('hashchange', onHashChange);
       for (const panel of allPanels) panel.style.pointerEvents = '';
       steps.forEach((link) => link.removeAttribute('aria-current'));
       links.forEach((link) => link.removeEventListener('click', onLinkClick));
-      panels.forEach((panel) => panel?.removeEventListener('focusin', onPanelFocus));
+      panels.forEach((panel) => panel.removeEventListener('focusin', onPanelFocus));
     };
   });
+
+  return true;
 }
