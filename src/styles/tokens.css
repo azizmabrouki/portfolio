@@ -20,7 +20,7 @@
   --color-grid: rgb(38 36 32 / 0.07); /* sheet grid */
   --color-accent: #c2532b; /* vermilion: emphasis lines and fills, text 24px+ only · 3.8:1 */
   --color-accent-text: #9a4214; /* orange: emphasis at body size (key numbers, trade-offs) · 5.5:1 */
-  --color-structure: #14213d; /* deep navy: links, navigation, sheet codes · 13.3:1 */
+  --color-structure: #1c3559; /* blueprint blue: links, navigation, sheet codes · 10.3:1 */
   --color-annotation: #6b4a2f; /* umber: labels, dates, captions · 6.6:1 */
   --color-mark: #ead9c6; /* sand highlight band behind key phrases; ink on it · 11.2:1 */
   --color-focus: #c2532b;
