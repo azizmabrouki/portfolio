@@ -63,11 +63,13 @@ h1,
 h2,
 .h2 {
   font-size: var(--step-4);
+  font-weight: 500;
 }
 
 h3,
 .h3 {
   font-size: var(--step-2);
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -109,7 +111,17 @@ small,
   line-height: 1.4;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-ink-muted);
+  color: var(--color-annotation);
+}
+
+/* Dates, periods and places: monospace, sentence case, umber. */
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--color-annotation);
 }
 
 /* Annotations: monospace notes that stay in sentence case. */
@@ -117,7 +129,61 @@ small,
   font-family: var(--font-mono);
   font-size: var(--step--1);
   line-height: 1.5;
-  color: var(--color-ink-muted);
+  color: var(--color-annotation);
+}
+
+/* ─── Emphasis ────────────────────────────────────────────────────────────── */
+/* Key phrases: a sand band behind the words (the lower half in headings). On desktop the
+   band sweeps in from the left when it scrolls into view (details.ts adds .is-pending). */
+mark {
+  padding-inline: 0.08em;
+  background-color: transparent;
+  background-image: linear-gradient(var(--color-mark), var(--color-mark));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 100%;
+  color: inherit;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size var(--duration-deliberate) var(--ease-out);
+}
+
+:is(h1, h2, h3, .display) mark {
+  background-size: 100% 42%;
+}
+
+mark.is-pending {
+  background-size: 0% 100%;
+}
+
+:is(h1, h2, h3, .display) mark.is-pending {
+  background-size: 0% 42%;
+}
+
+/* Numbers and results. */
+.metric,
+.flow strong {
+  color: var(--color-accent-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Glossary terms: a dotted navy underline; the definition opens in a popover. */
+.term {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline dotted var(--color-structure);
+  text-decoration-thickness: var(--line-regular);
+  text-underline-offset: 0.3em;
+  cursor: help;
+}
+
+.term:hover {
+  text-decoration-style: solid;
 }
 
 code,
@@ -134,15 +200,15 @@ samp {
 }
 
 /* ─── Links ───────────────────────────────────────────────────────────────── */
-/* A thin vermilion underline at rest; on hover a stronger line draws in from the left,
+/* Links are navy with a thin underline; on hover a vermilion line draws in from the left,
    like a pen stroke, while the thin one fades. */
 a {
-  color: inherit;
+  color: var(--color-structure);
   text-decoration-line: underline;
-  text-decoration-color: var(--color-accent);
-  text-decoration-thickness: var(--line-regular);
+  text-decoration-color: var(--color-structure);
+  text-decoration-thickness: var(--line-thin);
   text-underline-offset: 0.3em;
-  background-image: linear-gradient(currentColor, currentColor);
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
   background-repeat: no-repeat;
   background-position: 0 100%;
   background-size: 0% var(--line-strong);
@@ -153,7 +219,7 @@ a {
 }
 
 a:hover {
-  color: var(--color-accent-text);
+  color: var(--color-structure);
   text-decoration-color: transparent;
   background-size: 100% var(--line-strong);
 }
@@ -206,8 +272,8 @@ a:hover {
 }
 
 .button:hover {
-  border-color: var(--color-accent-text);
-  background: var(--color-accent-text);
+  border-color: var(--color-structure);
+  background: var(--color-structure);
   color: var(--color-paper);
 }
 
@@ -226,13 +292,13 @@ a:hover {
   padding-inline: 0;
   border-color: transparent;
   background: transparent;
-  color: var(--color-ink);
+  color: var(--color-structure);
 }
 
 .button--text:hover {
   border-color: transparent;
   background: transparent;
-  color: var(--color-accent-text);
+  color: var(--color-structure);
 }
 
 .button__arrow {
@@ -298,6 +364,10 @@ a:hover {
 }
 
 /* ─── Long-form text (Markdown bodies of case studies and notes) ──────────── */
+.flow {
+  line-height: 1.65;
+}
+
 .flow > * + * {
   margin-block-start: var(--flow-space, 1em);
 }
@@ -328,10 +398,6 @@ a:hover {
 
 .flow li::marker {
   color: var(--color-accent);
-}
-
-.flow strong {
-  font-weight: 600;
 }
 
 .flow blockquote {
@@ -399,7 +465,7 @@ a:hover {
   padding: 2px 6px;
   border: var(--line-thin) solid var(--color-line-faint);
   background: var(--color-paper);
-  color: var(--color-ink-muted);
+  color: var(--color-annotation);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -412,4 +478,42 @@ a:hover {
 
 .coords.is-visible {
   opacity: 1;
+}
+
+/* ─── Glossary popovers (reading aid) ─────────────────────────────────────── */
+/* Without JavaScript the browser centres them; glossary.ts places them under their term. */
+.term-pop {
+  max-inline-size: min(24rem, 100vw - 2rem);
+  padding: var(--space-xs) var(--space-s);
+  border: var(--line-thin) solid var(--color-ink);
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  font-size: var(--step--1);
+  line-height: 1.5;
+  box-shadow: 4px 4px 0 -1px var(--color-paper), 4px 4px 0 0 var(--color-ink);
+}
+
+.term-pop strong {
+  display: block;
+  margin-block-end: var(--space-3xs);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-structure);
+}
+
+/* ─── Stack filter (reading aid) ──────────────────────────────────────────── */
+.is-dimmed {
+  opacity: 0.35;
+  transition: opacity var(--duration-moderate) var(--ease-out);
+}
+
+.is-match {
+  transition: opacity var(--duration-moderate) var(--ease-out);
+}
+
+.card.is-match {
+  outline: var(--line-strong) solid var(--color-accent);
+  outline-offset: 4px;
 }

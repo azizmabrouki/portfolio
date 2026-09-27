@@ -18,8 +18,11 @@ export const palette: Swatch[] = [
   { token: '--color-paper-sunk', name: 'Paper, sunk', light: '#e6e0d5', dark: '#1e1c19', use: 'Wells and code', text: false },
   { token: '--color-ink', name: 'Ink', light: '#262420', dark: '#efeae1', use: 'Text and lines', text: true },
   { token: '--color-ink-muted', name: 'Ink, muted', light: '#5c574f', dark: '#b0aba3', use: 'Secondary text', text: true },
-  { token: '--color-accent', name: 'Vermilion', light: '#c2532b', dark: '#c2532b', use: 'Lines, fills, text 24px+', text: true },
-  { token: '--color-accent-text', name: 'Vermilion, text', light: '#a34624', dark: '#db7d5b', use: 'Vermilion at body size', text: true },
+  { token: '--color-structure', name: 'Deep navy', light: '#14213d', dark: '#a9c0e0', use: 'Links, navigation, sheet codes', text: true },
+  { token: '--color-accent', name: 'Vermilion', light: '#c2532b', dark: '#c2532b', use: 'Emphasis lines and fills, text 24px+', text: true },
+  { token: '--color-accent-text', name: 'Orange', light: '#9a4214', dark: '#e0875c', use: 'Emphasis at body size: key numbers, trade-offs', text: true },
+  { token: '--color-annotation', name: 'Umber', light: '#6b4a2f', dark: '#d1b08c', use: 'Labels, dates, captions', text: true },
+  { token: '--color-mark', name: 'Sand', light: '#ead9c6', dark: '#4a2a1c', use: 'Highlight band behind key phrases', text: false },
 ];
 
 export const paper = { light: '#efeae1', dark: '#262420' } as const;

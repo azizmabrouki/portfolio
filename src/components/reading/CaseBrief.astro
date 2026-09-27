@@ -1,0 +1,108 @@
+---
+/**
+ * "In 30 seconds": the case study for a reader who will not scroll. Role, problem,
+ * result and the numbers, with the key words already highlighted.
+ */
+import { rich } from '@/lib/rich';
+
+interface Props {
+  role: string;
+  company?: string | undefined;
+  period: string;
+  problem: string;
+  result: string;
+  numbers: { value: string; label: string }[];
+}
+
+const { role, company, period, problem, result, numbers } = Astro.props;
+---
+
+<aside class="brief" aria-labelledby="brief-title">
+  <p class="label" id="brief-title">In 30 seconds</p>
+  <dl>
+    <div>
+      <dt>Role</dt>
+      <dd>{company ? `${role}, ${company}` : role} <span class="meta">· {period}</span></dd>
+    </div>
+    <div>
+      <dt>Problem</dt>
+      <dd set:html={rich(problem)} />
+    </div>
+    <div>
+      <dt>Result</dt>
+      <dd set:html={rich(result)} />
+    </div>
+  </dl>
+  {
+    numbers.length > 0 && (
+      <ul class="brief__numbers" role="list">
+        {numbers.map((number) => (
+          <li>
+            <strong class="metric">{number.value}</strong> {number.label}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</aside>
+
+<style>
+  .brief {
+    display: grid;
+    gap: var(--space-s);
+    max-inline-size: 52rem;
+    padding: var(--space-m);
+    border: var(--line-thin) solid var(--color-ink);
+    border-inline-start: 4px solid var(--color-accent);
+    background: var(--color-paper-raised);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-2xs);
+    margin: 0;
+  }
+
+  dl div {
+    display: grid;
+    gap: var(--space-3xs) var(--space-s);
+  }
+
+  @media (min-width: 720px) {
+    dl div {
+      grid-template-columns: 6rem minmax(0, 1fr);
+    }
+  }
+
+  dt {
+    padding-block-start: 0.2em;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-annotation);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .brief__numbers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-l);
+    margin: 0;
+    padding: var(--space-xs) 0 0;
+    border-block-start: var(--line-thin) solid var(--color-line-faint);
+    list-style: none;
+    font-size: var(--step--1);
+  }
+
+  .brief__numbers .metric {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 500;
+    line-height: 1;
+  }
+</style>

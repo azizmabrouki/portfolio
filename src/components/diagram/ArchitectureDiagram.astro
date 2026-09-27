@@ -74,7 +74,7 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
 
       {
         layout.groups.map((group) => (
-          <g class="diagram__group" data-diagram-part="group">
+          <g class="diagram__group" data-diagram-part="group" data-node={group.id}>
             <rect x={group.x} y={group.y} width={group.w} height={group.h} />
             <text x={group.x + 12} y={group.y + 19} class="diagram__group-label">
               {group.label.toUpperCase()}
@@ -92,6 +92,7 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
             <g
               class:list={['diagram__node', `diagram__node--${node.kind}`, { 'diagram__node--accent': node.accent }]}
               data-diagram-part="node"
+              data-node={node.id}
             >
               {shape ? (
                 <>
@@ -237,7 +238,7 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
 
   .diagram__group-label {
     font-size: 11px;
-    fill: var(--color-ink-muted);
+    fill: var(--color-annotation);
   }
 
   .diagram__box {
@@ -271,7 +272,7 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
 
   .diagram__note {
     font-size: 10px;
-    fill: var(--color-ink-muted);
+    fill: var(--color-annotation);
   }
 
   .diagram__edge path {
@@ -294,7 +295,7 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
 
   .diagram__edge-label {
     font-size: 11px;
-    fill: var(--color-accent-text);
+    fill: var(--color-annotation);
     paint-order: stroke;
     stroke: var(--color-paper);
     stroke-width: 5px;
@@ -306,7 +307,7 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
     gap: var(--space-3xs);
     max-inline-size: var(--measure);
     font-size: var(--step--1);
-    color: var(--color-ink-muted);
+    color: var(--color-annotation);
   }
 
   .diagram__callout line {
@@ -325,6 +326,41 @@ const cylinder = (node: PlacedNode): { body: string; rim: string } => {
     font-size: 10px;
     font-weight: 600;
     fill: var(--color-accent-text);
+  }
+
+  /* A decision is hovered or focused, or "Show on the drawing" was pressed. */
+  .is-linked .diagram__box,
+  .is-linked rect,
+  .is-flash .diagram__box,
+  .is-flash rect {
+    stroke: var(--color-accent);
+    stroke-width: 3;
+  }
+
+  .diagram__callout.is-linked circle,
+  .diagram__callout.is-flash circle {
+    fill: var(--color-mark);
+    stroke-width: 2.5;
+  }
+
+  .is-flash {
+    animation: diagram-flash 0.6s var(--ease-in-out) 3;
+  }
+
+  @keyframes diagram-flash {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .is-flash {
+      animation: none;
+    }
+  }
+
+  .diagram__callout.is-clickable {
+    cursor: pointer;
   }
 
   .diagram__text summary {

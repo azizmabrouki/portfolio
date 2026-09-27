@@ -1,6 +1,9 @@
 ---
 title: HMA4Tech plant-anomaly platform
-summary: The back end of an AI platform that detects anomalies in plants, as a secured Spring Boot API, containerized and tuned.
+summary: The back end of an AI platform that detects anomalies in plants, as a ==secured Spring Boot API==, containerized and tuned.
+brief:
+  problem: An AI platform needed a back end the rest of the product could rely on, and deployments kept breaking from one machine to the next.
+  result: A Spring Boot API secured with [[JWT]] and [[RBAC]], containers everywhere (**~40% fewer** environment issues) and **20–30% faster** average responses.
 sheet: '02'
 period: Dec 2024 – Dec 2025
 role: Full-stack engineer, internship
@@ -21,21 +24,21 @@ numbers:
     label: faster average API responses
 decisions:
   - title: Stateless authentication
-    chose: JWT authentication with role-based access control.
+    chose: '[[JWT]] authentication with [[role-based access control|rbac]].'
     over: Server-side sessions.
-    why: Any instance of the API can check a request on its own, which keeps it simple to run in containers and to scale out. Roles map directly to who may read or change what.
+    why: Any instance of the API can ==check a request on its own==, which keeps it simple to run in containers and to scale out. Roles map directly to who may read or change what.
     tradeoff: A token stays valid until it expires, so expiry times and roles have to be designed with care.
     node: jwt
   - title: The same container everywhere
     chose: Docker images for every back-end service.
     over: Setting up each machine by hand.
-    why: The environment ships with the code, so what runs on one machine runs on the next. Environment-related deployment issues dropped by about 40%.
+    why: The environment ships with the code, so ==what runs on one machine runs on the next==. Environment-related deployment issues dropped by **about 40%**.
     tradeoff: Image builds become part of the workflow, and one more tool for the team to learn.
     node: api
   - title: Fix the query before adding hardware
     chose: Tuning the PostgreSQL queries behind the slow endpoints.
     over: A caching layer or a bigger server.
-    why: Average API response time went down 20–30% with no new component to run or keep in sync.
+    why: Average API response time went down **20–30%** with ==no new component== to run or keep in sync.
     tradeoff: Gains come one query at a time, and they need watching as the data grows.
     node: postgres
 diagram:
@@ -114,8 +117,8 @@ HMA4Tech is a startup building an AI platform that detects anomalies in plants. 
 
 ## The problem
 
-The AI work needed a back end the rest of the product could rely on: an API to reach it, access rules that depend on who is asking, and deployments that behave the same on every machine. Environment differences kept causing deployment issues, and some API responses were slower than they needed to be.
+The AI work needed <mark>a back end the rest of the product could rely on</mark>: an API to reach it, access rules that depend on who is asking, and deployments that behave the same on every machine. Environment differences kept causing deployment issues, and some API responses were slower than they needed to be.
 
 ## What I built
 
-More than ten REST endpoints in Spring Boot, secured with JWT authentication and role-based access control. Docker images for the back-end services, so development and deployment run the same thing. And a round of PostgreSQL query tuning that brought the average API response time down by 20 to 30 percent.
+**More than ten** REST endpoints in Spring Boot, secured with <button type="button" class="term" popovertarget="term-jwt">JWT</button> authentication and <button type="button" class="term" popovertarget="term-rbac">role-based access control</button>. Docker images for the back-end services, so development and deployment run the same thing. And a round of PostgreSQL query tuning that brought the average API response time <mark>down by **20 to 30 percent**</mark>.

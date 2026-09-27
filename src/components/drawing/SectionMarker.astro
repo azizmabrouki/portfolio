@@ -47,6 +47,7 @@ const { number, sheet = 'A', title, variant = 'inline', as: Tag = 'div' } = Astr
   }
 
   .marker__code {
+    color: var(--color-structure);
     font-variant-numeric: tabular-nums;
   }
 
@@ -54,7 +55,7 @@ const { number, sheet = 'A', title, variant = 'inline', as: Tag = 'div' } = Astr
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
-    color: var(--color-ink-muted);
+    color: var(--color-annotation);
   }
 
   .marker--inline .marker__title::before {

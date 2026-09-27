@@ -2,7 +2,8 @@
 /**
  * Site header: the name as the drawing set's title, the home page sections, and the
  * light/dark switch. `overlay` lays it over the hero on the home page so the building
- * starts at the very top.
+ * starts at the very top; there, a compact copy slides in once the building is passed,
+ * marks the section being read and offers a way back to the top.
  */
 import { site } from '@/config/site';
 
@@ -44,7 +45,36 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
   </div>
 </header>
 
+{
+  overlay && (
+    <div class="compact" data-compact-header hidden>
+      <a class="mark" href="#main">
+        <span class="mark__code" aria-hidden="true">A / 00</span>
+        <span class="mark__name">{site.shortName}</span>
+      </a>
+      <nav aria-label="Sections">
+        <ul role="list">
+          {site.nav.map((link) => (
+            <li>
+              <a href={link.href} data-section={link.href.slice(1)}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <a class="compact__top" href="#main">
+        <span aria-hidden="true">↑</span> Top
+      </a>
+    </div>
+  )
+}
+
 <script>
+  import { initCompactHeader } from '@/scripts/compactHeader';
+
+  initCompactHeader();
+
   const button = document.querySelector<HTMLButtonElement>('[data-theme-switch]');
   if (button) {
     const html = document.documentElement;
@@ -108,7 +138,7 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
   }
 
   .mark__code {
-    color: var(--color-accent-text);
+    color: var(--color-structure);
   }
 
   .site-header__end {
@@ -128,11 +158,63 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
   }
 
   nav a {
-    color: var(--color-ink-muted);
+    color: var(--color-structure);
   }
 
-  nav a:hover {
-    color: var(--color-ink);
+  /* Compact header: fixed, slides down once the building is passed. */
+  .compact {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 6;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 var(--space-m);
+    padding: 0 var(--gutter);
+    border-block-end: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    transform: translateY(-110%);
+    visibility: hidden;
+    transition:
+      transform var(--duration-moderate) var(--ease-out),
+      visibility 0s linear var(--duration-moderate);
+  }
+
+  .compact[hidden] {
+    display: none;
+  }
+
+  .compact.is-shown {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform var(--duration-moderate) var(--ease-out),
+      visibility 0s;
+  }
+
+  .compact a[aria-current='location'] {
+    color: var(--color-accent-text);
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: var(--line-strong);
+  }
+
+  .compact__top {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 639px) {
+    .compact .mark,
+    .compact__top {
+      display: none;
+    }
   }
 
   .theme {
