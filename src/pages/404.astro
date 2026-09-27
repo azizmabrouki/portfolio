@@ -1,35 +1,137 @@
 ---
 /**
  * Served with a real 404 status by Cloudflare (not_found_handling: "404-page").
- * The designed "missing floor" version arrives in Phase 3.
+ * The building with one floor missing: the page that was asked for.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Button from '@/components/Button.astro';
 import SectionMarker from '@/components/drawing/SectionMarker.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
+
+const left = 70;
+const width = 200;
+const floorHeight = 54;
+const ground = 330;
+const floors = [
+  { n: '04', name: 'Presentation', y: ground - floorHeight * 4 - 36 },
+  { n: '03', name: 'Not drawn', y: ground - floorHeight * 3 - 18, missing: true },
+  { n: '02', name: 'Domain', y: ground - floorHeight * 2, accent: true },
+  { n: '01', name: 'Infrastructure', y: ground - floorHeight },
+];
 ---
 
 <BaseLayout title="Page not found" description="This page does not exist on the drawing.">
-  <main id="main" class="missing sheet-ruled">
-    <div class="stack">
+  <SiteHeader />
+  <main id="main" class="missing container">
+    <div class="missing__text">
       <SectionMarker as="p" number="404" title="Not on the drawing" />
       <h1>This floor hasn’t been drawn.</h1>
-      <p><Button href="/" variant="secondary">Back to the entrance</Button></p>
+      <p class="lead muted">The page you asked for isn’t part of the building. It may have moved, or it was never planned.</p>
+      <p class="cluster">
+        <Button href="/" variant="secondary">Back to the entrance</Button>
+        <Button href="/#work" variant="text" arrow>See the case studies</Button>
+      </p>
     </div>
+
+    <svg class="missing__drawing" viewBox="0 0 440 372" aria-hidden="true">
+      <line class="construction" x1={left} y1="16" x2={left} y2="360" />
+      <line class="construction" x1={left + width} y1="16" x2={left + width} y2="360" />
+      <rect class="foundation" x={left} y={ground} width={width} height="18" />
+      <line class="ground" x1="20" y1={ground} x2="420" y2={ground} />
+      {
+        floors.map((floor) => (
+          <g class:list={['floor', { 'floor--missing': floor.missing, 'floor--accent': floor.accent }]}>
+            <rect x={left} y={floor.y} width={width} height={floorHeight} />
+            <text x={left + width + 14} y={floor.y + floorHeight / 2 + 4}>
+              {floor.n} · {floor.name.toUpperCase()}
+            </text>
+          </g>
+        ))
+      }
+      <text class="question" x={left + width / 2} y={ground - floorHeight * 3 - 18 + floorHeight / 2 + 9}>?</text>
+    </svg>
   </main>
 </BaseLayout>
 
 <style>
   .missing {
     display: grid;
-    align-content: center;
-    min-block-size: 100vh;
-    min-block-size: 100dvh;
-    padding: var(--gutter);
+    gap: var(--space-xl);
+    align-items: center;
+    min-block-size: calc(100vh - 4rem);
+    min-block-size: calc(100dvh - 4rem);
+    padding-block: var(--space-xl);
   }
 
-  .stack {
-    --stack-gap: var(--space-m);
+  @media (min-width: 860px) {
+    .missing {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
 
-    max-inline-size: 44rem;
+  .missing__text {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .cluster {
+    --cluster-gap: var(--space-s) var(--space-l);
+  }
+
+  .missing__drawing {
+    inline-size: 100%;
+    max-inline-size: 30rem;
+    block-size: auto;
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: var(--line-regular);
+  }
+
+  .construction {
+    stroke: var(--color-ink-muted);
+    stroke-width: var(--line-thin);
+    stroke-dasharray: var(--dash-construction-on) var(--dash-construction-off);
+  }
+
+  .ground {
+    stroke-width: var(--line-strong);
+  }
+
+  .foundation {
+    fill: var(--color-paper-sunk);
+  }
+
+  .floor rect {
+    fill: var(--color-paper-raised);
+  }
+
+  .floor--accent rect {
+    stroke: var(--color-accent);
+  }
+
+  .floor--missing rect {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-dasharray: var(--dash-planned-on) var(--dash-planned-off);
+  }
+
+  text {
+    fill: var(--color-ink-muted);
+    stroke: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+  }
+
+  .floor--missing text,
+  .question {
+    fill: var(--color-accent-text);
+  }
+
+  .question {
+    font-family: var(--font-display);
+    font-size: 28px;
+    text-anchor: middle;
   }
 </style>

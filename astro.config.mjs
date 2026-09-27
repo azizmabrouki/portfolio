@@ -15,6 +15,11 @@ export default defineConfig({
     inlineStylesheets: 'always',
   },
 
+  // Code blocks in notes take their colours from CSS variables set in global.css.
+  markdown: {
+    shikiConfig: { theme: 'css-variables' },
+  },
+
   // Downloaded from Fontsource at build time and self-hosted from /_astro/fonts.
   // Astro generates a metric-matched fallback per family, so text paints at once in the
   // fallback and swaps with no layout shift. Each family becomes a CSS variable in tokens.css.

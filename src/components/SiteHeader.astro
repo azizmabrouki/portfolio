@@ -1,0 +1,97 @@
+---
+/**
+ * Site header: the name as the drawing set's title, and the home page sections.
+ * `overlay` lays it over the hero on the home page so the building starts at the very top.
+ */
+import { site } from '@/config/site';
+
+interface Props {
+  overlay?: boolean;
+  /** On the home page, section links are in-page anchors; elsewhere they point to /#id. */
+  home?: boolean;
+}
+
+const { overlay = false, home = false } = Astro.props;
+const href = (anchor: string) => (home ? anchor : `/${anchor}`);
+---
+
+<header class:list={['site-header', { 'site-header--overlay': overlay }]}>
+  <a class="mark" href={home ? '#main' : '/'}>
+    <span class="mark__code" aria-hidden="true">A / 00</span>
+    <span class="mark__name">{site.shortName}</span>
+  </a>
+  <nav aria-label="Main">
+    <ul role="list">
+      {
+        site.nav.map((link) => (
+          <li>
+            <a href={href(link.href)}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2xs) var(--space-m);
+    padding: var(--space-s) var(--gutter);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .site-header--overlay {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+  }
+
+  .site-header:not(.site-header--overlay) {
+    border-block-end: var(--line-thin) solid var(--color-line-faint);
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration-line: underline;
+  }
+
+  .mark {
+    display: inline-flex;
+    gap: var(--space-xs);
+    color: var(--color-ink);
+  }
+
+  .mark__code {
+    color: var(--color-accent-text);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  nav a {
+    color: var(--color-ink-muted);
+  }
+
+  nav a:hover {
+    color: var(--color-ink);
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+/**
+ * Every page but the 404: header, <main>, footer, around BaseLayout's <head>.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import SiteHeader from '@/components/SiteHeader.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  /** The home page: the header lies over the hero and links to sections in-page. */
+  home?: boolean;
+}
+
+const { home = false, ...meta } = Astro.props;
+---
+
+<BaseLayout {...meta}>
+  <slot name="head" slot="head" />
+  <SiteHeader overlay={home} home={home} />
+  <main id="main">
+    <slot />
+  </main>
+  <SiteFooter />
+</BaseLayout>

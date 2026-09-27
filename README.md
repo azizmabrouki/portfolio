@@ -12,7 +12,7 @@ The site has two jobs: show how I think about systems, and be a working example 
 | Styling | CSS custom properties as design tokens (`src/styles/tokens.css`), shown on `/style` |
 | Fonts | Fraunces, Inter, JetBrains Mono via Astro's fonts API: self-hosted, metric-matched fallbacks |
 | Motion | GSAP + ScrollTrigger + CustomEase (Phase 2); Lenis and View Transitions later |
-| Content (from Phase 3) | Markdown/MDX content collections with Zod schemas |
+| Content | Markdown content collections with typed (Zod) frontmatter: case studies and notes |
 | CI | GitHub Actions: type-check, build, link check, Lighthouse CI |
 | Hosting | Cloudflare Workers (static assets), deployed on every push to `main` |
 
@@ -44,6 +44,10 @@ So the italic face went (it served one line of text), fonts stay preloaded, and 
 
 **Quality gates in CI, not in good intentions.** Every pull request and every push to `main` must type-check, build, have no broken links, and score 95+ on all four Lighthouse categories. A regression fails the build.
 
+**One Markdown file per case study, diagram included.** A case study's context and problem are Markdown; its architecture diagram, key decisions, numbers and stack are typed frontmatter. The diagram is described on a coarse grid (boxes, groups, edges) and `src/lib/diagram.ts` lays it out and routes the arrows, so adding a project never means hand-drawing SVG. The same data renders a plain-text version of every drawing, for screen readers and small screens.
+
+**Only what can be shown.** The StudioLabCloud case study stays at the level StudioLab agreed to: architecture and decisions, no code, screens or client data.
+
 **Hosting decoupled from CI.** Cloudflare builds and deploys from Git on its own; GitHub Actions verifies. Every branch gets its own preview URL, `main` is production.
 
 **Workers over Pages.** The plan started on Cloudflare Pages, but Cloudflare now presents Pages as its legacy workflow. Workers static assets serves the same pre-built files, honours the same `_headers` file and a real 404 page, and is where new platform features land. The cost is one config file, `wrangler.jsonc`.
@@ -53,19 +57,29 @@ So the italic face went (it served one line of text), fonts stay preloaded, and 
 ```text
 src/
   config/site.ts          name, role, links, navigation
-  config/building.ts      the building's floors and the content of each floor's section
+  config/building.ts      the building's floors and the summary each floor opens
+  config/experience.ts    roles, education, certifications for the timeline
+  content/projects/*.md   case studies: body in Markdown, diagram and decisions in frontmatter
+  content/notes/*.md      architecture notes
+  content.config.ts       collection schemas
   config/palette.ts       colour tokens as data, for swatches and contrast ratios on /style
   styles/tokens.css       colour (light and dark), type scale, space, lines, radii, motion
   styles/global.css       base styles, typography, links, buttons, layout utilities
-  layouts/                BaseLayout: <head>, meta, fonts, the motion-ok class
+  layouts/                BaseLayout (<head>, meta, fonts, motion-ok), PageLayout (header, main, footer)
   components/hero/        BuildingDrawing (CSS 3D building), HeroSequence (pinned scroll section)
+  components/home/        Work, How I work, Experience, Notes and Contact sections
+  components/diagram/     ArchitectureDiagram (SVG from a case study's frontmatter)
   components/drawing/     Rule, DimensionLine, SectionMarker, Hatch, TitleBlock
-  components/             Button, BuildingSketch
+  components/             SiteHeader, SiteFooter, Button, BuildingSketch
   animations/             query.ts (where motion runs), motion.ts (GSAP + tokens), timing.ts, heroSequence.ts
   lib/contrast.ts         WCAG contrast ratios, computed at build
-  pages/                  index, style (design system), 404
+  lib/diagram.ts          diagram layout and edge routing
+  lib/content.ts          collection queries, reading time, dates
+  pages/                  index, projects/[slug], notes/[slug], style (design system), 404,
+                          sitemap.xml, robots.txt
 public/
   favicon.svg
+  og-image.png            1200 × 630 social preview
   _headers                security headers and long-term caching for /_astro/*
 .github/
   workflows/ci.yml        verification pipeline
@@ -104,8 +118,8 @@ The custom domain and Cloudflare Web Analytics are added in Phase 6.
 | --- | --- | --- |
 | 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Workers | Done |
 | 1. Design system | Tokens, fonts, grid, type scale, drawing components | Done |
-| 2. Hero | The building draws itself, tilts into an exploded axonometric, floors open one by one and are clickable; still version for phones and reduced motion | In review |
-| 3. Content and pages | Home sections, case studies, CV, 404, SEO | |
+| 2. Hero | The building draws itself, tilts into an exploded axonometric, floors open one by one and are clickable; still version for phones and reduced motion | Done |
+| 3. Content and pages | Home sections, three case studies, first note, 404, Open Graph image, sitemap, robots.txt (CV PDF when ready) | In review |
 | 4. Signature motion | Floor-by-floor scroll, blueprint cards, View Transitions | |
 | 5. Polish | Smooth scroll, cursor details, dark mode, a11y and perf pass | |
 | 6. Launch | Custom domain, analytics, links from LinkedIn, CV and GitHub | |

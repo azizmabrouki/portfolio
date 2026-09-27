@@ -1,0 +1,66 @@
+---
+/**
+ * Site footer: the drawing set's title block, the links, and where the source lives.
+ */
+import TitleBlock from '@/components/drawing/TitleBlock.astro';
+import { contactLinks, site } from '@/config/site';
+
+const revision = new Date().toISOString().slice(0, 10);
+const year = revision.slice(0, 4);
+---
+
+<footer class="site-footer">
+  <div class="container stack">
+    <TitleBlock
+      fields={[
+        { label: 'Drawn by', value: site.name },
+        { label: 'Drawing set', value: 'Portfolio' },
+        { label: 'Revision', value: revision },
+        { label: 'Based', value: site.location },
+      ]}
+    />
+    <div class="site-footer__row">
+      <ul class="cluster" role="list" aria-label="Elsewhere">
+        {
+          contactLinks().map((link) => (
+            <li>
+              <a href={link.href} rel="me">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href={site.repo}>Source of this site</a></li>
+        <li><a href="/style/">Drawing standards</a></li>
+      </ul>
+      <p class="small muted">© {year} {site.name}. Built with Astro, shipped through CI.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--space-xl) var(--space-2xl);
+    border-block-start: var(--line-thin) solid var(--color-ink);
+  }
+
+  .stack {
+    --stack-gap: var(--space-m);
+  }
+
+  .site-footer__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  ul {
+    --cluster-gap: var(--space-2xs) var(--space-m);
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

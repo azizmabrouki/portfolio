@@ -1,0 +1,177 @@
+---
+/**
+ * Experience as a vertical dimension line: one tick per role, newest at the top,
+ * then education, certifications and languages.
+ */
+import SectionHead from '@/components/home/SectionHead.astro';
+import { credentials, education, languages, roles } from '@/config/experience';
+---
+
+<section id="experience" class="section container" aria-labelledby="experience-title">
+  <SectionHead number="03" marker="Experience" id="experience-title" title="Where I’ve built things" />
+
+  <div class="layout">
+    <ol class="timeline" role="list">
+      {
+        roles.map((role) => (
+          <li class="role">
+            <p class="role__when label">
+              {role.period}
+              {role.mode && <span> · {role.mode}</span>}
+            </p>
+            <div class="role__body">
+              <h3>{role.company}</h3>
+              <p class="role__title">{role.role}</p>
+              <p>{role.summary}</p>
+              <ul class="bullets">
+                {role.highlights.map((highlight) => (
+                  <li>{highlight}</li>
+                ))}
+              </ul>
+              {role.caseStudy && (
+                <p>
+                  <a href={`/projects/${role.caseStudy}/`}>Read the {role.company} case study</a>
+                </p>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <aside class="credentials" aria-label="Education, certifications and languages">
+      <h3 class="label">Education</h3>
+      <p>
+        <strong>{education.school}</strong>, {education.period}<br />
+        {education.degree}
+      </p>
+
+      <h3 class="label">Certifications</h3>
+      <ul role="list">
+        {
+          credentials.map((credential) => (
+            <li>
+              {credential.href ? <a href={credential.href}>{credential.title}</a> : credential.title}
+              <span class="muted small">
+                {' '}
+                · {credential.issuer}, {credential.date}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="label">Languages</h3>
+      <p>{languages.join(' · ')}</p>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    margin: 0;
+    padding: 0 0 0 var(--space-l);
+    list-style: none;
+  }
+
+  /* The dimension line down the left edge, with a tick at both ends. */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    inset-block: 0.4rem 0;
+    inset-inline-start: 0;
+    border-inline-start: var(--line-thin) solid var(--color-ink);
+  }
+
+  .timeline::after {
+    content: '';
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: calc(var(--tick-size) / -2);
+    inline-size: var(--tick-size);
+    border-block-start: var(--line-regular) solid var(--color-ink);
+    transform: rotate(-45deg);
+  }
+
+  .role {
+    position: relative;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  /* A 45° tick where each role crosses the line. */
+  .role::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0.55rem;
+    inset-inline-start: calc(-1 * var(--space-l) - var(--tick-size) / 2);
+    inline-size: var(--tick-size);
+    border-block-start: var(--line-regular) solid var(--color-accent);
+    transform: rotate(-45deg);
+  }
+
+  .role__when {
+    margin: 0;
+    color: var(--color-accent-text);
+  }
+
+  .role__body {
+    display: grid;
+    gap: var(--space-2xs);
+    max-inline-size: var(--measure);
+  }
+
+  .role__title {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+  }
+
+  .bullets {
+    display: grid;
+    gap: var(--space-3xs);
+    margin: 0;
+    padding-inline-start: 1.1em;
+    font-size: var(--step--1);
+    color: var(--color-ink-muted);
+  }
+
+  .bullets li::marker {
+    color: var(--color-accent);
+  }
+
+  .credentials {
+    display: grid;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .credentials h3:not(:first-child) {
+    margin-block-start: var(--space-s);
+  }
+
+  .credentials ul {
+    display: grid;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

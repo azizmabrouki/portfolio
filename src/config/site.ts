@@ -16,6 +16,7 @@ export interface SiteConfig {
   description: string;
   locale: string;
   availability: string;
+  location: string;
   /** Public repository of this site. */
   repo: string;
   links: {
@@ -36,17 +37,25 @@ export const site: SiteConfig = {
   description:
     'Portfolio of Mohamed Aziz Mabrouki — a software engineer who designs systems with clear boundaries, written-down decisions and CI/CD from day one.',
   locale: 'en',
-  availability: 'Tunisia · Europe · Remote',
+  availability: 'Tunis · open to Tunisia, Europe and remote',
+  location: 'Tunis, Tunisia',
   repo: 'https://github.com/azizmabrouki/portfolio',
 
   links: {
     github: 'https://github.com/azizmabrouki',
-    linkedin: '', // e.g. https://www.linkedin.com/in/<handle>
-    email: '',
-    cv: '', // set to /cv.pdf once public/cv.pdf exists (Phase 3)
+    linkedin: 'https://www.linkedin.com/in/mohamed-aziz-mabrouki/',
+    email: 'mouhamed.aziz.mabrouki@outlook.com',
+    cv: '', // set to /cv.pdf once public/cv.pdf exists
   },
 
-  nav: [], // filled in Phase 3: Work, How I work, Experience, Notes, Contact
+  // Sections of the home page. Other pages link to them as /#id.
+  nav: [
+    { label: 'Work', href: '#work' },
+    { label: 'How I work', href: '#how-i-work' },
+    { label: 'Experience', href: '#experience' },
+    { label: 'Notes', href: '#notes' },
+    { label: 'Contact', href: '#contact' },
+  ],
 };
 
 /** Links that are actually set, in display order. */

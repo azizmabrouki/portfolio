@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SectionHead from '@/components/home/SectionHead.astro';
+import { formatDate, readingMinutes } from '@/lib/content';
+
+interface Props {
+  notes: CollectionEntry<'notes'>[];
+}
+
+const { notes } = Astro.props;
+---
+
+<section id="notes" class="section container" aria-labelledby="notes-title">
+  <SectionHead
+    number="04"
+    marker="Notes"
+    id="notes-title"
+    title="Notes on architecture"
+    lead="Short write-ups of one decision or one lesson each."
+  />
+  <ol class="notes" role="list">
+    {
+      notes.map((note) => (
+        <li class="note">
+          <p class="label">
+            <time datetime={note.data.date.toISOString().slice(0, 10)}>{formatDate(note.data.date)}</time> ·{' '}
+            {readingMinutes(note.body)} min read
+          </p>
+          <h3>
+            <a href={`/notes/${note.id}/`}>{note.data.title}</a>
+          </h3>
+          <p class="muted">{note.data.summary}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .notes {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: var(--line-thin) solid var(--color-ink);
+  }
+
+  .note {
+    display: grid;
+    gap: var(--space-2xs);
+    padding-block: var(--space-m);
+    border-block-end: var(--line-thin) solid var(--color-line-faint);
+  }
+
+  @media (min-width: 860px) {
+    .note {
+      grid-template-columns: 14rem minmax(0, 1fr);
+      column-gap: var(--space-l);
+    }
+
+    .note .label {
+      grid-row: span 2;
+      padding-block-start: 0.5em;
+    }
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+
+  h3 a {
+    text-decoration-color: transparent;
+  }
+
+  h3 a:hover {
+    text-decoration-color: var(--color-accent);
+  }
+</style>
