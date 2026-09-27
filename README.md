@@ -136,7 +136,7 @@ Pushes to `main` deploy to production; other branches get a preview URL, posted 
 | 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Workers | Done |
 | 1. Design system | Tokens, fonts, grid, type scale, drawing components | Done |
 | 2. Hero | The building draws itself, tilts into an exploded axonometric, floors open one by one and are clickable; still version for phones and reduced motion | Done |
-| 3. Content and pages | Home sections, three case studies, first note, 404, Open Graph image, sitemap, robots.txt (CV PDF when ready) | In review |
+| 3. Content and pages | Home sections, three case studies, first note, 404, Open Graph image, sitemap, robots.txt (CV PDF when ready) | Done |
 | 4. Signature motion | Blueprint cards, View Transitions from card to case study, diagrams that assemble with decision markers | In review |
 | 5. Polish | Dark mode with a switch, drawn link underlines, counting markers, coordinate readout, copy-email button, smooth in-page links | In review |
 | 6. Launch | Address, analytics, links from LinkedIn, CV and GitHub | Prepared; needs the Cloudflare dashboard (below) |
