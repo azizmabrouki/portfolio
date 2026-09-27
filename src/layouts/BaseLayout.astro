@@ -39,7 +39,8 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#efeae1" />
+    <meta name="theme-color" content="#efeae1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#262420" media="(prefers-color-scheme: dark)" />
     <meta name="generator" content={Astro.generator} />
 
     <meta property="og:type" content={type} />
@@ -58,13 +59,31 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
 
     {/* Marks <html> with `motion-ok` before first paint, so the CSS picks the motion or the
         still layout without a flash. Mirrors src/animations/query.ts. `motion-off` is set
-        if the animation code fails to load, and keeps the still layout for the visit. */}
+        if the animation code fails to load, and keeps the still layout for the visit.
+        The theme is set here too, so a dark page never flashes light. */}
     <script is:inline define:vars={{ query: MOTION_QUERY }}>
       const motion = window.matchMedia(query);
       const html = document.documentElement;
       const apply = () => html.classList.toggle('motion-ok', motion.matches && !html.classList.contains('motion-off'));
       apply();
       motion.addEventListener('change', apply);
+
+      // Theme: the visitor's choice if they made one (the header switch), else the system's.
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+      const storedTheme = () => {
+        try {
+          return localStorage.getItem('theme');
+        } catch {
+          return null;
+        }
+      };
+      const applyTheme = () => {
+        const theme = storedTheme() ?? (systemDark.matches ? 'dark' : 'light');
+        if (theme === 'dark') html.setAttribute('data-theme', 'dark');
+        else html.removeAttribute('data-theme');
+      };
+      applyTheme();
+      systemDark.addEventListener('change', applyTheme);
     </script>
 
     {/* Preloaded so the fonts load at "High" priority. Discovered from CSS instead, they get
@@ -73,6 +92,17 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-jetbrains-mono" preload />
     <slot name="head" />
+
+    {
+      site.analytics.cloudflareToken && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: site.analytics.cloudflareToken })}
+        />
+      )
+    }
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

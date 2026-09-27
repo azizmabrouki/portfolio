@@ -11,7 +11,7 @@ The site has two jobs: show how I think about systems, and be a working example 
 | Framework | [Astro](https://astro.build) 7, TypeScript (strict) |
 | Styling | CSS custom properties as design tokens (`src/styles/tokens.css`), shown on `/style` |
 | Fonts | Fraunces, Inter, JetBrains Mono via Astro's fonts API: self-hosted, metric-matched fallbacks |
-| Motion | GSAP + ScrollTrigger + CustomEase (Phase 2); Lenis and View Transitions later |
+| Motion | GSAP + ScrollTrigger + CustomEase, cross-document View Transitions (CSS only), native scrolling |
 | Content | Markdown content collections with typed (Zod) frontmatter: case studies and notes |
 | CI | GitHub Actions: type-check, build, link check, Lighthouse CI |
 | Hosting | Cloudflare Workers (static assets), deployed on every push to `main` |
@@ -46,6 +46,16 @@ So the italic face went (it served one line of text), fonts stay preloaded, and 
 
 **One Markdown file per case study, diagram included.** A case study's context and problem are Markdown; its architecture diagram, key decisions, numbers and stack are typed frontmatter. The diagram is described on a coarse grid (boxes, groups, edges) and `src/lib/diagram.ts` lays it out and routes the arrows, so adding a project never means hand-drawing SVG. The same data renders a plain-text version of every drawing, for screen readers and small screens.
 
+**Page transitions without a router.** Cards and case-study headers share a `view-transition-name`, and `@view-transition { navigation: auto }` lets the browser morph the sheet into the page it opens. No client-side router and no JavaScript: browsers without support, and visitors who prefer reduced motion, simply navigate.
+
+**Diagrams assemble, but are always complete.** On motion-capable desktops a case study's diagram draws itself when it scrolls into view: boundaries, boxes in reading order, arrows from source to target, labels, then the numbered markers of the key decisions. The HTML holds the finished drawing, and a drawing already on screen at load is left alone.
+
+**No smooth-scroll library.** The plan listed Lenis. It was left out on purpose: it takes over the browser's scrolling (wheel, trackpad, keyboard, assistive tech) for a feel that ScrollTrigger's scrubbing already gives the one pinned sequence, and it would be one more dependency. In-page links scroll smoothly with the native `scrollIntoView` and move keyboard focus to the section.
+
+**Dark mode follows the system.** The theme is chosen before first paint (the visitor's choice from the header switch if they made one, else `prefers-color-scheme`), so a dark page never flashes light. Every colour is a token, so the drawings, diagrams and code blocks switch with it.
+
+**Details that stay out of the way.** Section markers count up the first time they appear, links draw a stronger underline from the left on hover, and drawing surfaces show the pointer's coordinates like a CAD readout (desktop, fine pointer only). All of it is skipped with reduced motion.
+
 **Only what can be shown.** The StudioLabCloud case study stays at the level StudioLab agreed to: architecture and decisions, no code, screens or client data.
 
 **Hosting decoupled from CI.** Cloudflare builds and deploys from Git on its own; GitHub Actions verifies. Every branch gets its own preview URL, `main` is production.
@@ -71,7 +81,8 @@ src/
   components/diagram/     ArchitectureDiagram (SVG from a case study's frontmatter)
   components/drawing/     Rule, DimensionLine, SectionMarker, Hatch, TitleBlock
   components/             SiteHeader, SiteFooter, Button, BuildingSketch
-  animations/             query.ts (where motion runs), motion.ts (GSAP + tokens), timing.ts, heroSequence.ts
+  animations/             query.ts (where motion runs), motion.ts (GSAP + tokens), timing.ts,
+                          heroSequence.ts, diagramAssemble.ts, details.ts (markers, links, coordinates)
   lib/contrast.ts         WCAG contrast ratios, computed at build
   lib/diagram.ts          diagram layout and edge routing
   lib/content.ts          collection queries, reading time, dates
@@ -110,7 +121,13 @@ npm run preview   # serve dist/
 
 Pushes to `main` deploy to production; other branches get a preview URL, posted on their pull request.
 
-The custom domain and Cloudflare Web Analytics are added in Phase 6.
+## Launch checklist (Phase 6)
+
+1. **Address.** Free option: in Cloudflare → Workers & Pages → *Your subdomain* → **Change**, pick a short account subdomain (e.g. `mabrouki`), and optionally rename the Worker (e.g. `aziz`), giving `aziz.mabrouki.workers.dev`. A renamed Worker must match `name` in `wrangler.jsonc`. With a domain instead (e.g. the free first year of `.me` from the GitHub Student Developer Pack): add it to Cloudflare, then Worker → Settings → Domains & Routes → **Add custom domain**.
+2. Put the new address in `site` in `astro.config.mjs` and in the link-check exclusion in `.github/workflows/ci.yml`.
+3. **Analytics.** Cloudflare → Analytics & Logs → Web Analytics → **Add a site** → copy the token into `analytics.cloudflareToken` in `src/config/site.ts`. Cookie-free, so no consent banner.
+4. **CV.** Save it as `public/cv.pdf` and set `links.cv` to `/cv.pdf` in `src/config/site.ts`: the hero, the contact section and the footer pick it up.
+5. **Links.** LinkedIn → Contact info → Website, and a Featured link to the site; the GitHub profile's website field.
 
 ## Roadmap
 
@@ -120,6 +137,6 @@ The custom domain and Cloudflare Web Analytics are added in Phase 6.
 | 1. Design system | Tokens, fonts, grid, type scale, drawing components | Done |
 | 2. Hero | The building draws itself, tilts into an exploded axonometric, floors open one by one and are clickable; still version for phones and reduced motion | Done |
 | 3. Content and pages | Home sections, three case studies, first note, 404, Open Graph image, sitemap, robots.txt (CV PDF when ready) | In review |
-| 4. Signature motion | Floor-by-floor scroll, blueprint cards, View Transitions | |
-| 5. Polish | Smooth scroll, cursor details, dark mode, a11y and perf pass | |
-| 6. Launch | Custom domain, analytics, links from LinkedIn, CV and GitHub | |
+| 4. Signature motion | Blueprint cards, View Transitions from card to case study, diagrams that assemble with decision markers | In review |
+| 5. Polish | Dark mode with a switch, drawn link underlines, counting markers, coordinate readout, copy-email button, smooth in-page links | In review |
+| 6. Launch | Address, analytics, links from LinkedIn, CV and GitHub | Prepared; needs the Cloudflare dashboard (below) |

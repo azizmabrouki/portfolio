@@ -19,9 +19,15 @@ const { email, linkedin, github, cv } = site.links;
 
     {
       email && (
-        <p class="contact__email">
-          <a href={`mailto:${email}`}>{email}</a>
-        </p>
+        <div class="contact__email">
+          <p>
+            <a href={`mailto:${email}`}>{email}</a>
+          </p>
+          <button class="button button--secondary" type="button" data-copy={email} hidden>
+            Copy address
+          </button>
+          <span class="visually-hidden" aria-live="polite" data-copy-status></span>
+        </div>
       )
     }
 
@@ -43,17 +49,53 @@ const { email, linkedin, github, cv } = site.links;
   </div>
 </section>
 
+<script>
+  // "Copy address": shown only where the clipboard is available.
+  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+  if (button && navigator.clipboard) {
+    const label = button.textContent?.trim() ?? 'Copy address';
+    let timer = 0;
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+        button.textContent = 'Copied';
+        if (status) status.textContent = 'Email address copied to the clipboard.';
+      } catch {
+        button.textContent = 'Copy failed: select the address instead';
+      }
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        button.textContent = label;
+        if (status) status.textContent = '';
+      }, 2400);
+    });
+  }
+</script>
+
 <style>
   .contact {
     padding-block-end: var(--space-3xl);
   }
 
   .contact__email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-m);
     margin-block-end: var(--space-m);
+  }
+
+  .contact__email p {
     font-family: var(--font-display);
     font-size: var(--step-3);
     line-height: var(--leading-snug);
     overflow-wrap: anywhere;
+  }
+
+  .contact__email button[hidden] {
+    display: none;
   }
 
   .contact__links {

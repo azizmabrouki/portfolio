@@ -56,6 +56,8 @@ const projects = defineCollection({
           over: z.string(),
           why: z.string(),
           tradeoff: z.string(),
+          /** Id of the diagram box this decision is about: it gets a numbered callout. */
+          node: z.string().optional(),
         }),
       )
       .min(1),

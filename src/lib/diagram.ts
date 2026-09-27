@@ -266,3 +266,44 @@ export function describeEdges(spec: DiagramSpec): string[] {
     return edge.label ? `${line}: ${edge.label}` : line;
   });
 }
+
+export interface Callout {
+  /** Shown in the bubble, e.g. "01": the number of the decision it points to. */
+  label: string;
+  /** Id of the box (node or group) the decision is about. */
+  target: string;
+}
+
+export interface PlacedCallout {
+  label: string;
+  target: string;
+  /** Centre of the bubble. */
+  x: number;
+  y: number;
+  r: number;
+  /** Leader line from the box's top-right corner to the bubble. */
+  leader: [Point, Point];
+}
+
+const CALLOUT_R = 12;
+const CALLOUT_OFFSET = 16;
+
+/**
+ * Decision markers on the drawing: a numbered bubble off the top-right corner of the box
+ * a decision is about, joined to it by a short 45° leader, like a detail callout.
+ */
+export function placeCallouts(layout: DiagramLayout, callouts: Callout[]): PlacedCallout[] {
+  const boxes = new Map<string, Rect>();
+  for (const box of [...layout.groups, ...layout.nodes]) boxes.set(box.id, box);
+
+  return callouts.flatMap((callout) => {
+    const box = boxes.get(callout.target);
+    if (!box) throw new Error(`Decision callout ${callout.label} points at an unknown box: ${callout.target}.`);
+    const corner = { x: right(box), y: box.y };
+    const x = corner.x + CALLOUT_OFFSET;
+    const y = corner.y - CALLOUT_OFFSET;
+    // The leader stops at the bubble's edge, along the 45° line.
+    const edge = CALLOUT_R / Math.SQRT2;
+    return [{ ...callout, x, y, r: CALLOUT_R, leader: [corner, { x: x - edge, y: y + edge }] }];
+  });
+}

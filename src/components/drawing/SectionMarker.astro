@@ -19,12 +19,12 @@ const { number, sheet = 'A', title, variant = 'inline', as: Tag = 'div' } = Astr
   {
     variant === 'bubble' ? (
       <span class="marker__bubble">
-        <span>{number}</span>
+        <span data-count>{number}</span>
         <span>{sheet}</span>
       </span>
     ) : (
       <span class="marker__code">
-        {sheet} / {number}
+        {sheet} / <span data-count>{number}</span>
       </span>
     )
   }

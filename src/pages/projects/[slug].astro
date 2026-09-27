@@ -29,6 +29,11 @@ const { project, previous, next } = Astro.props;
 const { Content } = await render(project);
 const data = project.data;
 
+const pad = (n: number) => String(n).padStart(2, '0');
+const callouts = data.decisions.flatMap((decision, index) =>
+  decision.node ? [{ label: pad(index + 1), target: decision.node }] : [],
+);
+
 const fields = [
   { label: 'Role', value: data.role },
   ...(data.company ? [{ label: 'Company', value: data.company }] : []),
@@ -39,9 +44,9 @@ const fields = [
 
 <PageLayout title={data.title} description={data.summary} type="article">
   <article class="case container">
-    <header class="case__head">
+    <header class="case__head" style={`view-transition-name: sheet-${project.id}`}>
       <SectionMarker as="p" sheet="P" number={data.sheet} title="Case study" />
-      <h1>{data.title}</h1>
+      <h1 style={`view-transition-name: title-${project.id}`}>{data.title}</h1>
       <p class="lead prose">{data.summary}</p>
       <TitleBlock fields={fields} />
       {data.disclosure && <p class="case__disclosure annotation">{data.disclosure}</p>}
@@ -53,7 +58,7 @@ const fields = [
 
     <section class="case__section" aria-labelledby="architecture">
       <h2 id="architecture">Architecture</h2>
-      <ArchitectureDiagram spec={data.diagram} id={`${project.id}-diagram`} />
+      <ArchitectureDiagram spec={data.diagram} id={`${project.id}-diagram`} callouts={callouts} />
     </section>
 
     <section class="case__section" aria-labelledby="decisions">
@@ -61,8 +66,8 @@ const fields = [
       <ol class="decisions" role="list">
         {
           data.decisions.map((decision, index) => (
-            <li class="decision">
-              <SectionMarker as="span" variant="bubble" sheet="D" number={String(index + 1).padStart(2, '0')} />
+            <li class="decision" id={`decision-${pad(index + 1)}`}>
+              <SectionMarker as="span" variant="bubble" sheet="D" number={pad(index + 1)} />
               <div class="decision__body">
                 <h3>{decision.title}</h3>
                 <dl>

@@ -1,7 +1,8 @@
 ---
 /**
- * Site header: the name as the drawing set's title, and the home page sections.
- * `overlay` lays it over the hero on the home page so the building starts at the very top.
+ * Site header: the name as the drawing set's title, the home page sections, and the
+ * light/dark switch. `overlay` lays it over the hero on the home page so the building
+ * starts at the very top.
  */
 import { site } from '@/config/site';
 
@@ -20,18 +21,52 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
     <span class="mark__code" aria-hidden="true">A / 00</span>
     <span class="mark__name">{site.shortName}</span>
   </a>
-  <nav aria-label="Main">
-    <ul role="list">
-      {
-        site.nav.map((link) => (
-          <li>
-            <a href={href(link.href)}>{link.label}</a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+  <div class="site-header__end">
+    <nav aria-label="Main">
+      <ul role="list">
+        {
+          site.nav.map((link) => (
+            <li>
+              <a href={href(link.href)}>{link.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    {/* Hidden until the script below runs: without JavaScript there is nothing to switch. */}
+    <button class="theme" type="button" data-theme-switch aria-pressed="false" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="7.5"></circle>
+        <path class="theme__half" d="M12 4.5 A7.5 7.5 0 0 1 12 19.5 Z"></path>
+      </svg>
+      <span class="visually-hidden">Dark theme</span>
+    </button>
+  </div>
 </header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-theme-switch]');
+  if (button) {
+    const html = document.documentElement;
+    const isDark = () => html.getAttribute('data-theme') === 'dark';
+    const sync = () => button.setAttribute('aria-pressed', String(isDark()));
+
+    button.hidden = false;
+    sync();
+    button.addEventListener('click', () => {
+      const next = isDark() ? 'light' : 'dark';
+      if (next === 'dark') html.setAttribute('data-theme', 'dark');
+      else html.removeAttribute('data-theme');
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        // Private mode or blocked storage: the switch still works for this page.
+      }
+    });
+    // The inline script in BaseLayout also follows the system setting.
+    new MutationObserver(sync).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+</script>
 
 <style>
   .site-header {
@@ -39,10 +74,10 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
     z-index: 5;
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-2xs) var(--space-m);
-    padding: var(--space-s) var(--gutter);
+    padding: var(--space-2xs) var(--gutter);
     font-family: var(--font-mono);
     font-size: var(--text-label);
     font-weight: 500;
@@ -61,11 +96,9 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
   }
 
   a {
+    display: inline-block;
+    padding-block: var(--space-2xs);
     text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration-line: underline;
   }
 
   .mark {
@@ -78,10 +111,17 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
     color: var(--color-accent-text);
   }
 
+  .site-header__end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs) var(--space-m);
+  }
+
   ul {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3xs) var(--space-s);
+    gap: 0 var(--space-s);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -93,5 +133,46 @@ const href = (anchor: string) => (home ? anchor : `/${anchor}`);
 
   nav a:hover {
     color: var(--color-ink);
+  }
+
+  .theme {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    padding: 0;
+    border: var(--line-thin) solid var(--color-line-faint);
+    border-radius: var(--radius-round);
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: border-color var(--duration-quick) var(--ease-out);
+  }
+
+  .theme[hidden] {
+    display: none;
+  }
+
+  .theme:hover {
+    border-color: var(--color-ink);
+  }
+
+  .theme svg {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+
+  .theme__half {
+    fill: currentColor;
+    stroke: none;
+    transform-origin: 12px 12px;
+    transition: transform var(--duration-moderate) var(--ease-out);
+  }
+
+  .theme[aria-pressed='true'] .theme__half {
+    transform: rotate(180deg);
   }
 </style>

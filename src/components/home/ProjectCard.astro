@@ -14,12 +14,12 @@ const { title, summary, sheet, period, role, company, stack } = project.data;
 const href = `/projects/${project.id}/`;
 ---
 
-<article class="card">
+<article class="card" style={`view-transition-name: sheet-${project.id}`}>
   <p class="card__top label">
     <span>Sheet P / {sheet}</span>
     <span>{period}</span>
   </p>
-  <h3 class="card__title">
+  <h3 class="card__title" style={`view-transition-name: title-${project.id}`}>
     <a href={href}>{title}</a>
   </h3>
   <p class="card__summary">{summary}</p>
@@ -125,6 +125,20 @@ const href = `/projects/${project.id}/`;
 
   .card__block dd {
     margin: 0;
+  }
+
+  /* On hover-capable screens the title block sits a little low and slides into place as
+     the sheet lifts, like a sheet pulled from the stack. It is always readable. */
+  @media (hover: hover) {
+    .card__block {
+      transform: translateY(4px);
+      transition: transform var(--duration-moderate) var(--ease-out);
+    }
+
+    .card:hover .card__block,
+    .card:focus-within .card__block {
+      transform: none;
+    }
   }
 
   .card__cta {

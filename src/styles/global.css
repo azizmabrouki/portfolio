@@ -134,20 +134,28 @@ samp {
 }
 
 /* ─── Links ───────────────────────────────────────────────────────────────── */
+/* A thin vermilion underline at rest; on hover a stronger line draws in from the left,
+   like a pen stroke, while the thin one fades. */
 a {
   color: inherit;
   text-decoration-line: underline;
   text-decoration-color: var(--color-accent);
   text-decoration-thickness: var(--line-regular);
   text-underline-offset: 0.3em;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% var(--line-strong);
   transition:
     color var(--duration-quick) var(--ease-out),
-    text-decoration-thickness var(--duration-quick) var(--ease-out);
+    text-decoration-color var(--duration-quick) var(--ease-out),
+    background-size var(--duration-moderate) var(--ease-out);
 }
 
 a:hover {
   color: var(--color-accent-text);
-  text-decoration-thickness: var(--line-strong);
+  text-decoration-color: transparent;
+  background-size: 100% var(--line-strong);
 }
 
 :focus-visible {
@@ -355,4 +363,53 @@ a:hover {
   --astro-code-token-string-expression: var(--color-ink);
   --astro-code-token-punctuation: var(--color-ink-muted);
   --astro-code-token-link: var(--color-accent-text);
+}
+
+/* ─── Page transitions ────────────────────────────────────────────────────── */
+/* Cross-document View Transitions: no router, no JavaScript. A case-study card and the
+   case study's header share a name, so the sheet morphs into the page it opens. Browsers
+   without support simply navigate; reduced motion keeps plain navigation too. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-moderate);
+}
+
+/* ─── Details (Phase 5) ───────────────────────────────────────────────────── */
+/* Coordinates beside the pointer on drawing surfaces: desktop, fine pointer, motion OK. */
+.coords-on [data-coords] {
+  cursor: crosshair;
+}
+
+.coords {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 20;
+  padding: 2px 6px;
+  border: var(--line-thin) solid var(--color-line-faint);
+  background: var(--color-paper);
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-quick) var(--ease-out);
+}
+
+.coords.is-visible {
+  opacity: 1;
 }

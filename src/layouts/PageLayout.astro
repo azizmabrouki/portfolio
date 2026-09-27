@@ -26,3 +26,11 @@ const { home = false, ...meta } = Astro.props;
   </main>
   <SiteFooter />
 </BaseLayout>
+
+<script>
+  // Counting markers, smooth in-page links, the coordinate readout: only for visitors who
+  // haven't asked for reduced motion. Everyone else gets the same page, still.
+  if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    void import('@/animations/details').then(({ initDetails }) => initDetails());
+  }
+</script>
