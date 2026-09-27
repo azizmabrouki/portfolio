@@ -1,0 +1,260 @@
+---
+/**
+ * The building: one floor per architecture layer, drawn in CSS 3D.
+ *
+ * At rest it is the finished drawing: an exploded axonometric. That is what phones,
+ * reduced motion and no-JS visitors see. On motion-capable desktops (html.motion-ok)
+ * it starts as the flat front elevation and src/animations/heroSequence.ts animates
+ * the custom properties below: --rx/--ry (tilt), --gap (explode), --hl/--pull (per floor).
+ *
+ * `interactive` turns each floor's front into a link to its section (#layer-<id>).
+ */
+import { floors } from '@/config/building';
+
+interface Props {
+  interactive?: boolean;
+}
+
+const { interactive = true } = Astro.props;
+const count = floors.length;
+---
+
+<div class="scene" data-scene>
+  <div class="ground-plane" aria-hidden="true"></div>
+
+  <div class="foundation" data-foundation aria-hidden="true">
+    <div class="face face--front"></div>
+    <div class="face face--side"></div>
+  </div>
+  <div class="ground-line" data-ground-line aria-hidden="true"></div>
+
+  {
+    floors.map((floor, index) => (
+      <div
+        class:list={['floor', { 'floor--accent': floor.accent }]}
+        style={`--i: ${count - 1 - index}`}
+        data-floor={floor.id}
+      >
+        <div class="face face--top" aria-hidden="true"></div>
+        <div class="face face--side" aria-hidden="true"></div>
+        {
+          interactive ? (
+            <a
+              class="face face--front"
+              href={`#layer-${floor.id}`}
+              aria-label={`${floor.layer}: ${floor.title}`}
+              data-floor-link={floor.id}
+            >
+              <span class="floor__label">{floor.number} · {floor.layer.replace(' layer', '')}</span>
+              <span class="windows" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            </a>
+          ) : (
+            <div class="face face--front">
+              <span class="floor__label">{floor.number} · {floor.layer.replace(' layer', '')}</span>
+              <span class="windows" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            </div>
+          )
+        }
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  /* Resting state: the finished, exploded axonometric. Orthographic (no perspective). */
+  .scene {
+    --fw: 300px; /* floor width */
+    --fh: 64px; /* floor height */
+    --fd: 200px; /* floor depth */
+    --rx: -30deg;
+    --ry: -38deg;
+    --gap: 46px;
+    --plane: 1;
+    --line: 0;
+    --s: 0.62;
+
+    position: absolute;
+    inset-inline-start: 52%;
+    inset-block-start: 70%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: scale(var(--s)) rotateX(var(--rx)) rotateY(var(--ry));
+  }
+
+  @media (min-width: 420px) {
+    .scene {
+      --s: 0.75;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .scene {
+      --s: 0.82;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .scene {
+      --s: 1;
+    }
+  }
+
+  /* Motion-capable desktops start from the flat front elevation. */
+  :global(.motion-ok) .scene {
+    inset-block-start: 64%;
+    --rx: 0deg;
+    --ry: 0deg;
+    --gap: 0px;
+    --plane: 0;
+    --line: 1;
+  }
+
+  .floor {
+    --hl: 0; /* active in the scroll sequence, 0..1 */
+    --hover: 0; /* pointer or keyboard focus */
+    --base: 0; /* 1 for the domain layer, always vermilion */
+    --pull: 0px;
+    --act: max(var(--hl), var(--hover));
+    --edge: color-mix(
+      in srgb,
+      var(--color-accent) calc(max(var(--act), var(--base)) * 100%),
+      var(--color-ink)
+    );
+
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform-style: preserve-3d;
+    transform: translateY(calc(-1 * (var(--i) * (var(--fh) + var(--gap)) + var(--fh) / 2)))
+      translateZ(var(--pull));
+  }
+
+  .floor--accent {
+    --base: 1;
+  }
+
+  .floor:hover,
+  .floor:focus-within {
+    --hover: 1;
+  }
+
+  .face {
+    position: absolute;
+    border: var(--line-thin) solid var(--edge);
+    backface-visibility: hidden;
+  }
+
+  .face--front {
+    inline-size: var(--fw);
+    block-size: var(--fh);
+    inset-inline-start: calc(var(--fw) / -2);
+    inset-block-start: calc(var(--fh) / -2);
+    transform: translateZ(calc(var(--fd) / 2));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    padding-inline: var(--space-xs);
+    background: color-mix(in srgb, var(--color-accent) calc(var(--act) * 9%), var(--color-paper-raised));
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  a.face--front {
+    cursor: pointer;
+  }
+
+  .face--side {
+    inline-size: var(--fd);
+    block-size: var(--fh);
+    inset-inline-start: calc(var(--fd) / -2);
+    inset-block-start: calc(var(--fh) / -2);
+    transform: rotateY(90deg) translateZ(calc(var(--fw) / 2));
+    background-color: var(--color-paper-sunk);
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--color-line-faint) 0 1px,
+      transparent 1px 8px
+    );
+  }
+
+  .face--top {
+    inline-size: var(--fw);
+    block-size: var(--fd);
+    inset-inline-start: calc(var(--fw) / -2);
+    inset-block-start: calc(var(--fd) / -2);
+    transform: rotateX(90deg) translateZ(calc(var(--fh) / 2));
+    background-color: var(--color-paper);
+    background-image:
+      linear-gradient(var(--color-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .floor__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--color-accent-text) calc(var(--act) * 100%), var(--color-ink));
+  }
+
+  .windows {
+    display: flex;
+    gap: 10px;
+  }
+
+  .windows span {
+    inline-size: 18px;
+    block-size: 26px;
+    border: var(--line-thin) solid var(--edge);
+  }
+
+  .foundation {
+    --fh: 18px;
+    --edge: var(--color-ink);
+
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform-style: preserve-3d;
+    transform: translateY(9px);
+  }
+
+  .foundation .face--front,
+  .foundation .face--side {
+    padding: 0;
+    background-color: var(--color-paper-sunk);
+    background-image: repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--color-ink) 55%, transparent) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  .ground-line {
+    position: absolute;
+    inset-inline-start: -250px;
+    inset-block-start: 0;
+    inline-size: 500px;
+    border-block-start: var(--line-regular) solid var(--color-ink);
+    transform: translateZ(calc(var(--fd) / 2));
+    opacity: var(--line);
+  }
+
+  .ground-plane {
+    position: absolute;
+    inline-size: 620px;
+    block-size: 520px;
+    inset-inline-start: -310px;
+    inset-block-start: -260px;
+    transform: rotateX(90deg) translateZ(-18px);
+    border: var(--line-thin) dashed var(--color-line-faint);
+    background-image: radial-gradient(var(--color-line-faint) 1px, transparent 1.5px);
+    background-size: var(--grid-cell) var(--grid-cell);
+    opacity: var(--plane);
+  }
+</style>

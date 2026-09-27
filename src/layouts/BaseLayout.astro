@@ -3,6 +3,7 @@ import { Font } from 'astro:assets';
 import '@/styles/tokens.css';
 import '@/styles/global.css';
 import { site } from '@/config/site';
+import { MOTION_QUERY } from '@/animations/query';
 
 interface Props {
   title?: string;
@@ -32,6 +33,17 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <meta property="og:description" content={description} />
     {canonical && <meta property="og:url" content={canonical} />}
     <meta name="twitter:card" content="summary" />
+
+    {/* Marks <html> with `motion-ok` before first paint, so the CSS picks the motion or the
+        still layout without a flash. Mirrors src/animations/query.ts. `motion-off` is set
+        if the animation code fails to load, and keeps the still layout for the visit. */}
+    <script is:inline define:vars={{ query: MOTION_QUERY }}>
+      const motion = window.matchMedia(query);
+      const html = document.documentElement;
+      const apply = () => html.classList.toggle('motion-ok', motion.matches && !html.classList.contains('motion-off'));
+      apply();
+      motion.addEventListener('change', apply);
+    </script>
 
     {/* Preloaded so the fonts load at "High" priority. Discovered from CSS instead, they get
         "VeryHigh", which Lighthouse's simulation counts as render-blocking. See README. */}

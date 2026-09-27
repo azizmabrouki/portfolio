@@ -11,7 +11,7 @@ The site has two jobs: show how I think about systems, and be a working example 
 | Framework | [Astro](https://astro.build) 7, TypeScript (strict) |
 | Styling | CSS custom properties as design tokens (`src/styles/tokens.css`), shown on `/style` |
 | Fonts | Fraunces, Inter, JetBrains Mono via Astro's fonts API: self-hosted, metric-matched fallbacks |
-| Motion (from Phase 2) | GSAP + ScrollTrigger, Lenis, Astro View Transitions |
+| Motion | GSAP + ScrollTrigger + CustomEase (Phase 2); Lenis and View Transitions later |
 | Content (from Phase 3) | Markdown/MDX content collections with Zod schemas |
 | CI | GitHub Actions: type-check, build, link check, Lighthouse CI |
 | Hosting | Cloudflare Workers (static assets), deployed on every push to `main` |
@@ -23,6 +23,10 @@ The site has two jobs: show how I think about systems, and be a working example 
 **Astro over Next.js.** Content collections, View Transitions and zero-JS-by-default cover everything this site needs. Next.js would only be worth it if the site became app-like (shared state or persistent 3D across pages).
 
 **Design tokens as the only source of style.** Colours, type, spacing, lines and motion timings live in one file; components read custom properties and never hard-code values. Re-theming the site means editing `tokens.css`, and `/style` shows every token and component in light and dark.
+
+**Motion is an enhancement, never a requirement.** Every drawing is written into the page finished (the building as an exploded axonometric), and that is what phones, reduced motion and no-JS visitors get. On desktops with motion allowed, an inline script marks `<html>` with `motion-ok` before first paint, so the CSS switches to the pinned layout without a flash, and GSAP is downloaded only then (dynamic import): mobile Lighthouse never loads it. Durations and easings come from the motion tokens, so the whole site can be toned up or down from `tokens.css`. The floors are real links to their sections; with motion they scroll to their step instead.
+
+**The exploded view was prototyped first.** The scroll sequence (front elevation → axonometric → floors pulled out one by one) was built as a throwaway prototype and validated before any site code, because motion is hard to judge from a description.
 
 **Fonts through Astro's fonts API, not font packages.** Files are fetched from Fontsource at build time and served from the site itself, like `@fontsource` would, and Astro generates metric-matched fallbacks, so text does not jump when the real font arrives. No extra dependencies.
 
@@ -48,24 +52,27 @@ So the italic face went (it served one line of text), fonts stay preloaded, and 
 
 ```text
 src/
-  config/site.ts        name, role, links, navigation
-  config/palette.ts     colour tokens as data, for swatches and contrast ratios on /style
-  styles/tokens.css     colour (light and dark), type scale, space, lines, radii, motion
-  styles/global.css     base styles, typography, links, buttons, layout utilities
-  layouts/              BaseLayout: <head>, meta, fonts
-  components/drawing/   Rule, DimensionLine, SectionMarker, Hatch, TitleBlock
-  components/           Button, BuildingSketch
-  lib/contrast.ts       WCAG contrast ratios, computed at build
-  pages/                index, style (design system), 404
+  config/site.ts          name, role, links, navigation
+  config/building.ts      the building's floors and the content of each floor's section
+  config/palette.ts       colour tokens as data, for swatches and contrast ratios on /style
+  styles/tokens.css       colour (light and dark), type scale, space, lines, radii, motion
+  styles/global.css       base styles, typography, links, buttons, layout utilities
+  layouts/                BaseLayout: <head>, meta, fonts, the motion-ok class
+  components/hero/        BuildingDrawing (CSS 3D building), HeroSequence (pinned scroll section)
+  components/drawing/     Rule, DimensionLine, SectionMarker, Hatch, TitleBlock
+  components/             Button, BuildingSketch
+  animations/             query.ts (where motion runs), motion.ts (GSAP + tokens), timing.ts, heroSequence.ts
+  lib/contrast.ts         WCAG contrast ratios, computed at build
+  pages/                  index, style (design system), 404
 public/
   favicon.svg
-  _headers              security headers and long-term caching for /_astro/*
+  _headers                security headers and long-term caching for /_astro/*
 .github/
-  workflows/ci.yml      verification pipeline
-  dependabot.yml        weekly dependency updates
-lighthouserc.json       Lighthouse CI thresholds
-wrangler.jsonc          Cloudflare Workers config: serve dist/ as static assets
-.nvmrc                  Node version, read by CI and Cloudflare
+  workflows/ci.yml        verification pipeline
+  dependabot.yml          weekly dependency updates
+lighthouserc.json         Lighthouse CI thresholds
+wrangler.jsonc            Cloudflare Workers config: static assets, branch previews
+.nvmrc                    Node version, read by CI and Cloudflare
 ```
 
 ## Running locally
@@ -96,8 +103,8 @@ The custom domain and Cloudflare Web Analytics are added in Phase 6.
 | Phase | Scope | Status |
 | --- | --- | --- |
 | 0. Setup | Repo, Astro + TypeScript, CI, Cloudflare Workers | Done |
-| 1. Design system | Tokens, fonts, grid, type scale, drawing components | In review |
-| 2. Hero | The building draws itself; reduced-motion fallback | |
+| 1. Design system | Tokens, fonts, grid, type scale, drawing components | Done |
+| 2. Hero | The building draws itself, tilts into an exploded axonometric, floors open one by one and are clickable; still version for phones and reduced motion | In review |
 | 3. Content and pages | Home sections, case studies, CV, 404, SEO | |
 | 4. Signature motion | Floor-by-floor scroll, blueprint cards, View Transitions | |
 | 5. Polish | Smooth scroll, cursor details, dark mode, a11y and perf pass | |
