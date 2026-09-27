@@ -39,7 +39,7 @@ const projects = defineCollection({
   loader: glob({ base: './src/content/projects', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
-    /** One sentence: cards, meta description, social previews. */
+    /** One sentence: cards, meta description, social previews. Takes the lib/rich.ts markup. */
     summary: z.string(),
     /** Sheet number in the drawing set, e.g. "01". Also the display order. */
     sheet: z.string(),
@@ -62,6 +62,8 @@ const projects = defineCollection({
       )
       .min(1),
     diagram,
+    /** The 30-second version at the top of the page; takes the lib/rich.ts markup. */
+    brief: z.object({ problem: z.string(), result: z.string() }).optional(),
     /** Optional "what I would do differently" paragraph. */
     differently: z.string().optional(),
     /** Shown above the case study when what can be shown is limited. */

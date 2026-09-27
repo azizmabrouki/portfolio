@@ -4,6 +4,8 @@
  * The whole card is clickable through the heading link, which carries the accessible name.
  */
 import type { CollectionEntry } from 'astro:content';
+import { skillsOf } from '@/config/skills';
+import { rich } from '@/lib/rich';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -14,15 +16,15 @@ const { title, summary, sheet, period, role, company, stack } = project.data;
 const href = `/projects/${project.id}/`;
 ---
 
-<article class="card" style={`view-transition-name: sheet-${project.id}`}>
-  <p class="card__top label">
-    <span>Sheet P / {sheet}</span>
-    <span>{period}</span>
+<article class="card" style={`view-transition-name: sheet-${project.id}`} data-skills={skillsOf(stack)}>
+  <p class="card__top">
+    <span class="label">Sheet P / {sheet}</span>
+    <span class="meta">{period}</span>
   </p>
   <h3 class="card__title" style={`view-transition-name: title-${project.id}`}>
     <a href={href}>{title}</a>
   </h3>
-  <p class="card__summary">{summary}</p>
+  <p class="card__summary" set:html={rich(summary)} />
   <dl class="card__block">
     <div>
       <dt>Role</dt>
@@ -93,9 +95,6 @@ const href = `/projects/${project.id}/`;
     outline-offset: 4px;
   }
 
-  .card__summary {
-    color: var(--color-ink-muted);
-  }
 
   .card__block {
     display: grid;
@@ -119,7 +118,7 @@ const href = `/projects/${project.id}/`;
     font-size: var(--text-label);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: var(--color-ink-muted);
+    color: var(--color-annotation);
     padding-block-start: 0.15em;
   }
 
@@ -143,7 +142,7 @@ const href = `/projects/${project.id}/`;
 
   .card__cta {
     margin: 0;
-    color: var(--color-accent-text);
+    color: var(--color-structure);
   }
 
   .card__cta span {

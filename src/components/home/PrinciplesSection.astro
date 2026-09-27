@@ -3,6 +3,7 @@
  * How I work: four principles, each with a small drawing in the site's line vocabulary.
  */
 import SectionHead from '@/components/home/SectionHead.astro';
+import { rich } from '@/lib/rich';
 
 interface Principle {
   id: 'boundaries' | 'why' | 'tests' | 'pipeline';
@@ -15,23 +16,23 @@ const principles: Principle[] = [
   {
     id: 'boundaries',
     title: 'Boundaries first',
-    text: 'I start with one deployable and strict modules that talk through contracts, so a change in one stays in one. A module becomes a service when a team, a scaling need or a runtime asks for it.',
+    text: 'I start with ==one deployable and strict modules== that talk through contracts, so a change in one stays in one. A module becomes a service when a team, a scaling need or a runtime asks for it.',
     link: { href: '/notes/modular-monolith-first/', label: 'Why I start with a modular monolith' },
   },
   {
     id: 'why',
     title: 'Write down the why',
-    text: 'Every significant decision gets an architecture decision record: the context, the options and the trade-off accepted. The next developer shouldn’t have to guess, and neither should I in six months.',
+    text: 'Every significant decision gets an [[architecture decision record|adr]]: the context, the options and ==the trade-off accepted==. The next developer shouldn’t have to guess, and neither should I in six months.',
   },
   {
     id: 'tests',
     title: 'Test what matters',
-    text: 'Tests go where a bug would hurt most. StudioLabCloud shipped with 609 automated tests and 25 OpenAPI specs describing its API.',
+    text: 'Tests go ==where a bug would hurt most==. StudioLabCloud shipped with **609 automated tests** and **25** [[OpenAPI]] specs describing its API.',
   },
   {
     id: 'pipeline',
     title: 'Ship through CI/CD',
-    text: 'Every change goes through a pipeline before anyone depends on it. StudioLabCloud ran on CI/CD, Kubernetes and Grafana; this site cannot merge a change that scores under 95 on Lighthouse.',
+    text: 'Every change goes ==through a pipeline before anyone depends on it==. StudioLabCloud ran on [[CI/CD]], Kubernetes and Grafana; this site cannot merge a change that scores **under 95** on Lighthouse.',
   },
 ];
 ---
@@ -41,7 +42,7 @@ const principles: Principle[] = [
     number="02"
     marker="How I work"
     id="how-title"
-    title="Most of the job happens before the code"
+    title="Most of the job happens ==before the code=="
     lead="Where a module boundary goes, what can fail, and whether the next developer will understand the design in a week."
   />
 
@@ -101,7 +102,7 @@ const principles: Principle[] = [
           </svg>
           <p class="label">Principle {String(index + 1).padStart(2, '0')}</p>
           <h3>{principle.title}</h3>
-          <p>{principle.text}</p>
+          <p set:html={rich(principle.text)} />
           {principle.link && (
             <p>
               <a href={principle.link.href}>{principle.link.label}</a>

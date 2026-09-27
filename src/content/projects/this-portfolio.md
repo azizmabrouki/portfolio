@@ -1,6 +1,9 @@
 ---
 title: This portfolio
-summary: A static site that behaves like a set of technical drawings, shipped through CI with performance and accessibility gates. The code is public.
+summary: A static site that behaves like a set of technical drawings, ==shipped through CI with performance and accessibility gates==. The code is public.
+brief:
+  problem: Ambitious motion usually costs speed and accessibility.
+  result: An animated drawing set that must score **95+** in every Lighthouse category to merge, and ==still reads completely== with reduced motion, a keyboard or no JavaScript.
 sheet: '03'
 period: '2026'
 role: Design, code and deployment
@@ -23,19 +26,19 @@ decisions:
   - title: Static first
     chose: Astro’s static output, with JavaScript added per component.
     over: A single-page app in Next.js or React.
-    why: A portfolio is read far more than it is used. Pre-rendered HTML is the fastest thing to load and the simplest thing to host.
+    why: A portfolio is ==read far more than it is used==. Pre-rendered HTML is the fastest thing to load and the simplest thing to host.
     tradeoff: Anything dynamic, like a contact form, will need a small Worker later.
     node: assets
   - title: Motion is an enhancement
     chose: The finished drawing is written into the page; the pinned, animated version switches on only where motion is welcome and the script loads.
     over: An animation-first page that needs JavaScript to show its content.
-    why: Phones, reduced-motion settings, no-JS visitors and failed downloads all get a complete page. GSAP never even loads on a phone.
+    why: Phones, reduced-motion settings, no-JS visitors and failed downloads all ==get a complete page==. GSAP never even loads on a phone.
     tradeoff: Two layouts of the hero to build and to test.
     node: gsap
   - title: Quality gates in CI
     chose: Every pull request must type-check, build, have no broken links and score 95+ on performance, accessibility, best practices and SEO.
     over: Checking by hand before launch.
-    why: A regression fails the build instead of reaching visitors, and the rules hold when I’m tired or in a hurry.
+    why: ==A regression fails the build== instead of reaching visitors, and the rules hold when I’m tired or in a hurry.
     tradeoff: Slower pull requests, and some wishes lose. The italic serif went to pass the performance gate.
     node: ci
 differently: I would put a number on font weight from the first commit. Lighthouse failed twice on fonts before it was clear that total font bytes, not preloading tricks, were the lever.
@@ -109,10 +112,10 @@ This site has two jobs: show how I think about systems, and be a working example
 
 ## The problem
 
-Portfolios with ambitious motion tend to be slow, inaccessible, or both. I wanted the motion without paying for it: fast on a mid-range phone, complete with reduced motion or a keyboard only, and protected against getting quietly worse over time.
+Portfolios with ambitious motion tend to be slow, inaccessible, or both. I wanted <mark>the motion without paying for it</mark>: fast on a mid-range phone, complete with reduced motion or a keyboard only, and protected against getting quietly worse over time.
 
 ## What I built
 
 An Astro site that ships pre-rendered HTML. Every colour, size, line weight and animation timing comes from one file of design tokens. The building is drawn in CSS 3D and animated with GSAP on desktops that allow motion; everyone else gets the finished drawing. Case studies and notes are Markdown files with typed frontmatter, so this page, its numbers and its diagram come from one file.
 
-Every pull request runs through GitHub Actions, and Cloudflare deploys each branch to its own preview URL. The [README](https://github.com/azizmabrouki/portfolio#readme) records the decisions, including the three rounds it took to get the fonts under the performance budget.
+Every pull request runs through GitHub Actions (<button type="button" class="term" popovertarget="term-ci-cd">CI</button>), and Cloudflare deploys each branch to its own preview URL. The [README](https://github.com/azizmabrouki/portfolio#readme) records the decisions, including the three rounds it took to get the fonts under the performance budget.

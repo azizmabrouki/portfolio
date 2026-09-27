@@ -1,0 +1,23 @@
+---
+/**
+ * One popover per glossary term. Term buttons in the text (class "term",
+ * popovertarget="term-<id>") open them: natively on click, tap and Enter, with a hover
+ * preview and placement under the term added by scripts/glossary.ts.
+ */
+import { glossary } from '@/config/glossary';
+---
+
+{
+  glossary.map((entry) => (
+    <div class="term-pop" id={`term-${entry.id}`} popover>
+      <strong>{entry.term}</strong>
+      {entry.definition}
+    </div>
+  ))
+}
+
+<script>
+  import { initGlossary } from '@/scripts/glossary';
+
+  initGlossary();
+</script>

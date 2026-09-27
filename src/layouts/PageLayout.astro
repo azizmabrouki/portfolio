@@ -5,6 +5,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import SiteHeader from '@/components/SiteHeader.astro';
+import GlossaryPopovers from '@/components/reading/GlossaryPopovers.astro';
 
 interface Props {
   title?: string;
@@ -25,6 +26,7 @@ const { home = false, ...meta } = Astro.props;
     <slot />
   </main>
   <SiteFooter />
+  <GlossaryPopovers />
 </BaseLayout>
 
 <script>

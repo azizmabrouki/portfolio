@@ -7,7 +7,7 @@ tags:
   - modular monolith
 ---
 
-When I started designing StudioLabCloud, the question came up in the first week: one application, or several services? The platform had clear areas (billing, the service catalogue, support, messaging) and each one looked like a natural candidate for a service. I chose one Laravel application with strict internal boundaries instead. Three releases later, I would make the same call.
+When I started designing StudioLabCloud, the question came up in the first week: one application, or several services? The platform had clear areas (billing, the service catalogue, support, messaging) and each one looked like a natural candidate for a service. I chose one Laravel application with <mark>strict internal boundaries</mark> instead: a <button type="button" class="term" popovertarget="term-modular-monolith">modular monolith</button>. Three releases later, I would make the same call.
 
 ## What microservices actually buy you
 
@@ -17,9 +17,9 @@ A new product built by one person or a small team has neither problem. What it h
 
 ## What a new product does need: boundaries
 
-The part of microservices that matters early isn’t the network. It is the boundary. Billing shouldn’t know how support stores a ticket, and support shouldn’t be able to change an invoice. Without boundaries, a codebase becomes one tangle where every change touches everything.
+The part of microservices that matters early isn’t the network. <mark>It is the boundary.</mark> Billing shouldn’t know how support stores a ticket, and support shouldn’t be able to change an invoice. Without boundaries, a codebase becomes one tangle where every change touches everything.
 
-You can have the boundary without the network. In StudioLabCloud, modules talk to each other through explicit contracts: a small set of services and data transfer objects that other modules are allowed to use. Everything else is internal. The rule I try to hold is simple: a module that needs something from another one asks through the contract, never by reaching into its internals.
+You can have the boundary without the network. In StudioLabCloud, modules talk to each other through explicit contracts: a small set of services and <button type="button" class="term" popovertarget="term-dto">data transfer objects</button> that other modules are allowed to use. Everything else is internal. The rule I try to hold is simple: a module that needs something from another one asks through the contract, never by reaching into its internals.
 
 That gives three things right away.
 
@@ -31,7 +31,7 @@ That gives three things right away.
 
 A monolith’s boundaries are only as strong as the team’s discipline. Nothing at runtime stops a developer from importing a class from another module when a deadline is close. The code compiles and the tests pass.
 
-Two habits help. The first is writing down why each boundary exists, in an architecture decision record: the context, the options, and the trade-off accepted. A boundary with a written reason is harder to break casually than one that only felt right. The second is making the rule checkable where you can, with architecture tests or a line in the review checklist, so that crossing a boundary is a visible decision rather than an accident.
+Two habits help. The first is <mark>writing down why each boundary exists</mark>, in an <button type="button" class="term" popovertarget="term-adr">architecture decision record</button>: the context, the options, and the trade-off accepted. A boundary with a written reason is harder to break casually than one that only felt right. The second is making the rule checkable where you can, with architecture tests or a line in the review checklist, so that crossing a boundary is a visible decision rather than an accident.
 
 The other cost is that everything scales together. If one module needs far more resources than the rest, you scale the whole application. For most products, for a long time, that is still cheaper than running a distributed system.
 
@@ -45,7 +45,7 @@ I would extract a module into its own service when one of these becomes true, an
 
 The third one already happened in StudioLabCloud, in a small way. The support assistant relies on retrieval and language models, and that tooling lives in Python, not PHP. So it runs as its own Python service behind a handover contract, while everything else stays in one application.
 
-That is the point of starting with modules. When a real reason to split shows up, the boundary is already there, and you split exactly one piece.
+That is the point of starting with modules. When a real reason to split shows up, the boundary is already there, and <mark>you split exactly one piece</mark>.
 
 ## The short version
 

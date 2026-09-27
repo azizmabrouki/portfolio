@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import SectionHead from '@/components/home/SectionHead.astro';
 import { formatDate, readingMinutes } from '@/lib/content';
+import { rich } from '@/lib/rich';
 
 interface Props {
   notes: CollectionEntry<'notes'>[];
@@ -22,14 +23,14 @@ const { notes } = Astro.props;
     {
       notes.map((note) => (
         <li class="note">
-          <p class="label">
+          <p class="meta">
             <time datetime={note.data.date.toISOString().slice(0, 10)}>{formatDate(note.data.date)}</time> ·{' '}
             {readingMinutes(note.body)} min read
           </p>
           <h3>
             <a href={`/notes/${note.id}/`}>{note.data.title}</a>
           </h3>
-          <p class="muted">{note.data.summary}</p>
+          <p set:html={rich(note.data.summary)} />
         </li>
       ))
     }
@@ -58,7 +59,7 @@ const { notes } = Astro.props;
       column-gap: var(--space-l);
     }
 
-    .note .label {
+    .note .meta {
       grid-row: span 2;
       padding-block-start: 0.5em;
     }

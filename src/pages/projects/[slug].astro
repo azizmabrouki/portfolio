@@ -1,7 +1,8 @@
 ---
 /**
- * A case study as one drawing sheet: context and problem (Markdown body), the architecture
- * drawn from frontmatter, the key decisions with their trade-offs, numbers and stack.
+ * A case study as one drawing sheet: the 30-second brief, context and problem (Markdown
+ * body), the architecture drawn from frontmatter, the key decisions with their trade-offs
+ * (linked to the drawing), numbers and stack. A sheet index sticks to the top.
  */
 import { render, type CollectionEntry } from 'astro:content';
 import PageLayout from '@/layouts/PageLayout.astro';
@@ -9,7 +10,10 @@ import ArchitectureDiagram from '@/components/diagram/ArchitectureDiagram.astro'
 import DimensionLine from '@/components/drawing/DimensionLine.astro';
 import SectionMarker from '@/components/drawing/SectionMarker.astro';
 import TitleBlock from '@/components/drawing/TitleBlock.astro';
+import CaseBrief from '@/components/reading/CaseBrief.astro';
+import ContentsBar from '@/components/reading/ContentsBar.astro';
 import { getProjects } from '@/lib/content';
+import { plain, rich } from '@/lib/rich';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -26,8 +30,18 @@ interface Props {
 }
 
 const { project, previous, next } = Astro.props;
-const { Content } = await render(project);
+const { Content, headings } = await render(project);
 const data = project.data;
+
+// The sheet index: the Markdown body's sections, then the fixed ones.
+const contents = [
+  ...headings.filter((heading) => heading.depth === 2).map((heading) => ({ id: heading.slug, label: heading.text })),
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'decisions', label: 'Decisions' },
+  ...(data.numbers.length > 0 ? [{ id: 'numbers', label: 'Numbers' }] : []),
+  { id: 'stack', label: 'Stack' },
+  ...(data.differently ? [{ id: 'differently', label: 'Differently' }] : []),
+];
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const callouts = data.decisions.flatMap((decision, index) =>
@@ -42,15 +56,30 @@ const fields = [
 ];
 ---
 
-<PageLayout title={data.title} description={data.summary} type="article">
+<PageLayout title={data.title} description={plain(data.summary)} type="article">
   <article class="case container">
     <header class="case__head" style={`view-transition-name: sheet-${project.id}`}>
       <SectionMarker as="p" sheet="P" number={data.sheet} title="Case study" />
       <h1 style={`view-transition-name: title-${project.id}`}>{data.title}</h1>
-      <p class="lead prose">{data.summary}</p>
+      <p class="lead prose" set:html={rich(data.summary)} />
       <TitleBlock fields={fields} />
       {data.disclosure && <p class="case__disclosure annotation">{data.disclosure}</p>}
     </header>
+
+    {
+      data.brief && (
+        <CaseBrief
+          role={data.role}
+          company={data.company}
+          period={data.period}
+          problem={data.brief.problem}
+          result={data.brief.result}
+          numbers={data.numbers}
+        />
+      )
+    }
+
+    <ContentsBar items={contents} />
 
     <div class="case__body flow prose">
       <Content />
@@ -66,28 +95,40 @@ const fields = [
       <ol class="decisions" role="list">
         {
           data.decisions.map((decision, index) => (
-            <li class="decision" id={`decision-${pad(index + 1)}`}>
+            <li
+              class="decision"
+              id={`decision-${pad(index + 1)}`}
+              data-decision-node={decision.node}
+              data-decision-label={pad(index + 1)}
+            >
               <SectionMarker as="span" variant="bubble" sheet="D" number={pad(index + 1)} />
               <div class="decision__body">
                 <h3>{decision.title}</h3>
                 <dl>
-                  <div>
+                  <div class="decision__chose">
                     <dt>Chose</dt>
-                    <dd>{decision.chose}</dd>
+                    <dd set:html={rich(decision.chose)} />
                   </div>
                   <div>
                     <dt>Over</dt>
-                    <dd>{decision.over}</dd>
+                    <dd set:html={rich(decision.over)} />
                   </div>
                   <div>
                     <dt>Why</dt>
-                    <dd>{decision.why}</dd>
+                    <dd set:html={rich(decision.why)} />
                   </div>
                   <div class="decision__cost">
                     <dt>Trade-off</dt>
-                    <dd>{decision.tradeoff}</dd>
+                    <dd set:html={rich(decision.tradeoff)} />
                   </div>
                 </dl>
+                {decision.node && (
+                  <p>
+                    <button class="button button--text decision__show" type="button" data-show-on-drawing hidden>
+                      Show on the drawing <span aria-hidden="true">↑</span>
+                    </button>
+                  </p>
+                )}
               </div>
             </li>
           ))
@@ -173,6 +214,12 @@ const fields = [
   </article>
 </PageLayout>
 
+<script>
+  import { initDecisions } from '@/scripts/decisions';
+
+  initDecisions();
+</script>
+
 <style>
   .case {
     display: grid;
@@ -199,6 +246,13 @@ const fields = [
   .case__section {
     display: grid;
     gap: var(--space-m);
+  }
+
+  /* Anchors land below the sticky sheet index. */
+  .case :global(:is(h2, h3)),
+  .case__section,
+  .decision {
+    scroll-margin-block-start: 4.5rem;
   }
 
   .decisions {
@@ -250,11 +304,19 @@ const fields = [
     font-weight: 500;
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: var(--color-ink-muted);
+    color: var(--color-annotation);
   }
 
   .decision dd {
     margin: 0;
+  }
+
+  .decision__chose dd {
+    font-weight: 600;
+  }
+
+  .decision__show[hidden] {
+    display: none;
   }
 
   .decision__cost dt {
@@ -282,8 +344,8 @@ const fields = [
     font-variant-numeric: tabular-nums;
   }
 
-  .numbers__label {
-    color: var(--color-ink-muted);
+  .numbers__value {
+    color: var(--color-accent-text);
   }
 
   .chips {

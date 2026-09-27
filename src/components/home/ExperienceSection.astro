@@ -5,6 +5,8 @@
  */
 import SectionHead from '@/components/home/SectionHead.astro';
 import { credentials, education, languages, roles } from '@/config/experience';
+import { skillsOf } from '@/config/skills';
+import { rich } from '@/lib/rich';
 ---
 
 <section id="experience" class="section container" aria-labelledby="experience-title">
@@ -14,18 +16,19 @@ import { credentials, education, languages, roles } from '@/config/experience';
     <ol class="timeline" role="list">
       {
         roles.map((role) => (
-          <li class="role">
-            <p class="role__when label">
+          <li class="role" data-skills={skillsOf(role.stack)}>
+            <p class="role__when meta">
               {role.period}
               {role.mode && <span> · {role.mode}</span>}
             </p>
             <div class="role__body">
               <h3>{role.company}</h3>
               <p class="role__title">{role.role}</p>
-              <p>{role.summary}</p>
+              <p class="role__stack meta">{role.stack.join(' · ')}</p>
+              <p set:html={rich(role.summary)} />
               <ul class="bullets">
                 {role.highlights.map((highlight) => (
-                  <li>{highlight}</li>
+                  <li set:html={rich(highlight)} />
                 ))}
               </ul>
               {role.caseStudy && (
@@ -127,7 +130,10 @@ import { credentials, education, languages, roles } from '@/config/experience';
 
   .role__when {
     margin: 0;
-    color: var(--color-accent-text);
+  }
+
+  .role__stack {
+    color: var(--color-structure);
   }
 
   .role__body {
@@ -147,8 +153,6 @@ import { credentials, education, languages, roles } from '@/config/experience';
     gap: var(--space-3xs);
     margin: 0;
     padding-inline-start: 1.1em;
-    font-size: var(--step--1);
-    color: var(--color-ink-muted);
   }
 
   .bullets li::marker {

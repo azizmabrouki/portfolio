@@ -12,6 +12,7 @@ import SectionMarker from '@/components/drawing/SectionMarker.astro';
 import { stepPositions } from '@/animations/timing';
 import { floors } from '@/config/building';
 import { contactLinks, site } from '@/config/site';
+import { rich } from '@/lib/rich';
 
 const links = contactLinks();
 const [introAt = 0, ...floorAts] = stepPositions(floors.length);
@@ -84,15 +85,14 @@ const [introAt = 0, ...floorAts] = stepPositions(floors.length);
           >
             <SectionMarker as="p" number={floor.number} title={floor.layer} />
             <h2 id={`layer-${floor.id}-title`}>{floor.title}</h2>
-            {floor.lead && <p class="prose">{floor.lead}</p>}
+            {floor.lead && <p class="prose" set:html={rich(floor.lead)} />}
             {floor.items && (
               <ol class="items" role="list">
                 {floor.items.map((item, index) => (
                   <li>
                     <span class="items__n">{String(index + 1).padStart(2, '0')}</span>
                     <span>
-                      <strong>{item.title}</strong>
-                      {item.text ? ` ${item.text}` : ''}
+                      <strong>{item.title}</strong> {item.text && <Fragment set:html={rich(item.text)} />}
                     </span>
                   </li>
                 ))}
@@ -224,7 +224,7 @@ const [introAt = 0, ...floorAts] = stepPositions(floors.length);
     padding-block-start: 0.2em;
     font-family: var(--font-mono);
     font-size: var(--text-label);
-    color: var(--color-ink-muted);
+    color: var(--color-annotation);
   }
 
   .items strong {
@@ -263,7 +263,7 @@ const [introAt = 0, ...floorAts] = stepPositions(floors.length);
     inset-block: 0;
     inset-inline-start: -0.25px;
     inline-size: var(--line-regular);
-    background: var(--color-accent);
+    background: var(--color-structure);
     transform: scaleY(0);
     transform-origin: top center;
   }
@@ -289,7 +289,7 @@ const [introAt = 0, ...floorAts] = stepPositions(floors.length);
     font-size: var(--text-label);
     font-weight: 500;
     letter-spacing: 0.08em;
-    color: var(--color-ink-muted);
+    color: var(--color-structure);
     text-decoration: none;
     transition: color var(--duration-quick) var(--ease-out);
   }

@@ -3,6 +3,7 @@
  * Opening of a home page section: sheet marker, heading, optional lead.
  */
 import SectionMarker from '@/components/drawing/SectionMarker.astro';
+import { rich } from '@/lib/rich';
 
 interface Props {
   number: string;
@@ -17,8 +18,8 @@ const { number, marker, id, title, lead } = Astro.props;
 
 <header class="section-head">
   <SectionMarker as="p" sheet="B" number={number} title={marker} />
-  <h2 id={id}>{title}</h2>
-  {lead && <p class="lead prose">{lead}</p>}
+  <h2 id={id} set:html={rich(title)} />
+  {lead && <p class="lead prose" set:html={rich(lead)} />}
 </header>
 
 <style>
@@ -32,7 +33,4 @@ const { number, marker, id, title, lead } = Astro.props;
     max-inline-size: 22ch;
   }
 
-  .lead {
-    color: var(--color-ink-muted);
-  }
 </style>

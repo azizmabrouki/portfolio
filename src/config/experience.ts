@@ -1,6 +1,7 @@
 /**
  * Experience, education and certifications for the timeline on the home page.
  * Newest first. Mirrors the LinkedIn profile; edit both together.
+ * Summaries and highlights take the ==highlight==, **metric** and [[term]] markup (lib/rich.ts).
  */
 
 export interface Role {
@@ -11,6 +12,8 @@ export interface Role {
   start: string;
   end: string;
   mode?: string;
+  /** Main technologies, shown under the role and used by the stack filter. */
+  stack: string[];
   summary: string;
   highlights: string[];
   /** Slug of the matching case study, if there is one. */
@@ -32,13 +35,14 @@ export const roles: Role[] = [
     start: '2026-02',
     end: '2026-08',
     mode: 'Hybrid',
+    stack: ['Laravel', 'PHP', 'Stripe', 'Python', 'Docker', 'Kubernetes', 'Grafana', 'CI/CD'],
     summary:
-      'Designed and built StudioLabCloud, a SaaS platform for selling and managing cloud services to French-speaking clients. I owned the whole chain: architecture, interface design, implementation, tests and deployment.',
+      'Designed and built StudioLabCloud, a SaaS platform for selling and managing cloud services to French-speaking clients. I ==owned the whole chain==: architecture, interface design, implementation, tests and deployment.',
     highlights: [
-      'Modular Laravel monolith with explicit module contracts, DTOs and architecture decision records',
-      'Recurring Stripe billing in several currencies, with idempotent webhook processing',
-      'Support ticketing, client messaging and video calls, plus a Python RAG assistant with human handover',
-      '609 automated tests, 25 OpenAPI specs, CI/CD, Kubernetes and Grafana; 3 releases over 6 Scrum sprints',
+      'A [[modular monolith]] in Laravel, with explicit module contracts, DTOs and [[architecture decision records|adr]]',
+      'Recurring Stripe billing in several currencies, with [[idempotent]] webhook processing: ==a replayed event never charges twice==',
+      'Support ticketing, client messaging and video calls, plus a Python [[RAG]] assistant with human handover',
+      '**609 automated tests**, **25** [[OpenAPI]] specs, [[CI/CD]], Kubernetes and Grafana; **3 releases** over 6 Scrum sprints',
     ],
     caseStudy: 'studiolabcloud',
   },
@@ -48,13 +52,14 @@ export const roles: Role[] = [
     period: 'Dec 2024 – Dec 2025',
     start: '2024-12',
     end: '2025-12',
+    stack: ['Java', 'Spring Boot', 'Spring Security', 'PostgreSQL', 'Docker'],
     summary:
       'An AI platform that detects anomalies in plants, built by an agile startup team of AI engineers and developers.',
     highlights: [
-      'Designed and built 10+ Spring Boot REST endpoints for the platform’s back end',
-      'Secured the API with JWT authentication and role-based access control',
-      'Containerized the back-end services with Docker: about 40% fewer environment-related deployment issues',
-      'Tuned PostgreSQL queries: average API response time down 20–30%',
+      'Designed and built **10+** Spring Boot REST endpoints for the platform’s back end',
+      'Secured the API with [[JWT]] authentication and [[role-based access control|rbac]]',
+      'Containerized the back-end services with Docker: **about 40% fewer** environment-related deployment issues',
+      'Tuned PostgreSQL queries: average API response time ==down **20–30%**==',
     ],
     caseStudy: 'hma4tech',
   },
@@ -65,10 +70,11 @@ export const roles: Role[] = [
     start: '2023-07',
     end: '2023-09',
     mode: 'On-site',
-    summary: 'An internal web app for planning and coordinating meetings, used by 20+ staff.',
+    stack: ['Java', 'Spring Boot', 'Angular'],
+    summary: 'An internal web app for planning and coordinating meetings, used by **20+ staff**.',
     highlights: [
       'Back-end business logic in Spring Boot, exposed as REST APIs to an Angular front end',
-      'Automated meeting scheduling and email notifications: about 30% less manual coordination',
+      'Automated meeting scheduling and email notifications: **about 30% less** manual coordination',
       'Email services that generate and send meeting invitations and summaries',
     ],
   },

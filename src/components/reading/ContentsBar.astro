@@ -1,0 +1,89 @@
+---
+/**
+ * The sheet index: a slim bar that sticks to the top of a case study or a note, lists its
+ * sections, marks the one being read, and fills a line like a dimension line as you go.
+ * Without JavaScript it is a plain list of links.
+ */
+interface Props {
+  items: { id: string; label: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="contents" aria-label="On this page" data-contents>
+  <ol role="list">
+    {
+      items.map((item) => (
+        <li>
+          <a href={`#${item.id}`} data-contents-link={item.id}>
+            {item.label}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+  <span class="contents__line" aria-hidden="true"><span data-contents-fill></span></span>
+</nav>
+
+<script>
+  import { initContents } from '@/scripts/contents';
+
+  initContents();
+</script>
+
+<style>
+  .contents {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 4;
+    background: var(--color-paper);
+  }
+
+  ol {
+    display: flex;
+    gap: var(--space-m);
+    margin: 0;
+    padding: var(--space-2xs) 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  ol::-webkit-scrollbar {
+    display: none;
+  }
+
+  a {
+    display: inline-block;
+    padding-block: var(--space-3xs);
+    text-decoration: none;
+  }
+
+  a[aria-current='location'] {
+    color: var(--color-accent-text);
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: var(--line-strong);
+  }
+
+  .contents__line {
+    display: block;
+    block-size: var(--line-thin);
+    background: var(--color-line-faint);
+  }
+
+  .contents__line span {
+    display: block;
+    block-size: var(--line-strong);
+    margin-block-start: -0.5px;
+    background: var(--color-structure);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+</style>

@@ -5,6 +5,8 @@
  * - In-page links (the header's sections) scroll smoothly and move keyboard focus.
  * - Where the signature motion runs (MOTION_QUERY: desktops): section markers count up
  *   (A / 00 → A / 03) the first time they scroll into view. Phones keep them still.
+ * - Also on desktops: highlighted phrases (<mark>) sweep their band in from the left the
+ *   first time they scroll into view.
  * - Drawing surfaces show the pointer's coordinates, like a CAD readout (fine pointers only).
  */
 import { MOTION_QUERY } from './query';
@@ -40,6 +42,27 @@ function countUpMarkers(): void {
     { threshold: 1 },
   );
   counters.forEach((counter) => observer.observe(counter));
+}
+
+function sweepMarks(): void {
+  // Only marks still below the fold: what is on screen at load is never redrawn.
+  const marks = [...document.querySelectorAll<HTMLElement>('mark')].filter(
+    (mark) => mark.getBoundingClientRect().top > window.innerHeight,
+  );
+  if (marks.length === 0) return;
+  for (const mark of marks) mark.classList.add('is-pending');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        entry.target.classList.remove('is-pending');
+      }
+    },
+    { rootMargin: '0px 0px -12% 0px', threshold: 1 },
+  );
+  marks.forEach((mark) => observer.observe(mark));
 }
 
 function smoothInPageLinks(): void {
@@ -101,6 +124,9 @@ function coordinates(): void {
 
 export function initDetails(): void {
   smoothInPageLinks();
-  if (window.matchMedia(MOTION_QUERY).matches) countUpMarkers();
+  if (window.matchMedia(MOTION_QUERY).matches) {
+    countUpMarkers();
+    sweepMarks();
+  }
   coordinates();
 }
