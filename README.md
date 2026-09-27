@@ -56,7 +56,7 @@ So the italic face went (it served one line of text), fonts stay preloaded, and 
 
 **Details that stay out of the way.** Section markers count up the first time they appear, links draw a stronger underline from the left on hover, and drawing surfaces show the pointer's coordinates like a CAD readout (desktop, fine pointer only). All of it is skipped with reduced motion.
 
-**Colour has jobs.** Ink is the text. Deep navy (#14213d, 13.3:1) carries structure: links, navigation, sheet codes. Orange carries emphasis: key numbers, trade-offs, the section being read; vermilion stays for emphasis lines. Umber carries annotations: labels, dates, captions. A sand band highlights one or two key phrases per paragraph. Every text colour passes WCAG AA in both themes, and ink and navy pass AAA.
+**Colour has jobs.** Ink is the text. Blueprint blue (#1c3559, 10.3:1) carries structure: links, navigation, sheet codes. Orange carries emphasis: key numbers, trade-offs, the section being read; vermilion stays for emphasis lines. Umber carries annotations: labels, dates, captions. A sand band highlights one or two key phrases per paragraph. Every text colour passes WCAG AA in both themes, and ink and blue pass AAA.
 
 **Key words are marked in the content, not in components.** Short texts in frontmatter and config take a tiny markup, turned into HTML by `src/lib/rich.ts` after escaping: `==key phrase==` for the highlight band, `**609 tests**` for a metric, `[[RAG]]` or `[[shown words|term-id]]` for a glossary term. Markdown bodies use `<mark>`, `**bold**` and the term button directly.
 
@@ -150,5 +150,5 @@ Pushes to `main` deploy to production; other branches get a preview URL, posted 
 | 3. Content and pages | Home sections, three case studies, first note, 404, Open Graph image, sitemap, robots.txt (CV PDF when ready) | Done |
 | 4. Signature motion | Blueprint cards, View Transitions from card to case study, diagrams that assemble with decision markers | In review |
 | 5. Polish | Dark mode with a switch, drawn link underlines, counting markers, coordinate readout, copy-email button, smooth in-page links | In review |
-| 5.5 UI refinement | Navy, umber and orange with one job each; highlighted key words and metrics; glossary, 30-second briefs, sheet index, decisions linked to drawings, stack filter, compact header | In review |
+| 5.5 UI refinement | Blueprint blue, umber and orange with one job each; highlighted key words and metrics; glossary, 30-second briefs, sheet index, decisions linked to drawings, stack filter, compact header | In review |
 | 6. Launch | Address, analytics, links from LinkedIn, CV and GitHub | Prepared; needs the Cloudflare dashboard (below) |
