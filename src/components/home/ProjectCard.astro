@@ -1,0 +1,143 @@
+---
+/**
+ * A case study as a drawing sheet, with a second sheet peeking out behind it.
+ * The whole card is clickable through the heading link, which carries the accessible name.
+ */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, sheet, period, role, company, stack } = project.data;
+const href = `/projects/${project.id}/`;
+---
+
+<article class="card">
+  <p class="card__top label">
+    <span>Sheet P / {sheet}</span>
+    <span>{period}</span>
+  </p>
+  <h3 class="card__title">
+    <a href={href}>{title}</a>
+  </h3>
+  <p class="card__summary">{summary}</p>
+  <dl class="card__block">
+    <div>
+      <dt>Role</dt>
+      <dd>{company ? `${role}, ${company}` : role}</dd>
+    </div>
+    <div>
+      <dt>Stack</dt>
+      <dd>{stack.slice(0, 4).join(' · ')}</dd>
+    </div>
+  </dl>
+  <p class="card__cta label" aria-hidden="true">Open the sheet <span>→</span></p>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-paper-raised);
+    /* the sheet underneath */
+    box-shadow:
+      6px 6px 0 -1px var(--color-paper),
+      6px 6px 0 0 var(--color-ink);
+    transition:
+      transform var(--duration-moderate) var(--ease-out),
+      box-shadow var(--duration-moderate) var(--ease-out);
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: translate(-3px, -3px);
+    box-shadow:
+      9px 9px 0 -1px var(--color-paper),
+      9px 9px 0 0 var(--color-ink);
+  }
+
+  .card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin: 0;
+  }
+
+  .card__title {
+    font-size: var(--step-3);
+  }
+
+  .card__title a {
+    text-decoration: none;
+  }
+
+  /* Stretch the heading link over the whole card. */
+  .card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .card__title a:focus-visible {
+    outline: none;
+  }
+
+  .card:focus-within {
+    outline: var(--line-strong) solid var(--color-focus);
+    outline-offset: 4px;
+  }
+
+  .card__summary {
+    color: var(--color-ink-muted);
+  }
+
+  .card__block {
+    display: grid;
+    gap: var(--line-thin);
+    margin: auto 0 0;
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-ink);
+    font-size: var(--step--1);
+  }
+
+  .card__block div {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: var(--space-2xs);
+    padding: var(--space-3xs) var(--space-2xs);
+    background: var(--color-paper-raised);
+  }
+
+  .card__block dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    padding-block-start: 0.15em;
+  }
+
+  .card__block dd {
+    margin: 0;
+  }
+
+  .card__cta {
+    margin: 0;
+    color: var(--color-accent-text);
+  }
+
+  .card__cta span {
+    display: inline-block;
+    transition: transform var(--duration-quick) var(--ease-out);
+  }
+
+  .card:hover .card__cta span {
+    transform: translateX(0.3em);
+  }
+</style>

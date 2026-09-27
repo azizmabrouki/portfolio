@@ -1,0 +1,80 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import PageLayout from '@/layouts/PageLayout.astro';
+import SectionMarker from '@/components/drawing/SectionMarker.astro';
+import { formatDate, getNotes, readingMinutes } from '@/lib/content';
+import { site } from '@/config/site';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  // Oldest note is N / 01, the next N / 02, and so on.
+  return notes.map((note, index) => ({
+    params: { slug: note.id },
+    props: { note, number: String(notes.length - index).padStart(2, '0') },
+  }));
+}
+
+interface Props {
+  note: CollectionEntry<'notes'>;
+  number: string;
+}
+
+const { note, number } = Astro.props;
+const { Content } = await render(note);
+const { title, summary, date, tags } = note.data;
+---
+
+<PageLayout title={title} description={summary} type="article" publishedTime={date}>
+  <article class="note container">
+    <header class="note__head">
+      <SectionMarker as="p" sheet="N" number={number} title="Note" />
+      <h1>{title}</h1>
+      <p class="lead">{summary}</p>
+      <p class="label">
+        <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time> · {readingMinutes(note.body)} min
+        read{tags.length > 0 && ` · ${tags.join(', ')}`}
+      </p>
+    </header>
+
+    <div class="flow prose">
+      <Content />
+    </div>
+
+    <footer class="note__foot">
+      <p>
+        Written by {site.name}. Questions or a different view? <a href="/#contact">Get in touch</a>.
+      </p>
+      <p><a href="/#notes">← All notes</a></p>
+    </footer>
+  </article>
+</PageLayout>
+
+<style>
+  .note {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-xl) var(--space-3xl);
+  }
+
+  .note__head {
+    display: grid;
+    gap: var(--space-m);
+    max-inline-size: 48rem;
+  }
+
+  h1 {
+    font-size: var(--step-5);
+  }
+
+  .lead {
+    color: var(--color-ink-muted);
+  }
+
+  .note__foot {
+    display: grid;
+    gap: var(--space-s);
+    max-inline-size: var(--measure);
+    padding-block-start: var(--space-m);
+    border-block-start: var(--line-thin) solid var(--color-ink);
+  }
+</style>

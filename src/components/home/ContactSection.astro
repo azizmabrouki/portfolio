@@ -1,0 +1,71 @@
+---
+import SectionHead from '@/components/home/SectionHead.astro';
+import TitleBlock from '@/components/drawing/TitleBlock.astro';
+import { site } from '@/config/site';
+import { languages } from '@/config/experience';
+
+const { email, linkedin, github, cv } = site.links;
+---
+
+<section id="contact" class="section contact" aria-labelledby="contact-title">
+  <div class="container">
+    <SectionHead
+      number="05"
+      marker="Contact"
+      id="contact-title"
+      title="Hiring? Let’s talk."
+      lead="I’m looking for a junior software engineer role where I can grow toward architecture, in Tunisia, in Europe or remote. Email is the fastest way to reach me."
+    />
+
+    {
+      email && (
+        <p class="contact__email">
+          <a href={`mailto:${email}`}>{email}</a>
+        </p>
+      )
+    }
+
+    <ul class="contact__links cluster" role="list">
+      {linkedin && <li><a href={linkedin} rel="me">LinkedIn</a></li>}
+      {github && <li><a href={github} rel="me">GitHub</a></li>}
+      {cv && <li><a href={cv}>CV (PDF)</a></li>}
+    </ul>
+
+    <TitleBlock
+      class="contact__block"
+      fields={[
+        { label: 'Based in', value: site.location },
+        { label: 'Open to', value: 'Tunisia · Europe · Remote' },
+        { label: 'Languages', value: languages.join(' · ') },
+        { label: 'Graduating', value: 'ESPRIT, 2026' },
+      ]}
+    />
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding-block-end: var(--space-3xl);
+  }
+
+  .contact__email {
+    margin-block-end: var(--space-m);
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: var(--leading-snug);
+    overflow-wrap: anywhere;
+  }
+
+  .contact__links {
+    --cluster-gap: var(--space-2xs) var(--space-l);
+
+    margin: 0 0 var(--space-xl);
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+</style>

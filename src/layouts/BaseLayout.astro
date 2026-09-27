@@ -8,12 +8,26 @@ import { MOTION_QUERY } from '@/animations/query';
 interface Props {
   title?: string;
   description?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  /** Social preview image, 1200 × 630, under public/. */
+  image?: string;
+  imageAlt?: string;
 }
 
-const { title, description = site.description } = Astro.props;
+const {
+  title,
+  description = site.description,
+  type = 'website',
+  publishedTime,
+  image = '/og-image.png',
+  imageAlt = `${site.name}: ${site.role}. A building drawn as a software architecture.`,
+} = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.role}`;
 // Canonical and og:url need the real production URL, so they only render once `site` is set.
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+// Social networks need an absolute image URL.
+const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
 ---
 
 <!doctype html>
@@ -28,11 +42,19 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <meta name="theme-color" content="#efeae1" />
     <meta name="generator" content={Astro.generator} />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     {canonical && <meta property="og:url" content={canonical} />}
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap.xml" />
 
     {/* Marks <html> with `motion-ok` before first paint, so the CSS picks the motion or the
         still layout without a flash. Mirrors src/animations/query.ts. `motion-off` is set

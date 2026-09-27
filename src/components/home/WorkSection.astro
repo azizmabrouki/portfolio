@@ -1,0 +1,45 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ProjectCard from '@/components/home/ProjectCard.astro';
+import SectionHead from '@/components/home/SectionHead.astro';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+}
+
+const { projects } = Astro.props;
+---
+
+<section id="work" class="section container" aria-labelledby="work-title">
+  <SectionHead
+    number="01"
+    marker="Selected work"
+    id="work-title"
+    title="Case studies"
+    lead="Each one is a sheet: the context, the architecture drawn out, and the decisions with what they cost."
+  />
+  <ul class="cards" role="list">
+    {
+      projects.map((project) => (
+        <li>
+          <ProjectCard project={project} />
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: var(--space-l);
+    margin: 0;
+    padding: 0 6px 6px 0;
+    list-style: none;
+  }
+
+  .cards li {
+    display: grid;
+  }
+</style>

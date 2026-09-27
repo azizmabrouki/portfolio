@@ -1,33 +1,41 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import Button from '@/components/Button.astro';
-import TitleBlock from '@/components/drawing/TitleBlock.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
 import HeroSequence from '@/components/hero/HeroSequence.astro';
+import WorkSection from '@/components/home/WorkSection.astro';
+import PrinciplesSection from '@/components/home/PrinciplesSection.astro';
+import ExperienceSection from '@/components/home/ExperienceSection.astro';
+import NotesSection from '@/components/home/NotesSection.astro';
+import ContactSection from '@/components/home/ContactSection.astro';
+import { getNotes, getProjects } from '@/lib/content';
 import { site } from '@/config/site';
+
+const projects = await getProjects();
+const notes = await getNotes();
+
+// Structured data: tells search engines who the site is about.
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: 'Software engineer',
+  description: site.description,
+  url: Astro.site?.href,
+  email: site.links.email ? `mailto:${site.links.email}` : undefined,
+  address: { '@type': 'PostalAddress', addressLocality: 'Tunis', addressCountry: 'TN' },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'ESPRIT' },
+  sameAs: [site.links.linkedin, site.links.github].filter(Boolean),
+};
 ---
 
-<BaseLayout>
-  <main id="main">
-    <HeroSequence />
+<PageLayout home>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+  </Fragment>
 
-    <footer class="footer container">
-      <TitleBlock
-        fields={[
-          { label: 'Project', value: 'Portfolio' },
-          { label: 'Phase', value: '02 — Hero' },
-          { label: 'Status', value: 'Motion drawn' },
-          { label: 'Based', value: site.availability },
-        ]}
-      />
-      <p><Button href="/style/" variant="text" arrow>See the drawing standards</Button></p>
-    </footer>
-  </main>
-</BaseLayout>
-
-<style>
-  .footer {
-    display: grid;
-    gap: var(--space-m);
-    padding-block: var(--space-xl) var(--space-2xl);
-  }
-</style>
+  <HeroSequence />
+  <WorkSection projects={projects} />
+  <PrinciplesSection />
+  <ExperienceSection />
+  {notes.length > 0 && <NotesSection notes={notes.slice(0, 3)} />}
+  <ContactSection />
+</PageLayout>

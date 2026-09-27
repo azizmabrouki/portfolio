@@ -1,0 +1,330 @@
+---
+/**
+ * A case study as one drawing sheet: context and problem (Markdown body), the architecture
+ * drawn from frontmatter, the key decisions with their trade-offs, numbers and stack.
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import PageLayout from '@/layouts/PageLayout.astro';
+import ArchitectureDiagram from '@/components/diagram/ArchitectureDiagram.astro';
+import DimensionLine from '@/components/drawing/DimensionLine.astro';
+import SectionMarker from '@/components/drawing/SectionMarker.astro';
+import TitleBlock from '@/components/drawing/TitleBlock.astro';
+import { getProjects } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, index) => ({
+    params: { slug: project.id },
+    props: { project, previous: projects[index - 1], next: projects[index + 1] },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  previous?: CollectionEntry<'projects'> | undefined;
+  next?: CollectionEntry<'projects'> | undefined;
+}
+
+const { project, previous, next } = Astro.props;
+const { Content } = await render(project);
+const data = project.data;
+
+const fields = [
+  { label: 'Role', value: data.role },
+  ...(data.company ? [{ label: 'Company', value: data.company }] : []),
+  { label: 'Period', value: data.period },
+  { label: 'Sheet', value: `P / ${data.sheet}` },
+];
+---
+
+<PageLayout title={data.title} description={data.summary} type="article">
+  <article class="case container">
+    <header class="case__head">
+      <SectionMarker as="p" sheet="P" number={data.sheet} title="Case study" />
+      <h1>{data.title}</h1>
+      <p class="lead prose">{data.summary}</p>
+      <TitleBlock fields={fields} />
+      {data.disclosure && <p class="case__disclosure annotation">{data.disclosure}</p>}
+    </header>
+
+    <div class="case__body flow prose">
+      <Content />
+    </div>
+
+    <section class="case__section" aria-labelledby="architecture">
+      <h2 id="architecture">Architecture</h2>
+      <ArchitectureDiagram spec={data.diagram} id={`${project.id}-diagram`} />
+    </section>
+
+    <section class="case__section" aria-labelledby="decisions">
+      <h2 id="decisions">Key decisions</h2>
+      <ol class="decisions" role="list">
+        {
+          data.decisions.map((decision, index) => (
+            <li class="decision">
+              <SectionMarker as="span" variant="bubble" sheet="D" number={String(index + 1).padStart(2, '0')} />
+              <div class="decision__body">
+                <h3>{decision.title}</h3>
+                <dl>
+                  <div>
+                    <dt>Chose</dt>
+                    <dd>{decision.chose}</dd>
+                  </div>
+                  <div>
+                    <dt>Over</dt>
+                    <dd>{decision.over}</dd>
+                  </div>
+                  <div>
+                    <dt>Why</dt>
+                    <dd>{decision.why}</dd>
+                  </div>
+                  <div class="decision__cost">
+                    <dt>Trade-off</dt>
+                    <dd>{decision.tradeoff}</dd>
+                  </div>
+                </dl>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    {
+      data.numbers.length > 0 && (
+        <section class="case__section" aria-labelledby="numbers">
+          <h2 id="numbers">In numbers</h2>
+          <ul class="numbers" role="list">
+            {data.numbers.map((number) => (
+              <li>
+                <DimensionLine />
+                <p class="numbers__value">{number.value}</p>
+                <p class="numbers__label">{number.label}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section class="case__section" aria-labelledby="stack">
+      <h2 id="stack">Stack</h2>
+      <ul class="chips" role="list">
+        {data.stack.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    {
+      data.differently && (
+        <section class="case__section" aria-labelledby="differently">
+          <h2 id="differently">What I would do differently</h2>
+          <p class="prose">{data.differently}</p>
+        </section>
+      )
+    }
+
+    {
+      data.links.length > 0 && (
+        <ul class="case__links cluster" role="list">
+          {data.links.map((link) => (
+            <li>
+              <a class="button button--secondary" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <nav class="case__nav" aria-label="Other case studies">
+      {
+        previous ? (
+          <a href={`/projects/${previous.id}/`} rel="prev">
+            <span class="label">← Previous sheet</span>
+            <span>{previous.data.title}</span>
+          </a>
+        ) : (
+          <a href="/#work">
+            <span class="label">← All work</span>
+            <span>Back to the case studies</span>
+          </a>
+        )
+      }
+      {
+        next ? (
+          <a href={`/projects/${next.id}/`} rel="next">
+            <span class="label">Next sheet →</span>
+            <span>{next.data.title}</span>
+          </a>
+        ) : (
+          <a href="/#contact">
+            <span class="label">Contact →</span>
+            <span>Let’s talk</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</PageLayout>
+
+<style>
+  .case {
+    display: grid;
+    gap: var(--space-2xl);
+    padding-block: var(--space-xl) var(--space-3xl);
+  }
+
+  .case__head {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  h1 {
+    font-size: var(--step-6);
+    max-inline-size: 18ch;
+  }
+
+  .case__disclosure {
+    padding-inline-start: var(--space-s);
+    border-inline-start: var(--line-regular) solid var(--color-accent);
+    max-inline-size: var(--measure);
+  }
+
+  .case__section {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .decisions {
+    display: grid;
+    gap: var(--space-l);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .decision {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-s);
+    align-items: start;
+  }
+
+  .decision__body {
+    display: grid;
+    gap: var(--space-s);
+    max-inline-size: 52rem;
+  }
+
+  .decision dl {
+    display: grid;
+    gap: var(--line-thin);
+    margin: 0;
+    border: var(--line-thin) solid var(--color-ink);
+    background: var(--color-ink);
+  }
+
+  .decision dl div {
+    display: grid;
+    gap: var(--space-3xs) var(--space-s);
+    padding: var(--space-2xs) var(--space-xs);
+    background: var(--color-paper-raised);
+  }
+
+  @media (min-width: 720px) {
+    .decision dl div {
+      grid-template-columns: 7rem minmax(0, 1fr);
+    }
+  }
+
+  .decision dt {
+    padding-block-start: 0.2em;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  .decision dd {
+    margin: 0;
+  }
+
+  .decision__cost dt {
+    color: var(--color-accent-text);
+  }
+
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-l);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .numbers li {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .numbers__value {
+    font-family: var(--font-display);
+    font-size: var(--step-5);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .numbers__label {
+    color: var(--color-ink-muted);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chips li {
+    padding: var(--space-3xs) var(--space-xs);
+    border: var(--line-thin) solid var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .case__links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .case__nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-m);
+    padding-block-start: var(--space-l);
+    border-block-start: var(--line-thin) solid var(--color-ink);
+  }
+
+  .case__nav a {
+    display: grid;
+    gap: var(--space-3xs);
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    text-decoration: none;
+  }
+
+  .case__nav a:last-child {
+    text-align: end;
+  }
+
+  .case__nav a:hover span:last-child {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+  }
+</style>

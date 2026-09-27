@@ -282,3 +282,77 @@ a:hover {
   background-size: var(--grid-cell) var(--grid-cell);
   background-position: calc(var(--grid-cell) / -2) calc(var(--grid-cell) / -2);
 }
+
+/* ─── Page sections ───────────────────────────────────────────────────────── */
+.section {
+  padding-block-start: var(--space-3xl);
+  scroll-margin-block-start: var(--space-s);
+}
+
+/* ─── Long-form text (Markdown bodies of case studies and notes) ──────────── */
+.flow > * + * {
+  margin-block-start: var(--flow-space, 1em);
+}
+
+.flow > :is(h2, h3) {
+  --flow-space: var(--space-l);
+}
+
+.flow > :is(h2, h3) + * {
+  --flow-space: var(--space-2xs);
+}
+
+.flow h2 {
+  font-size: var(--step-3);
+}
+
+.flow h3 {
+  font-size: var(--step-2);
+}
+
+.flow :is(ul, ol) {
+  padding-inline-start: 1.25em;
+}
+
+.flow li + li {
+  margin-block-start: 0.4em;
+}
+
+.flow li::marker {
+  color: var(--color-accent);
+}
+
+.flow strong {
+  font-weight: 600;
+}
+
+.flow blockquote {
+  margin-inline: 0;
+  padding-inline-start: var(--space-s);
+  border-inline-start: var(--line-regular) solid var(--color-accent);
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+}
+
+.flow pre {
+  padding: var(--space-s);
+  overflow-x: auto;
+  border: var(--line-thin) solid var(--color-line-faint);
+  font-size: var(--step--1);
+  line-height: 1.5;
+}
+
+/* Code blocks: Shiki's css-variables theme, coloured from the palette. */
+:root {
+  --astro-code-foreground: var(--color-ink);
+  --astro-code-background: var(--color-paper-raised);
+  --astro-code-token-constant: var(--color-accent-text);
+  --astro-code-token-string: var(--color-ink);
+  --astro-code-token-comment: var(--color-ink-muted);
+  --astro-code-token-keyword: var(--color-accent-text);
+  --astro-code-token-parameter: var(--color-ink);
+  --astro-code-token-function: var(--color-ink);
+  --astro-code-token-string-expression: var(--color-ink);
+  --astro-code-token-punctuation: var(--color-ink-muted);
+  --astro-code-token-link: var(--color-accent-text);
+}

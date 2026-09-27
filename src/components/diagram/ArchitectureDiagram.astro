@@ -1,0 +1,279 @@
+---
+/**
+ * An architecture diagram in the drawing vocabulary: boxes, dashed boundaries, orthogonal
+ * arrows with small labels. The layout comes from src/lib/diagram.ts; the data from a
+ * case study's frontmatter. Parts carry data-diagram-part so Phase 4 can draw them on.
+ *
+ * Wide drawings scroll sideways on small screens, and the same information is always
+ * available as a plain list under the drawing.
+ */
+import { describeEdges, layoutDiagram, toPath, type DiagramSpec, type PlacedNode } from '@/lib/diagram';
+
+interface Props {
+  spec: DiagramSpec;
+  /** Unique on the page: prefixes the SVG ids. */
+  id: string;
+  figure?: string;
+}
+
+const { spec, id, figure = '1' } = Astro.props;
+const layout = layoutDiagram(spec);
+const pad = 24;
+const viewBox = `${-pad} ${-pad / 2} ${layout.width + pad * 2} ${layout.height + pad}`;
+const titleId = `${id}-title`;
+const descId = `${id}-desc`;
+const arrowId = `${id}-arrow`;
+const lines = describeEdges(spec);
+
+/** A database drawn as a cylinder: body, then the front half of the top ellipse. */
+const cylinder = (node: PlacedNode): { body: string; rim: string } => {
+  const e = 8;
+  const r = node.w / 2;
+  return {
+    body: `M${node.x} ${node.y + e} a${r} ${e} 0 0 1 ${node.w} 0 v${node.h - 2 * e} a${r} ${e} 0 0 1 ${-node.w} 0 Z`,
+    rim: `M${node.x} ${node.y + e} a${r} ${e} 0 0 0 ${node.w} 0`,
+  };
+};
+---
+
+<figure class="diagram" data-diagram>
+  <div class="diagram__scroll" tabindex="0" role="region" aria-label={`${spec.title}: drawing, scrolls sideways on small screens`}>
+    <svg
+      viewBox={viewBox}
+      role="img"
+      aria-labelledby={`${titleId} ${descId}`}
+      style={`--diagram-min: ${Math.round((layout.width + pad * 2) * 0.62)}px`}
+    >
+      <title id={titleId}>{spec.title}</title>
+      <desc id={descId}>{spec.description}</desc>
+      <defs>
+        <marker
+          id={arrowId}
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="8"
+          markerHeight="8"
+          markerUnits="userSpaceOnUse"
+          orient="auto-start-reverse"
+        >
+          <path d="M1 1.5 L9 5 L1 8.5" class="diagram__arrowhead"></path>
+        </marker>
+      </defs>
+
+      {
+        layout.groups.map((group) => (
+          <g class="diagram__group" data-diagram-part="group">
+            <rect x={group.x} y={group.y} width={group.w} height={group.h} />
+            <text x={group.x + 12} y={group.y + 19} class="diagram__group-label">
+              {group.label.toUpperCase()}
+            </text>
+          </g>
+        ))
+      }
+
+      {
+        layout.nodes.map((node) => {
+          const centreX = node.x + node.w / 2;
+          const labelY = node.note ? node.y + node.h / 2 - 1 : node.y + node.h / 2 + 5;
+          const shape = node.kind === 'store' ? cylinder(node) : undefined;
+          return (
+            <g
+              class:list={['diagram__node', `diagram__node--${node.kind}`, { 'diagram__node--accent': node.accent }]}
+              data-diagram-part="node"
+            >
+              {shape ? (
+                <>
+                  <path d={shape.body} class="diagram__box" />
+                  <path d={shape.rim} class="diagram__detail" />
+                </>
+              ) : (
+                <rect x={node.x} y={node.y} width={node.w} height={node.h} class="diagram__box" />
+              )}
+              {node.kind === 'client' && (
+                <line x1={node.x} y1={node.y + 9} x2={node.x + node.w} y2={node.y + 9} class="diagram__detail" />
+              )}
+              {node.kind === 'service' && (
+                <line x1={node.x + 7} y1={node.y} x2={node.x + 7} y2={node.y + node.h} class="diagram__detail" />
+              )}
+              <text x={centreX} y={labelY} text-anchor="middle" class="diagram__label">
+                {node.label}
+              </text>
+              {node.note && (
+                <text x={centreX} y={labelY + 17} text-anchor="middle" class="diagram__note">
+                  {node.note.toUpperCase()}
+                </text>
+              )}
+            </g>
+          );
+        })
+      }
+
+      {
+        layout.edges.map((edge) => (
+          <g class:list={['diagram__edge', { 'diagram__edge--dashed': edge.dashed }]} data-diagram-part="edge">
+            <path d={toPath(edge.points)} marker-end={`url(#${arrowId})`} />
+            {edge.label && (
+              <text x={edge.labelAt.x} y={edge.labelAt.y} text-anchor={edge.labelAt.anchor} class="diagram__edge-label">
+                {edge.label}
+              </text>
+            )}
+          </g>
+        ))
+      }
+    </svg>
+  </div>
+
+  <figcaption>
+    <span class="label">Fig. {figure}</span>
+    <span>{spec.description}</span>
+  </figcaption>
+
+  <details class="diagram__text">
+    <summary>Read the drawing as a list</summary>
+    <ul>
+      {lines.map((line) => <li>{line}</li>)}
+    </ul>
+  </details>
+</figure>
+
+<style>
+  .diagram {
+    display: grid;
+    gap: var(--space-s);
+    margin: 0;
+  }
+
+  .diagram__scroll {
+    overflow-x: auto;
+    padding-block: var(--space-2xs);
+    border-block: var(--line-thin) solid var(--color-ink);
+    background-color: var(--color-paper);
+    background-image: radial-gradient(var(--color-line-faint) 1px, transparent 1.5px);
+    background-size: var(--grid-cell) var(--grid-cell);
+  }
+
+  svg {
+    display: block;
+    inline-size: 100%;
+    min-inline-size: min(var(--diagram-min), 100%);
+    block-size: auto;
+    overflow: visible;
+  }
+
+  /* Phones: keep the drawing legible and let it scroll instead of shrinking it to nothing. */
+  @media (max-width: 719px) {
+    svg {
+      min-inline-size: var(--diagram-min);
+    }
+  }
+
+  .diagram__group rect {
+    fill: none;
+    stroke: var(--color-ink-muted);
+    stroke-width: var(--line-thin);
+    stroke-dasharray: var(--dash-planned-on) var(--dash-planned-off);
+  }
+
+  .diagram__group-label,
+  .diagram__note,
+  .diagram__edge-label {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .diagram__group-label {
+    font-size: 11px;
+    fill: var(--color-ink-muted);
+  }
+
+  .diagram__box {
+    fill: var(--color-paper-raised);
+    stroke: var(--color-ink);
+    stroke-width: var(--line-regular);
+  }
+
+  .diagram__detail {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: var(--line-thin);
+  }
+
+  .diagram__node--external .diagram__box {
+    fill: var(--color-paper);
+    stroke-dasharray: var(--dash-planned-on) var(--dash-planned-off);
+  }
+
+  .diagram__node--accent .diagram__box,
+  .diagram__node--accent .diagram__detail {
+    stroke: var(--color-accent);
+  }
+
+  .diagram__label {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    fill: var(--color-ink);
+  }
+
+  .diagram__note {
+    font-size: 10px;
+    fill: var(--color-ink-muted);
+  }
+
+  .diagram__edge path {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: var(--line-regular);
+  }
+
+  .diagram__edge--dashed path {
+    stroke-dasharray: var(--dash-construction-on) 4;
+  }
+
+  .diagram__arrowhead {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .diagram__edge-label {
+    font-size: 11px;
+    fill: var(--color-accent-text);
+    paint-order: stroke;
+    stroke: var(--color-paper);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+  }
+
+  figcaption {
+    display: grid;
+    gap: var(--space-3xs);
+    max-inline-size: var(--measure);
+    font-size: var(--step--1);
+    color: var(--color-ink-muted);
+  }
+
+  .diagram__text summary {
+    cursor: pointer;
+    inline-size: fit-content;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .diagram__text ul {
+    margin: var(--space-2xs) 0 0;
+    padding-inline-start: 1.25em;
+    font-size: var(--step--1);
+  }
+
+  .diagram__text li::marker {
+    color: var(--color-accent);
+  }
+</style>

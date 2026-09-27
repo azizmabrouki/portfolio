@@ -99,6 +99,12 @@ const [introAt = 0, ...floorAts] = stepPositions(floors.length);
               </ol>
             )}
             {floor.meta && <p class="muted">{floor.meta}</p>}
+            <p>
+              <a class="more" href={floor.more.href}>
+                {floor.more.label}
+                <span aria-hidden="true">↓</span>
+              </a>
+            </p>
           </article>
         ))
       }
@@ -223,6 +229,16 @@ const [introAt = 0, ...floorAts] = stepPositions(floors.length);
 
   .items strong {
     font-weight: 600;
+  }
+
+  .more {
+    display: inline-flex;
+    gap: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
   }
 
   .when-motion {

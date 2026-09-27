@@ -1,0 +1,162 @@
+---
+/**
+ * How I work: four principles, each with a small drawing in the site's line vocabulary.
+ */
+import SectionHead from '@/components/home/SectionHead.astro';
+
+interface Principle {
+  id: 'boundaries' | 'why' | 'tests' | 'pipeline';
+  title: string;
+  text: string;
+  link?: { href: string; label: string };
+}
+
+const principles: Principle[] = [
+  {
+    id: 'boundaries',
+    title: 'Boundaries first',
+    text: 'I start with one deployable and strict modules that talk through contracts, so a change in one stays in one. A module becomes a service when a team, a scaling need or a runtime asks for it.',
+    link: { href: '/notes/modular-monolith-first/', label: 'Why I start with a modular monolith' },
+  },
+  {
+    id: 'why',
+    title: 'Write down the why',
+    text: 'Every significant decision gets an architecture decision record: the context, the options and the trade-off accepted. The next developer shouldn’t have to guess, and neither should I in six months.',
+  },
+  {
+    id: 'tests',
+    title: 'Test what matters',
+    text: 'Tests go where a bug would hurt most. StudioLabCloud shipped with 609 automated tests and 25 OpenAPI specs describing its API.',
+  },
+  {
+    id: 'pipeline',
+    title: 'Ship through CI/CD',
+    text: 'Every change goes through a pipeline before anyone depends on it. StudioLabCloud ran on CI/CD, Kubernetes and Grafana; this site cannot merge a change that scores under 95 on Lighthouse.',
+  },
+];
+---
+
+<section id="how-i-work" class="section container" aria-labelledby="how-title">
+  <SectionHead
+    number="02"
+    marker="How I work"
+    id="how-title"
+    title="Most of the job happens before the code"
+    lead="Where a module boundary goes, what can fail, and whether the next developer will understand the design in a week."
+  />
+
+  <ol class="principles" role="list">
+    {
+      principles.map((principle, index) => (
+        <li class="principle">
+          <svg class="principle__drawing" viewBox="0 0 160 96" aria-hidden="true">
+            {principle.id === 'boundaries' && (
+              <>
+                <line class="construction" x1="80" y1="4" x2="80" y2="92" />
+                <rect x="14" y="22" width="50" height="52" />
+                <rect x="96" y="22" width="50" height="52" />
+                <line x1="64" y1="48" x2="96" y2="48" />
+                <circle class="accent" cx="80" cy="48" r="5" />
+                <line class="thin" x1="22" y1="34" x2="48" y2="34" />
+                <line class="thin" x1="104" y1="34" x2="130" y2="34" />
+              </>
+            )}
+            {principle.id === 'why' && (
+              <>
+                <path d="M40 8 H104 L120 24 V88 H40 Z" />
+                <path class="thin" d="M104 8 V24 H120" />
+                <line class="thin" x1="52" y1="36" x2="106" y2="36" />
+                <line class="thin" x1="52" y1="46" x2="100" y2="46" />
+                <line class="thin" x1="52" y1="56" x2="94" y2="56" />
+                <line class="accent" x1="52" y1="72" x2="108" y2="72" />
+                <line class="accent" x1="49" y1="75" x2="55" y2="69" />
+                <line class="accent" x1="105" y1="75" x2="111" y2="69" />
+              </>
+            )}
+            {principle.id === 'tests' && (
+              <>
+                <line x1="16" y1="70" x2="144" y2="70" />
+                <line x1="12" y1="74" x2="20" y2="66" />
+                <line x1="140" y1="74" x2="148" y2="66" />
+                <line class="thin" x1="16" y1="60" x2="16" y2="80" />
+                <line class="thin" x1="144" y1="60" x2="144" y2="80" />
+                <line class="thin" x1="48" y1="66" x2="48" y2="74" />
+                <line class="thin" x1="80" y1="64" x2="80" y2="76" />
+                <line class="thin" x1="112" y1="66" x2="112" y2="74" />
+                <path class="accent" d="M58 32 L74 46 L104 16" />
+              </>
+            )}
+            {principle.id === 'pipeline' && (
+              <>
+                <rect x="8" y="36" width="30" height="24" />
+                <rect x="62" y="36" width="30" height="24" />
+                <rect class="accent" x="116" y="36" width="30" height="24" />
+                <line x1="38" y1="48" x2="60" y2="48" />
+                <path class="thin" d="M55 44 L60 48 L55 52" />
+                <line x1="92" y1="48" x2="114" y2="48" />
+                <path class="thin" d="M109 44 L114 48 L109 52" />
+                <line class="construction" x1="8" y1="76" x2="146" y2="76" />
+              </>
+            )}
+          </svg>
+          <p class="label">Principle {String(index + 1).padStart(2, '0')}</p>
+          <h3>{principle.title}</h3>
+          <p>{principle.text}</p>
+          {principle.link && (
+            <p>
+              <a href={principle.link.href}>{principle.link.label}</a>
+            </p>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-l) var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .principle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding-block-start: var(--space-s);
+    border-block-start: var(--line-thin) solid var(--color-ink);
+  }
+
+  .principle__drawing {
+    inline-size: 10rem;
+    block-size: auto;
+    margin-block-end: var(--space-2xs);
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: var(--line-regular);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .principle__drawing .thin {
+    stroke-width: var(--line-thin);
+  }
+
+  .principle__drawing .construction {
+    stroke: var(--color-ink-muted);
+    stroke-width: var(--line-thin);
+    stroke-dasharray: var(--dash-construction-on) var(--dash-construction-off);
+  }
+
+  .principle__drawing .accent {
+    stroke: var(--color-accent);
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+</style>
