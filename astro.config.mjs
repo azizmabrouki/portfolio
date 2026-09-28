@@ -5,7 +5,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
   // Production URL, used for canonical links, Open Graph and the sitemap.
   // Switch to the custom domain in Phase 6.
-  site: 'https://aziz-mabrouki.mohamedaziz-mabrouki.workers.dev',
+  site: 'https://aziz-mabrouki.mabrouki.workers.dev',
 
   output: 'static',
   build: {
