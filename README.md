@@ -151,4 +151,4 @@ Pushes to `main` deploy to production; other branches get a preview URL, posted 
 | 4. Signature motion | Blueprint cards, View Transitions from card to case study, diagrams that assemble with decision markers | In review |
 | 5. Polish | Dark mode with a switch, drawn link underlines, counting markers, coordinate readout, copy-email button, smooth in-page links | In review |
 | 5.5 UI refinement | Blueprint blue, umber and orange with one job each; highlighted key words and metrics; glossary, 30-second briefs, sheet index, decisions linked to drawings, stack filter, compact header | In review |
-| 6. Launch | Address, analytics, links from LinkedIn, CV and GitHub | Prepared; needs the Cloudflare dashboard (below) |
+| 6. Launch | Address, analytics, links from LinkedIn, CV and GitHub | Address done: aziz-mabrouki.mabrouki.workers.dev; analytics, CV and links to come |
