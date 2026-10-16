@@ -9,6 +9,7 @@ import { site } from '@/config/site';
 
 <section id="top" data-sec="hero" class="wrap hero" aria-labelledby="h-title">
   <div class="herotext">
+    <p class="kicker after">{hero.kicker}</p>
     <h1 id="h-title" class="disp h1">
       {
         hero.headline.map((line, index) => (
@@ -43,6 +44,13 @@ import { site } from '@/config/site';
     flex-direction: column;
     gap: 24px;
     max-width: min(100%, 760px);
+  }
+
+  .kicker {
+    margin: 0;
+    font-weight: 700;
+    font-size: clamp(15px, 1.2vw, 17px);
+    color: var(--gold);
   }
 
   .h1 {

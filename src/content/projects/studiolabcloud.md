@@ -4,12 +4,20 @@ summary: A SaaS platform for selling and managing cloud services, built as a mod
 teaser: A SaaS platform for selling and managing cloud services, built as a modular monolith with recurring billing and a support desk.
 brief:
   problem: Sell cloud services, bill them every month in several currencies and support the clients, in one product that a small team can keep running.
-  result: A modular monolith shipped in 3 releases, with billing that ==never charges twice==, a support desk whose assistant hands over to a person, and 609 automated tests.
+  result: A modular monolith shipped in 3 releases, where ==a replayed payment event is applied once==, a support desk whose assistant hands over to a person, and 609 automated tests.
 sheet: '01'
 period: Feb – Aug 2026
 # Placeholder wording: the exact internship title is still to be confirmed.
 role: Intern, final-year project
 company: StudioLab
+contribution:
+  - 'Designed the architecture: a Laravel modular monolith with explicit module contracts, DTOs and decision records'
+  - Built recurring Stripe billing in several currencies, with idempotent webhook processing and replay tests
+  - 'Built the support desk: ticketing, client messaging and video calls'
+  - Built the Python RAG assistant and the contract that hands a conversation to a human agent
+  - Wrote 609 automated tests and 25 OpenAPI specs; set up CI/CD, the Kubernetes deployment and Grafana monitoring
+# Placeholder: still to be written.
+differently: "[What I'd change with more time.]"
 facts:
   - label: My part
     value: 'The whole chain: architecture, interface design, implementation, tests and deployment'
@@ -54,7 +62,7 @@ decisions:
   - title: Webhooks that may arrive twice
     chose: '[[Idempotent]] webhook processing, so each payment event is recorded and ==applied once==.'
     over: Trusting every webhook to arrive exactly once.
-    why: Payment providers retry deliveries, and a replayed event must ==never charge a client twice==.
+    why: 'Payment providers retry deliveries, and a replayed event must not charge a client twice: replay tests check that each event is applied once.'
     tradeoff: One more piece of state to store and check on every event, and tests written for the replay cases.
     node: billing
   - title: An assistant that knows when to stop

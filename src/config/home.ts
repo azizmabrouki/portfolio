@@ -14,19 +14,38 @@ export const layers = [
 ] as const;
 
 export const hero = {
+  /** Who I am and what I'm after, said before the headline. */
+  kicker: 'Software engineer · heading for platform engineering',
   headline: ['I design systems', 'that stay up.'],
   intro:
-    'Mohamed Aziz Mabrouki, software architecture engineer in Tunis. I build cloud platforms, the CI/CD that ships them and the monitoring that keeps them running.',
+    'Mohamed Aziz Mabrouki, in Tunis. I build backend and product systems, like a cloud-services platform with billing, support and an AI handover, and I care how they are structured, tested, shipped and run.',
   cta: { label: 'Get in touch', href: '#contact' },
   cue: 'Scroll into the system',
 };
 
-/** The sections the top bar's pipeline tracks, and the phone menu lists. */
+/** The sections the top bar's pipeline tracks, and the phone menu lists. Plain names, so a visitor can jump straight to the work or to contact. */
 export const stages = [
-  { label: 'Plan it', href: '#system', name: 'the system', menu: 'The system' },
-  { label: 'Ship it', href: '#work', name: 'the work', menu: 'The work' },
-  { label: 'Watch it', href: '#route', name: 'the route so far', menu: 'The route' },
-  { label: 'Keep it up', href: '#contact', name: 'contact', menu: 'Contact' },
+  { label: 'Approach', href: '#system', menu: 'How I build' },
+  { label: 'Work', href: '#work', menu: 'The work' },
+  { label: 'Experience', href: '#route', menu: 'Experience' },
+  { label: 'Contact', href: '#contact', menu: 'Contact' },
+];
+
+/** The compact work preview right under the hero: the strongest proof first. */
+export const selected = { heading: 'Selected work', all: 'All work and details' };
+
+/**
+ * What the 3D world shows at each scene, said in words in a caption that follows the
+ * scroll, so the animation always explains itself (index = scene, see scripts/world).
+ */
+export const scenes = [
+  'The product people use, on top of the system underneath',
+  'Noise: tickets, alerts and servers, all at once',
+  'The system underneath, one layer per concern',
+  'Live model: take a server down',
+  'The work, landing on the stack',
+  'The route so far, one stop at a time',
+  'The next layer: your team',
 ];
 
 export interface Principle {

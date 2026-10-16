@@ -1,9 +1,9 @@
 ---
 /**
  * The case study template: title and short facts, the numbers, the problem and the result
- * in two sentences, screens, the story (the Markdown body), the architecture drawn from
- * frontmatter, the key decisions (each can light its box in the drawing), the stack, and
- * where to go next. Drafts (frontmatter `draft: true`) get no page yet.
+ * in two sentences, what I built myself, the story (the Markdown body), the architecture
+ * drawn from frontmatter, the key decisions (each can light its box in the drawing), the
+ * evidence (screens), what I'd change, the stack, and where to go next. Drafts (frontmatter `draft: true`) get no page yet.
  */
 import { render, type CollectionEntry } from 'astro:content';
 import PageLayout from '@/layouts/PageLayout.astro';
@@ -95,18 +95,14 @@ const kicker = ['Case study', data.company, data.period].filter(Boolean).join(' 
   }
 
   {
-    data.screens.length > 0 && (
-      <section class="wrap screens" aria-label="Screens">
-        {data.screens.map((screen) => (
-          <figure>
-            {screen.src ? (
-              <img class="shot" src={screen.src} alt={screen.alt ?? ''} loading="lazy" />
-            ) : (
-              <div class="shot">{screen.placeholder}</div>
-            )}
-            <figcaption>{screen.caption}</figcaption>
-          </figure>
-        ))}
+    data.contribution.length > 0 && (
+      <section class="wrap sec mine" aria-labelledby="mine-title">
+        <h2 id="mine-title" class="lbl st-title">My contribution</h2>
+        <ul class="mlist">
+          {data.contribution.map((item) => (
+            <li set:html={rich(item)} />
+          ))}
+        </ul>
       </section>
     )
   }
@@ -160,6 +156,33 @@ const kicker = ['Case study', data.company, data.period].filter(Boolean).join(' 
       }
     </div>
   </section>
+
+  {
+    data.screens.length > 0 && (
+      <section class="wrap screens" aria-labelledby="ev-title">
+        <h2 id="ev-title" class="lbl st-title ev-title">Evidence</h2>
+        {data.screens.map((screen) => (
+          <figure>
+            {screen.src ? (
+              <img class="shot" src={screen.src} alt={screen.alt ?? ''} loading="lazy" />
+            ) : (
+              <div class="shot">{screen.placeholder}</div>
+            )}
+            <figcaption>{screen.caption}</figcaption>
+          </figure>
+        ))}
+      </section>
+    )
+  }
+
+  {
+    data.differently && (
+      <section class="wrap sec" aria-labelledby="diff-title">
+        <h2 id="diff-title" class="lbl st-title">What I'd change</h2>
+        <p class="diff" set:html={rich(data.differently)} />
+      </section>
+    )
+  }
 
   <section class="wrap sec" aria-labelledby="st-title">
     <h2 id="st-title" class="lbl st-title">Built with</h2>
@@ -327,6 +350,44 @@ const kicker = ['Case study', data.company, data.period].filter(Boolean).join(' 
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  .ev-title {
+    grid-column: 1 / -1;
+  }
+
+  .mlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+    gap: 3px;
+  }
+
+  .mlist li {
+    padding: 18px 20px 18px 40px;
+    position: relative;
+    background: var(--surface);
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .mlist li::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 27px;
+    width: 7px;
+    height: 7px;
+    background: var(--gold);
+  }
+
+  .diff {
+    margin: 0;
+    max-width: 40em;
+    font-size: clamp(19px, 1.6vw, 22px);
+    line-height: 1.5;
   }
 
   .shot {
