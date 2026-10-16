@@ -8,7 +8,7 @@
  * Styles are global because the inserted markup has no Astro scope; every rule is
  * anchored on .world, .leaders or .labels.
  */
-import { layers } from '@/config/home';
+import { layers, scenes } from '@/config/home';
 import { work } from '@/config/work';
 
 const servers = [
@@ -21,7 +21,12 @@ const servers = [
 ];
 ---
 
-<div class="world" aria-hidden="true" data-screens={JSON.stringify(work.map((slot) => slot.screen))}>
+<div
+  class="world"
+  aria-hidden="true"
+  data-screens={JSON.stringify(work.map((slot) => slot.screen))}
+  data-scenes={JSON.stringify(scenes)}
+>
   <div class="spot" data-spot></div>
 </div>
 <svg class="leaders" aria-hidden="true">
@@ -56,12 +61,46 @@ const servers = [
   }
   <div class="lab tlab glab" data-lab="ghost"><b>your team</b><span>the next layer</span></div>
 </div>
+<p class="scene" aria-hidden="true"><span class="scene-dot"></span><span data-scene></span></p>
 
 <style is:global>
   .world,
   .leaders,
-  .labels {
+  .labels,
+  .scene {
     display: none;
+  }
+
+  /* What the 3D world is showing right now, in words (config/home.ts `scenes`). */
+  html.w3d .scene {
+    position: fixed;
+    right: var(--gutter);
+    bottom: 24px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 10px 14px;
+    background: rgb(7 8 11 / 0.8);
+    box-shadow: inset 0 0 0 1px var(--line);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: opacity 300ms;
+  }
+
+  .scene-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex: none;
+  }
+
+  .scene:has([data-scene]:empty) {
+    opacity: 0;
   }
 
   html.w3d .world {

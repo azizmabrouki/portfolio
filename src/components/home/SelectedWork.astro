@@ -1,0 +1,177 @@
+---
+/**
+ * "Selected work", right under the hero: the strongest proof before the story. One row per
+ * featured slot (work.ts `glance`): what it is, my role, the result, and where to read more.
+ * The full Work section further down keeps every detail.
+ */
+import { selected } from '@/config/home';
+import { work } from '@/config/work';
+import { getProjects } from '@/lib/content';
+
+const published = new Set((await getProjects()).filter((project) => !project.data.draft).map((project) => project.id));
+const featured = work.filter((slot) => slot.glance);
+---
+
+<section id="selected" class="wrap selected" aria-labelledby="sel-title">
+  <div class="scol">
+    <h2 id="sel-title" class="lbl stitle">{selected.heading}</h2>
+    <ul class="slist">
+      {
+        featured.map((slot) => {
+          const caseStudy = slot.project && published.has(slot.project) ? `/projects/${slot.project}/` : undefined;
+          return (
+            <li>
+              <div class="shead">
+                <span class="badge">{slot.slot}</span>
+                <h3 class="sname">{slot.name}</h3>
+                <span class="tab yr">{slot.years}</span>
+              </div>
+              <p class="spitch">{slot.pitch}</p>
+              <dl class="sfacts">
+                <div>
+                  <dt>My role</dt>
+                  <dd>{slot.glance?.role}</dd>
+                </div>
+                <div>
+                  <dt>Result</dt>
+                  <dd>{slot.glance?.result}</dd>
+                </div>
+              </dl>
+              <p class="slink">
+                {caseStudy ? (
+                  <a href={caseStudy}>Read the case study</a>
+                ) : (
+                  <a href={`#p-${slot.slot.toLowerCase()}`}>More on {slot.name}</a>
+                )}
+              </p>
+            </li>
+          );
+        })
+      }
+    </ul>
+    <p class="sall"><a href="#work">{selected.all}</a></p>
+  </div>
+</section>
+
+<style>
+  .selected {
+    position: relative;
+    padding-top: 24px;
+  }
+
+  .scol {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 720px;
+  }
+
+  .stitle {
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  .slist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 3px;
+  }
+
+  .slist li {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    background: var(--surface);
+  }
+
+  .shead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sname {
+    margin: 0;
+    font-weight: 700;
+    font-size: clamp(22px, 2vw, 28px);
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+
+  .yr {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .spitch {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-soft);
+  }
+
+  .sfacts {
+    margin: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .sfacts dt {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  .sfacts dd {
+    margin: 2px 0 0;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .slink,
+  .sall {
+    margin: 0;
+  }
+
+  .slink a,
+  .sall a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    font-weight: 600;
+    font-size: 15px;
+    text-underline-offset: 4px;
+  }
+
+  @media (min-width: 760px) {
+    .slist {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sfacts dd {
+      font-size: 15px;
+    }
+  }
+
+  /* In the 3D world the strip sits in the left column, beside the stack. */
+  :global(html.w3d) .selected {
+    padding-top: 0;
+    padding-bottom: 160px;
+  }
+
+  :global(html.w3d) .scol {
+    width: min(48%, 680px);
+  }
+
+  :global(html.w3d) .slist {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :global(html.w3d) .slist li {
+    background: rgb(15 17 21 / 0.9);
+  }
+</style>

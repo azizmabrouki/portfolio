@@ -68,7 +68,7 @@ export const roles: Role[] = [
     stack: ['Laravel', 'PHP', 'Stripe', 'Python', 'Docker', 'Kubernetes', 'Grafana', 'CI/CD'],
     highlights: [
       'A modular monolith in Laravel, with explicit module contracts, DTOs and architecture decision records',
-      'Recurring Stripe billing in several currencies, with idempotent webhooks: a replayed event never charges twice',
+      'Recurring Stripe billing in several currencies, with idempotent webhooks: a replayed event is applied once, covered by replay tests',
       'Support ticketing, client messaging and video calls, plus a Python RAG assistant that hands over to a person',
       '**609** automated tests, **25** OpenAPI specs, CI/CD, Kubernetes and Grafana; **3 releases** over 6 sprints',
     ],

@@ -23,6 +23,8 @@ export interface WorkSlot {
   lights: number[];
   /** Placeholder shown on the slot's screen in the 3D world until a screenshot exists. */
   screen: string;
+  /** Shown in "Selected work" under the hero: my role and the strongest result, one line each. */
+  glance?: { role: string; result: string };
 }
 
 export const work: WorkSlot[] = [
@@ -34,18 +36,22 @@ export const work: WorkSlot[] = [
       "A modular SaaS platform where StudioLab's French-speaking clients order cloud services, pay for them every month and get help.",
     facts: [
       {
-        label: 'What it changed',
-        text: 'Shipped in 3 releases over 6 sprints: billing in several currencies that never charges twice, a support desk whose AI assistant hands over to a person, 609 automated tests and 25 OpenAPI specs.',
-      },
-      {
         label: 'My part',
         text: 'Final-year project. I owned the whole chain, from architecture to deployment, alone with the product owner, and I keep it running as a freelancer.',
+      },
+      {
+        label: 'What it changed',
+        text: 'Shipped in 3 releases over 6 sprints: billing in several currencies where a replayed payment event is applied once, a support desk whose AI assistant hands over to a person, 609 automated tests and 25 OpenAPI specs.',
       },
     ],
     builtWith: 'Laravel, Stripe, Python (RAG), Docker, Kubernetes, Grafana, CI/CD',
     project: 'studiolabcloud',
     lights: [0, 1, 2, 3, 4],
     screen: 'Screenshot: StudioLabCloud',
+    glance: {
+      role: 'Sole engineer, from architecture to deployment, with the product owner',
+      result: '3 releases over 6 sprints, 609 automated tests, and I still run it',
+    },
   },
   {
     slot: 'B',
@@ -54,17 +60,21 @@ export const work: WorkSlot[] = [
     pitch: 'The back end of an AI platform that detects anomalies in plants: a secured Spring Boot API, containerized and tuned.',
     facts: [
       {
-        label: 'What it changed',
-        text: 'About 40% fewer environment-related deployment issues once everything ran in containers, and average API responses 20–30% faster after query tuning.',
-      },
-      {
         label: 'My part',
         text: 'Full-stack engineer for a year, Dec 2024 to Dec 2025, in an agile startup team of AI engineers and developers. 10+ REST endpoints, JWT and role-based access.',
+      },
+      {
+        label: 'What it changed',
+        text: 'About 40% fewer environment-related deployment issues once everything ran in containers, and average API responses 20–30% faster after query tuning.',
       },
     ],
     builtWith: 'Java, Spring Boot, Spring Security, JWT, PostgreSQL, Docker',
     project: 'hma4tech',
     lights: [0, 3],
+    glance: {
+      role: 'Full-stack engineer in an agile startup team, for a year',
+      result: 'A Spring Boot API secured with JWT and roles, containerized with Docker',
+    },
     screen: 'Screenshot: HMA4Tech',
   },
   {
@@ -76,11 +86,11 @@ export const work: WorkSlot[] = [
     pitchStill:
       'The page you are reading: a model of how I build that loads fast and reads completely without motion or JavaScript. On a phone it trades the 3D world for this lighter page.',
     facts: [
+      { label: 'My part', text: 'Design, code and deployment, alone. The code is public.' },
       {
         label: 'What it changed',
         text: 'A regression fails the build instead of reaching you: every pull request must pass four CI gates, including 95+ in all four Lighthouse categories, before Cloudflare deploys it.',
       },
-      { label: 'My part', text: 'Design, code and deployment, alone. The code is public.' },
     ],
     builtWith: 'Astro, TypeScript, CSS 3D, GitHub Actions, Lighthouse CI, Cloudflare Workers',
     project: 'this-portfolio',

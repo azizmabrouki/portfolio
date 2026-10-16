@@ -71,6 +71,8 @@ const projects = defineCollection({
     role: z.string(),
     company: z.string().optional(),
     stack: z.array(z.string()),
+    /** What I personally designed and built, one item each: the "My contribution" list. */
+    contribution: z.array(z.string()).default([]),
     /** Short facts under the title: My part, Team, Shape, Now. */
     facts: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
     numbers: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
@@ -94,7 +96,7 @@ const projects = defineCollection({
     diagram,
     /** The 30-second version at the top of the page; takes the lib/rich.ts markup. */
     brief: z.object({ problem: z.string(), result: z.string() }).optional(),
-    /** Optional "what I would do differently" paragraph. */
+    /** "What I'd change": what I would do differently with more time. */
     differently: z.string().optional(),
     /** Shown above the case study when what can be shown is limited. */
     disclosure: z.string().optional(),

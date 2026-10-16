@@ -21,7 +21,7 @@ import { site } from '@/config/site';
                 <path d="M4 2 L8 6 L4 10" fill="none" stroke="currentColor" stroke-width="1.6" />
               </svg>
             )}
-            <a class="stage" data-pipe={index} data-st="todo" href={stage.href} aria-label={`${stage.label}: ${stage.name}`}>
+            <a class="stage" data-pipe={index} data-st="todo" href={stage.href}>
               <span class="stage-top">
                 <span class="sq">
                   <svg viewBox="0 0 10 10" aria-hidden="true">
@@ -57,16 +57,12 @@ import { site } from '@/config/site';
   <nav id="sheet" class="sheet" aria-label="Sections" hidden>
     <ul>
       {
-        stages.map((stage) => (
+        [...stages.slice(0, -1), { href: '#notes', menu: 'Notes' }, ...stages.slice(-1)].map((item) => (
           <li>
-            <a href={stage.href}>
-              {stage.menu}
-              {stage.menu !== 'Contact' && <span>{stage.label}</span>}
-            </a>
+            <a href={item.href}>{item.menu}</a>
           </li>
         ))
       }
-      <li><a href="#notes">Notes</a></li>
     </ul>
   </nav>
 </header>

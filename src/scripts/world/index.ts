@@ -88,7 +88,9 @@ export function createWorld(root: HTMLElement) {
     projs: qa('[data-proj]'),
     rows: qa('[data-row]'),
     listen: q('[data-listen]'),
+    scene: q('[data-scene]'),
   };
+  const sceneWords = JSON.parse(stage.dataset.scenes ?? '[]') as string[];
 
   // ---- fixed randomness: the same scatter on every visit ----
   let seed = 20261016;
@@ -376,12 +378,18 @@ export function createWorld(root: HTMLElement) {
       }
     });
 
-    // the screen of the active project lands on top of its stack
+    // the screen of the active project lands on top of its stack; on the first screen the
+    // product (slot A) already sits on top, before the layers underneath are explained
     const topZ = 4 * 100 - 260 + 150;
+    const heroTopZ = 4 * 22 - 44 + 56;
     const wWork = bump(s, 4, 0.7);
+    const wHero = bump(s, 0, 0.6);
     E.screens.forEach((se, j) => {
+      const hero = j === 0 && wHero > 0.5;
       const mine = actT === j + 1 && wWork > 0.5;
-      const stg = mine
+      const stg = hero
+        ? [0, 0, heroTopZ, 0, 0, 0, 1]
+        : mine
         ? [0, 0, topZ, 0, 0, 0, 1]
         : [0, actT > j + 1 ? -60 : 60, topZ + 760, 0, 0, actT > j + 1 ? 10 : -10, 0];
       const sv = spring(sc[j], stg, dt, 70, 12);
@@ -433,6 +441,12 @@ export function createWorld(root: HTMLElement) {
       }
     }
     if (rigW > 0.02) packets(t);
+
+    // ---- the caption: what the world shows now, in words ----
+    if (E.scene) {
+      const words = sceneWords[near];
+      if (E.scene.textContent !== (words ?? '')) E.scene.textContent = words ?? '';
+    }
 
     // ---- camera: one move per scene ----
     const sway = reduce ? 0 : Math.sin(t * 0.25) * 4;
@@ -587,6 +601,7 @@ export function createWorld(root: HTMLElement) {
     // The still page shows everything: drop the reveal and the scroll states.
     qa('.rv').forEach((n) => n.setAttribute('data-in', ''));
     E.beats.forEach((b) => b.removeAttribute('style'));
+    if (E.scene) E.scene.textContent = '';
     E.projs.forEach((proj) => proj.removeAttribute('data-cur'));
     E.rows.forEach((row) => {
       row.removeAttribute('data-on');

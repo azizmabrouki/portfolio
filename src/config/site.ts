@@ -12,8 +12,10 @@ export interface SiteLink {
 export interface SiteConfig {
   name: string;
   shortName: string;
-  /** The ESPRIT degree title. Never "software architect": that is a senior title. */
+  /** The role sought, said first: titles, the hero, structured data. */
   role: string;
+  /** The ESPRIT degree title. Never "software architect": that is a senior title. */
+  degree: string;
   description: string;
   locale: string;
   city: string;
@@ -43,9 +45,10 @@ export interface SiteConfig {
 export const site: SiteConfig = {
   name: 'Mohamed Aziz Mabrouki',
   shortName: 'Aziz Mabrouki',
-  role: 'Software architecture engineer',
+  role: 'Software engineer, heading for platform engineering',
+  degree: 'Software architecture engineer',
   description:
-    'Mohamed Aziz Mabrouki, software architecture engineer in Tunis. I build cloud platforms, the CI/CD that ships them and the monitoring that keeps them running.',
+    'Mohamed Aziz Mabrouki, software engineer in Tunis, heading for platform engineering. I build backend and product systems, with clear boundaries, tested delivery and cloud services.',
   locale: 'en',
   city: 'Tunis',
   timeZone: 'Africa/Tunis',
@@ -72,5 +75,5 @@ export function mailto(subject: string = site.emailSubject): string {
   return `mailto:${site.links.email}?subject=${encodeURIComponent(subject).replace(/'/g, '%27')}`;
 }
 
-/** "© 2026 Mohamed Aziz Mabrouki · Software architecture engineer · Tunis" */
-export const footerLine = `© ${new Date().getFullYear()} ${site.name} · ${site.role} · ${site.city}`;
+/** "© 2026 Mohamed Aziz Mabrouki · Software architecture engineer · Tunis": the degree title. */
+export const footerLine = `© ${new Date().getFullYear()} ${site.name} · ${site.degree} · ${site.city}`;

@@ -23,7 +23,7 @@ const {
   type = 'website',
   publishedTime,
   image = '/og-image.png',
-  imageAlt = `${site.name}, ${site.role.toLowerCase()} in ${site.city}.`,
+  imageAlt = `${site.name}, ${site.role.charAt(0).toLowerCase()}${site.role.slice(1)}, ${site.city}.`,
   noCanonical = false,
 } = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.role}`;
