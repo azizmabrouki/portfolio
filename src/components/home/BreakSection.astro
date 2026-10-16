@@ -24,10 +24,10 @@ const servers = [
         <span class="mask"><span>{breakIt.heading}</span></span>
       </h2>
       <p class="sbody fd" style="--d: 160ms">{breakIt.body}</p>
-      <div class="model" aria-hidden="true">
+      <div class="model" aria-hidden="true" data-model>
         <div class="lb">Requests in</div>
         <div class="wires">
-          {servers.map((server, index) => <i data-srv={server.id} style={`left: ${40 + index * 109}px`} />)}
+          {servers.map((server, index) => <i data-srv={server.id} style={`left: ${40 + index * 109}px; --o: ${index * 0.5}s`} />)}
         </div>
         <div class="srvs">
           {
@@ -162,6 +162,70 @@ const servers = [
     width: 0;
     background: none;
     border-left: 2px dashed var(--red);
+  }
+
+  /* Still page with motion: requests run down each wire into its server, faster on the
+     two that pick up the work while one is down; none reach the server that is down. */
+  :global(html.still-anim) .wires i::after {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 10px var(--gold-glow);
+    animation: req 1.6s linear var(--o, 0s) infinite;
+  }
+
+  :global(html.still-anim[data-theme='light']) .wires i::after {
+    background: var(--gold-fill);
+  }
+
+  :global(html.still-anim) :global([data-chaos='down']) .wires i:not([data-srv='2'])::after {
+    animation-duration: 0.9s;
+  }
+
+  :global(html.still-anim) :global([data-chaos='down']) .wires [data-srv='2']::after {
+    display: none;
+  }
+
+  :global(html.still-anim) .leds b {
+    animation: blink 1.6s ease-in-out infinite;
+  }
+
+  :global(html.still-anim) .leds b:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  :global(html.still-anim) .leds b:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes req {
+    0% {
+      transform: translateY(-4px);
+      opacity: 0;
+    }
+    15%,
+    80% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
   }
 
   .srvs {
