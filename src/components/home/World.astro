@@ -82,7 +82,7 @@ const servers = [
     gap: 10px;
     margin: 0;
     padding: 10px 14px;
-    background: rgb(7 8 11 / 0.8);
+    background: var(--bar-bg);
     box-shadow: inset 0 0 0 1px var(--line);
     font-weight: 600;
     font-size: 14px;
@@ -117,6 +117,19 @@ const servers = [
     perspective: 2600px;
     perspective-origin: 50% 42%;
     background: var(--bg);
+  }
+
+  /* Light theme: the world is drawn once, in dark; inverting it (and turning the hues back)
+     gives a light model with amber light, without a second set of shading. Its background
+     is the dark one, so the inverted stage matches the light page. */
+  :root[data-theme='light'] .world {
+    background: #07080b;
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  /* Lights stay lights: requests, shipping capsules and the monitor LED are inverted back. */
+  :root[data-theme='light'] .world :is(.pk, .capsule, .led) {
+    filter: invert(1) hue-rotate(180deg);
   }
 
   .world .spot {
@@ -491,14 +504,14 @@ const servers = [
     overflow: visible;
   }
   .leaders line {
-    stroke: rgb(140 143 151 / 0.5);
+    stroke: var(--line-chevron);
     stroke-width: 1;
   }
   .leaders line[data-on] {
     stroke: rgb(255 181 71 / 0.7);
   }
   .leaders circle {
-    fill: #5c6069;
+    fill: var(--text-faint);
   }
   .leaders circle[data-on] {
     fill: var(--gold);
@@ -529,12 +542,12 @@ const servers = [
     font-weight: 700;
     font-size: 16px;
     letter-spacing: -0.01em;
-    color: #b9bcc4;
+    color: var(--text-muted);
   }
   .labels .lab span {
     font-weight: 500;
     font-size: 13px;
-    color: #6e727b;
+    color: var(--text-faint);
   }
   .labels .llab {
     transform: translateY(-50%);

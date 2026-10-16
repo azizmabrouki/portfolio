@@ -3,8 +3,14 @@
  * Components read these custom properties and never hard-code values, except inside the
  * 3D world, whose shading is drawing, not theme (see components/home/world.html).
  *
- * The site has one theme: dark. Every text colour below passes WCAG AA (4.5:1) on every
- * surface it is used on; the lowest pair is --text-faint on a lit plate (4.9:1).
+ * Two themes: dark (the default) and light, chosen with the sun / crescent switch in the top
+ * bar and set on <html> as data-theme before first paint. Every text colour passes WCAG AA
+ * (4.5:1) on every surface it is used on, in both themes: the lowest pairs are --text-faint
+ * on a lit plate (dark, 4.9:1) and --green on a hovered row (light, 4.6:1).
+ *
+ * Gold has two tokens: --gold-fill for surfaces that carry dark text (buttons, badges, the
+ * "Your team" row), and --gold for gold text, lines and glows. They are the same in dark;
+ * in light, gold text is a deep amber, because #FFB547 on off-white is 1.6:1.
  */
 
 :root {
@@ -37,7 +43,8 @@
   --text-on-gold: #07080b;
 
   /* Colour with a job */
-  --gold: #ffb547; /* emphasis: the current thing, numbers, primary buttons. 11.4:1 */
+  --gold: #ffb547; /* emphasis: the current thing, numbers. 11.4:1 */
+  --gold-fill: #ffb547; /* surfaces under dark text: primary buttons, badges */
   --gold-hover: #ffc870;
   --gold-wash: rgb(255 181 71 / 0.16); /* <mark> */
   --gold-line: rgb(255 181 71 / 0.55);
@@ -53,6 +60,22 @@
   --line-soft: rgb(255 255 255 / 0.06);
   --line-strong: rgb(255 255 255 / 0.16);
   --line-text: rgb(237 234 227 / 0.45);
+  --line-faint: rgb(255 255 255 / 0.08);
+  --line-chevron: rgb(237 234 227 / 0.35);
+  --plate-edge: rgb(255 255 255 / 0.14);
+  --plate-drop: rgb(0 0 0 / 0.55);
+  --gold-glow: rgb(255 181 71 / 0.35);
+
+  /* Top bar, pipeline and board details */
+  --bar-bg: rgb(7 8 11 / 0.92);
+  --bar-bg-strong: rgb(7 8 11 / 0.94);
+  --overlay: rgb(15 17 21 / 0.9);
+  --stage-idle: #8b8e95;
+  --stage-square: #2a2d35;
+  --track: #22252c;
+  --chevron: #4a4e58;
+  --wire: #4a4d55;
+  --flap: #1b1e25;
 
   /* Type: Archivo, one variable file (weight and width axes) */
   --font: var(--font-archivo), 'Helvetica Neue', Arial, sans-serif;
@@ -80,4 +103,66 @@
   --ease-io: cubic-bezier(0.76, 0, 0.24, 1);
   --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
   --dur-fast: 180ms;
+}
+
+/* ---- Light ---- */
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f6f4ef;
+  --surface-sunk: #efece6;
+  --surface-board: #eae6de;
+  --surface: #edeae3;
+  --surface-readout: #efece6;
+  --surface-raised: #e7e3da;
+  --surface-button: #ffffff;
+  --surface-open: #e7e3da;
+  --surface-hover: #e2ded4;
+  --surface-current: #fff4e0;
+  --surface-button-hover: #fbf0dc;
+  --surface-blue: #e7edf9;
+  --surface-gold: #fbf0dc;
+  --surface-plate: #e2ded5;
+  --surface-plate-lit: #fbe6be;
+  --surface-down: #fbe2db;
+
+  --text: #14161b; /* 16.5:1 on --bg */
+  --text-body: #2b2e35;
+  --text-soft: #3b3e45;
+  --text-muted: #4d5058;
+  --text-faint: #5d6068; /* 5.7:1 on --bg, 4.7:1 on a hovered row */
+  --text-on-gold: #14161b; /* 10.3:1 on --gold-fill */
+
+  --gold: #8a5000; /* 5.9:1 on --bg */
+  --gold-fill: #ffb547;
+  --gold-hover: #ffc870;
+  --gold-wash: rgb(255 181 71 / 0.3);
+  --gold-line: rgb(138 80 0 / 0.55);
+  --blue: #2852b0; /* 6.5:1 */
+  --blue-label: #2852b0;
+  --blue-wash: rgb(40 82 176 / 0.05);
+  --blue-line: rgb(40 82 176 / 0.35);
+  --green: #1c6e45;
+  --red: #a83a22;
+
+  --line: rgb(20 22 27 / 0.12);
+  --line-soft: rgb(20 22 27 / 0.08);
+  --line-strong: rgb(20 22 27 / 0.2);
+  --line-text: rgb(20 22 27 / 0.45);
+  --line-faint: rgb(20 22 27 / 0.08);
+  --line-chevron: rgb(20 22 27 / 0.35);
+  --plate-edge: rgb(20 22 27 / 0.16);
+  --plate-drop: rgb(60 50 30 / 0.18);
+  --gold-glow: rgb(255 181 71 / 0.45);
+
+  --bar-bg: rgb(246 244 239 / 0.92);
+  --bar-bg-strong: rgb(246 244 239 / 0.94);
+  --overlay: rgb(237 234 227 / 0.92);
+  --stage-idle: #5d6068;
+  --stage-square: #d8d4cb;
+  --track: #dcd8cf;
+  --chevron: #8a8d94;
+  --wire: #9a9da4;
+  --flap: #dcd8cf;
 }

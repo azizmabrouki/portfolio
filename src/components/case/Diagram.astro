@@ -294,7 +294,7 @@ const px = (n: number) => `${Math.round(n)}px`;
   .node[data-on] {
     box-shadow:
       0 0 0 3px var(--gold),
-      0 0 48px rgb(255 181 71 / 0.35);
+      0 0 48px var(--gold-glow);
     animation: ping 1200ms ease-out 2;
   }
 
@@ -347,7 +347,7 @@ const px = (n: number) => `${Math.round(n)}px`;
     width: 24px;
     height: 24px;
     border-radius: 12px;
-    background: var(--gold);
+    background: var(--gold-fill);
     color: var(--text-on-gold);
     font-size: 13px;
     line-height: 24px;
@@ -379,7 +379,7 @@ const px = (n: number) => `${Math.round(n)}px`;
   }
 
   .k-module {
-    border: 1px solid rgb(255 255 255 / 0.3);
+    border: 1px solid var(--line-strong);
     background: var(--surface-raised);
   }
 

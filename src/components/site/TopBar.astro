@@ -3,6 +3,7 @@
  * The top bar of every page but the home page: brand · All work · Contact.
  */
 import { site } from '@/config/site';
+import ThemeToggle from '@/components/site/ThemeToggle.astro';
 
 interface Props {
   /** Sticks to the top while reading (case studies and notes, not the 404). */
@@ -17,13 +18,14 @@ const { sticky = true } = Astro.props;
     <a class="brand" href="/">{site.shortName}</a>
     <nav class="crumbs" aria-label="Site">
       {site.nav.map((link) => <a href={link.href}>{link.label}</a>)}
+      <ThemeToggle />
     </nav>
   </div>
 </header>
 
 <style>
   .bar {
-    background: rgb(7 8 11 / 0.92);
+    background: var(--bar-bg);
   }
 
   .sticky {

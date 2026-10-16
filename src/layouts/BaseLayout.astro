@@ -63,12 +63,16 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <meta name="twitter:image:alt" content={imageAlt} />
     <link rel="sitemap" href="/sitemap.xml" />
 
-    {/* Before first paint: `js` says scripts run (still-page controls can show), and `w3d`
-        says this screen gets the 3D home page (see scripts/world/query.ts). Both are set
-        here so the CSS picks the layout without a flash. */}
+    {/* Before first paint: `js` says scripts run (still-page controls can show), `w3d` says
+        this screen gets the 3D home page (see scripts/world/query.ts), and data-theme
+        carries the saved theme. All set here so the CSS picks them without a flash. */}
     <script is:inline define:vars={{ query: WORLD_QUERY }}>
       const html = document.documentElement;
       html.classList.add('js');
+      // The visitor's theme from the sun / crescent switch; dark when they haven't chosen.
+      try {
+        if (localStorage.getItem('theme') === 'light') html.dataset.theme = 'light';
+      } catch {}
       const world = window.matchMedia(query);
       const apply = () => html.classList.toggle('w3d', world.matches && !html.classList.contains('w3d-off'));
       apply();
