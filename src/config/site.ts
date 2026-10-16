@@ -12,11 +12,13 @@ export interface SiteLink {
 export interface SiteConfig {
   name: string;
   shortName: string;
+  /** The ESPRIT degree title. Never "software architect": that is a senior title. */
   role: string;
   description: string;
   locale: string;
-  availability: string;
-  location: string;
+  city: string;
+  /** IANA time zone of the clock in the top bar and on the departures board. */
+  timeZone: string;
   /** Public repository of this site. */
   repo: string;
   links: {
@@ -24,9 +26,12 @@ export interface SiteConfig {
     linkedin: string;
     /** Plain address; rendered as a mailto: link. */
     email: string;
-    /** Path under public/, e.g. /cv.pdf */
+    /** Path under public/, e.g. /cv.pdf. The "Download CV" button stays hidden while empty. */
     cv: string;
   };
+  /** Subject line of every "Email me" link. */
+  emailSubject: string;
+  /** The top bar of every page but the home page: brand · All work · Contact. */
   nav: SiteLink[];
   /**
    * Cloudflare Web Analytics: cookie-free, no consent banner needed. Paste the token from
@@ -38,12 +43,12 @@ export interface SiteConfig {
 export const site: SiteConfig = {
   name: 'Mohamed Aziz Mabrouki',
   shortName: 'Aziz Mabrouki',
-  role: 'Software engineer, growing into software architecture',
+  role: 'Software architecture engineer',
   description:
-    'Portfolio of Mohamed Aziz Mabrouki — a software engineer who designs systems with clear boundaries, written-down decisions and CI/CD from day one.',
+    'Mohamed Aziz Mabrouki, software architecture engineer in Tunis. I build cloud platforms, the CI/CD that ships them and the monitoring that keeps them running.',
   locale: 'en',
-  availability: 'Tunis · open to Tunisia, Europe and remote',
-  location: 'Tunis, Tunisia',
+  city: 'Tunis',
+  timeZone: 'Africa/Tunis',
   repo: 'https://github.com/azizmabrouki/portfolio',
 
   links: {
@@ -52,26 +57,20 @@ export const site: SiteConfig = {
     email: 'mouhamed.aziz.mabrouki@outlook.com',
     cv: '', // set to /cv.pdf once public/cv.pdf exists
   },
+  emailSubject: "Let's talk",
 
-  // Sections of the home page. Other pages link to them as /#id.
   nav: [
-    { label: 'Work', href: '#work' },
-    { label: 'How I work', href: '#how-i-work' },
-    { label: 'Experience', href: '#experience' },
-    { label: 'Notes', href: '#notes' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'All work', href: '/#work' },
+    { label: 'Contact', href: '/#contact' },
   ],
 
   analytics: { cloudflareToken: '' },
 };
 
-/** Links that are actually set, in display order. */
-export function contactLinks(): SiteLink[] {
-  const { github, linkedin, email, cv } = site.links;
-  const links: SiteLink[] = [];
-  if (cv) links.push({ label: 'CV', href: cv });
-  if (linkedin) links.push({ label: 'LinkedIn', href: linkedin });
-  if (github) links.push({ label: 'GitHub', href: github });
-  if (email) links.push({ label: 'Email', href: `mailto:${email}` });
-  return links;
+/** mailto: link with an optional subject, e.g. for "Report a broken link". */
+export function mailto(subject: string = site.emailSubject): string {
+  return `mailto:${site.links.email}?subject=${encodeURIComponent(subject).replace(/'/g, '%27')}`;
 }
+
+/** "© 2026 Mohamed Aziz Mabrouki · Software architecture engineer · Tunis" */
+export const footerLine = `© ${new Date().getFullYear()} ${site.name} · ${site.role} · ${site.city}`;

@@ -1,38 +1,49 @@
 ---
 /**
- * Every page but the 404: header, <main>, footer, around BaseLayout's <head>.
+ * Case studies, notes and the 404: the shared top bar, <main> and footer around
+ * BaseLayout's <head>. The home page has its own bar and uses BaseLayout directly.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import SiteFooter from '@/components/SiteFooter.astro';
-import SiteHeader from '@/components/SiteHeader.astro';
-import GlossaryPopovers from '@/components/reading/GlossaryPopovers.astro';
+import Footer from '@/components/site/Footer.astro';
+import TopBar from '@/components/site/TopBar.astro';
+import Glossary from '@/components/site/Glossary.astro';
 
 interface Props {
   title?: string;
   description?: string;
   type?: 'website' | 'article';
   publishedTime?: Date;
-  /** The home page: the header lies over the hero and links to sections in-page. */
-  home?: boolean;
+  /** Id of the page's title, for "Back to the top". */
+  top?: string;
+  /** The 404: a bar that does not stick, the slim footer, no indexing. */
+  lost?: boolean;
 }
 
-const { home = false, ...meta } = Astro.props;
+const { top, lost = false, ...meta } = Astro.props;
 ---
 
-<BaseLayout {...meta}>
+<BaseLayout {...meta} noindex={lost}>
   <slot name="head" slot="head" />
-  <SiteHeader overlay={home} home={home} />
-  <main id="main">
-    <slot />
-  </main>
-  <SiteFooter />
-  <GlossaryPopovers />
+  <div class:list={['page', { lost }]}>
+    <TopBar sticky={!lost} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer top={top} slim={lost} />
+  </div>
+  {!lost && <Glossary />}
 </BaseLayout>
 
-<script>
-  // Smooth in-page links, plus on desktops the counting markers and the coordinate
-  // readout: only for visitors who haven't asked for reduced motion (see details.ts).
-  if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-    void import('@/animations/details').then(({ initDetails }) => initDetails());
+<style>
+  .lost {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
-</script>
+
+  .lost main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+</style>

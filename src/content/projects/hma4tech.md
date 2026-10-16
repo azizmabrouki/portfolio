@@ -1,5 +1,8 @@
 ---
+# Rewritten on the v3 template in Phase 3; until then the home page says "Case study soon".
+draft: true
 title: HMA4Tech plant-anomaly platform
+teaser: The secured, containerized Spring Boot back end of a plant-anomaly AI platform.
 summary: The back end of an AI platform that detects anomalies in plants, as a ==secured Spring Boot API==, containerized and tuned.
 brief:
   problem: An AI platform needed a back end the rest of the product could rely on, and deployments kept breaking from one machine to the next.

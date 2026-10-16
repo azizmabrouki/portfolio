@@ -3,7 +3,7 @@ import { Font } from 'astro:assets';
 import '@/styles/tokens.css';
 import '@/styles/global.css';
 import { site } from '@/config/site';
-import { MOTION_QUERY } from '@/animations/query';
+import { WORLD_QUERY } from '@/scripts/world/query';
 
 interface Props {
   title?: string;
@@ -13,6 +13,8 @@ interface Props {
   /** Social preview image, 1200 × 630, under public/. */
   image?: string;
   imageAlt?: string;
+  /** Leave the page out of search results (the 404). */
+  noindex?: boolean;
 }
 
 const {
@@ -21,11 +23,12 @@ const {
   type = 'website',
   publishedTime,
   image = '/og-image.png',
-  imageAlt = `${site.name}: ${site.role}. A building drawn as a software architecture.`,
+  imageAlt = `${site.name}, ${site.role.toLowerCase()} in ${site.city}.`,
+  noindex = false,
 } = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.role}`;
 // Canonical and og:url need the real production URL, so they only render once `site` is set.
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const canonical = Astro.site && !noindex ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 // Social networks need an absolute image URL.
 const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
 ---
@@ -37,10 +40,10 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#efeae1" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#262420" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#07080B" />
     <meta name="generator" content={Astro.generator} />
 
     <meta property="og:type" content={type} />
@@ -61,40 +64,21 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <meta name="twitter:image:alt" content={imageAlt} />
     <link rel="sitemap" href="/sitemap.xml" />
 
-    {/* Marks <html> with `motion-ok` before first paint, so the CSS picks the motion or the
-        still layout without a flash. Mirrors src/animations/query.ts. `motion-off` is set
-        if the animation code fails to load, and keeps the still layout for the visit.
-        The theme is set here too, so a dark page never flashes light. */}
-    <script is:inline define:vars={{ query: MOTION_QUERY }}>
-      const motion = window.matchMedia(query);
+    {/* Before first paint: `js` says scripts run (still-page controls can show), and `w3d`
+        says this screen gets the 3D home page (see scripts/world/query.ts). Both are set
+        here so the CSS picks the layout without a flash. */}
+    <script is:inline define:vars={{ query: WORLD_QUERY }}>
       const html = document.documentElement;
-      const apply = () => html.classList.toggle('motion-ok', motion.matches && !html.classList.contains('motion-off'));
+      html.classList.add('js');
+      const world = window.matchMedia(query);
+      const apply = () => html.classList.toggle('w3d', world.matches && !html.classList.contains('w3d-off'));
       apply();
-      motion.addEventListener('change', apply);
-
-      // Theme: the visitor's choice if they made one (the header switch), else the system's.
-      const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
-      const storedTheme = () => {
-        try {
-          return localStorage.getItem('theme');
-        } catch {
-          return null;
-        }
-      };
-      const applyTheme = () => {
-        const theme = storedTheme() ?? (systemDark.matches ? 'dark' : 'light');
-        if (theme === 'dark') html.setAttribute('data-theme', 'dark');
-        else html.removeAttribute('data-theme');
-      };
-      applyTheme();
-      systemDark.addEventListener('change', applyTheme);
+      world.addEventListener('change', apply);
     </script>
 
-    {/* Preloaded so the fonts load at "High" priority. Discovered from CSS instead, they get
+    {/* Preloaded so the font loads at "High" priority. Discovered from CSS instead, it gets
         "VeryHigh", which Lighthouse's simulation counts as render-blocking. See README. */}
-    <Font cssVariable="--font-fraunces" preload />
-    <Font cssVariable="--font-inter" preload />
-    <Font cssVariable="--font-jetbrains-mono" preload />
+    <Font cssVariable="--font-archivo" preload />
     <slot name="head" />
 
     {
@@ -109,7 +93,7 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     }
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip" href="#main">Skip to content</a>
     <slot />
   </body>
 </html>

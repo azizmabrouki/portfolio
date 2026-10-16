@@ -5,6 +5,10 @@
  * cell (x = column, y = row, w = columns wide) and edges name the boxes they join. This
  * module turns that into SVG coordinates and orthogonal edge routes, so the drawing
  * component only has to paint. Pure functions, no Astro: easy to test and to animate later.
+ *
+ * The same spec can also be laid out narrow, for phones: `narrowSpec` moves every box to
+ * its place on the narrow grid, and edges listed in `lanes` run down the side of the
+ * drawing instead of straight through the boxes below them.
  */
 
 export type NodeKind = 'module' | 'service' | 'store' | 'external' | 'client';
@@ -36,6 +40,8 @@ export interface DiagramEdge {
   dashed?: boolean | undefined;
 }
 
+export type Lane = 'left' | 'right';
+
 export interface DiagramSpec {
   title: string;
   description: string;
@@ -44,7 +50,72 @@ export interface DiagramSpec {
   nodes: DiagramNode[];
   groups?: DiagramGroup[] | undefined;
   edges: DiagramEdge[];
+  /** Edges (by target id) that run down the left or right side of the drawing. */
+  lanes?: Record<string, Lane> | undefined;
 }
+
+export interface NarrowPlacement {
+  columns: number;
+  rows: number;
+  nodes: Record<string, { x: number; y: number; w?: number | undefined }>;
+  groups?: Record<string, { x: number; y: number; w?: number | undefined; h: number }> | undefined;
+  lanes?: Record<string, Lane> | undefined;
+}
+
+/** The spec with every box moved to its place on the narrow grid. */
+export function narrowSpec(spec: DiagramSpec, narrow: NarrowPlacement): DiagramSpec {
+  return {
+    ...spec,
+    columns: narrow.columns,
+    rows: narrow.rows,
+    nodes: spec.nodes.map((node) => {
+      const place = narrow.nodes[node.id];
+      return place ? { ...node, ...place, w: place.w ?? 1 } : node;
+    }),
+    groups: spec.groups?.map((group) => {
+      const place = narrow.groups?.[group.id];
+      return place ? { ...group, ...place, w: place.w ?? group.w } : group;
+    }),
+    lanes: narrow.lanes,
+  };
+}
+
+/** Grid and box sizes, in px. The defaults draw the wide (desktop) version. */
+export interface LayoutOptions {
+  cellW: number;
+  cellH: number;
+  nodeH: number;
+  /** Space between a box and the sides of its cell. */
+  insetX: number;
+  /** Space between the top of a cell and its box. */
+  nodeTop: number;
+  groupInset: number;
+  /**
+   * Labels of an edge pair (A → B and B → A) drawn as straight vertical lines: 'sides'
+   * puts each on its own outer side; 'stacked' puts both left of the pair, one above the
+   * other, as a narrow drawing has no room on both sides.
+   */
+  pairLabels: 'sides' | 'stacked';
+}
+
+export const WIDE: LayoutOptions = {
+  cellW: 200,
+  cellH: 140,
+  nodeH: 72,
+  insetX: 24,
+  nodeTop: 44,
+  groupInset: 6,
+  pairLabels: 'sides',
+};
+export const NARROW: LayoutOptions = {
+  cellW: 171,
+  cellH: 68,
+  nodeH: 56,
+  insetX: 12,
+  nodeTop: 0,
+  groupInset: 0,
+  pairLabels: 'stacked',
+};
 
 export interface Rect {
   x: number;
@@ -89,31 +160,35 @@ export interface DiagramLayout {
   edges: PlacedEdge[];
 }
 
-/** One grid cell. Boxes sit inside their cells with room around them for edges and labels. */
-export const CELL_W = 200;
-export const CELL_H = 124;
-const NODE_INSET_X = 16;
-const NODE_TOP = 36;
-const NODE_H = 60;
-const GROUP_INSET = 6;
 /** Edges joining the same two boxes in both directions are drawn side by side. */
 const PARALLEL_GAP = 8;
 /** Minimum overlap (px) for a straight edge between two boxes. */
 const MIN_OVERLAP = 24;
 
-const nodeRect = (node: DiagramNode): Rect => ({
-  x: node.x * CELL_W + NODE_INSET_X,
-  y: node.y * CELL_H + NODE_TOP,
-  w: (node.w ?? 1) * CELL_W - NODE_INSET_X * 2,
-  h: NODE_H,
+const nodeRect = (node: DiagramNode, o: LayoutOptions): Rect => ({
+  x: node.x * o.cellW + o.insetX,
+  y: node.y * o.cellH + o.nodeTop,
+  w: (node.w ?? 1) * o.cellW - o.insetX * 2,
+  h: o.nodeH,
 });
 
-const groupRect = (group: DiagramGroup): Rect => ({
-  x: group.x * CELL_W + GROUP_INSET,
-  y: group.y * CELL_H + GROUP_INSET,
-  w: group.w * CELL_W - GROUP_INSET * 2,
-  h: group.h * CELL_H - GROUP_INSET * 2,
+const groupRect = (group: DiagramGroup, o: LayoutOptions): Rect => ({
+  x: group.x * o.cellW + o.groupInset,
+  y: group.y * o.cellH + o.groupInset,
+  w: group.w * o.cellW - o.groupInset * 2,
+  h: group.h * o.cellH - o.groupInset * 2,
 });
+
+/** Down the side of the drawing, then across into the side of the target box. */
+function laneRoute(a: Rect, b: Rect, lane: Lane): Point[] {
+  const x = lane === 'left' ? Math.min(a.x, b.x) + 4 : Math.max(right(a), right(b)) - 4;
+  const y = b.y + b.h / 2;
+  return [
+    { x, y: bottom(a) },
+    { x, y },
+    { x: lane === 'left' ? b.x : right(b), y },
+  ];
+}
 
 const right = (r: Rect) => r.x + r.w;
 const bottom = (r: Rect) => r.y + r.h;
@@ -205,9 +280,9 @@ function labelPosition(points: Point[], side: 1 | -1 = -1): PlacedEdge['labelAt'
   return side < 0 ? { x, y: y - 8, anchor: 'middle' } : { x, y: y + 16, anchor: 'middle' };
 }
 
-export function layoutDiagram(spec: DiagramSpec): DiagramLayout {
+export function layoutDiagram(spec: DiagramSpec, o: LayoutOptions = WIDE): DiagramLayout {
   const nodes: PlacedNode[] = spec.nodes.map((node) => ({
-    ...nodeRect(node),
+    ...nodeRect(node, o),
     id: node.id,
     label: node.label,
     note: node.note,
@@ -215,7 +290,7 @@ export function layoutDiagram(spec: DiagramSpec): DiagramLayout {
     accent: node.accent ?? false,
   }));
   const groups: PlacedGroup[] = (spec.groups ?? []).map((group) => ({
-    ...groupRect(group),
+    ...groupRect(group, o),
     id: group.id,
     label: group.label,
   }));
@@ -228,9 +303,43 @@ export function layoutDiagram(spec: DiagramSpec): DiagramLayout {
     const b = boxes.get(edge.to);
     if (!a || !b) throw new Error(`Diagram "${spec.title}": edge ${edge.from} → ${edge.to} names an unknown box.`);
 
+    const lane = spec.lanes?.[edge.to];
+    if (lane) {
+      const points = laneRoute(a, b, lane);
+      const corner = points[1] as Point;
+      return {
+        id: `e${index}`,
+        from: edge.from,
+        to: edge.to,
+        points,
+        label: edge.label,
+        // Above the turn, on the inside of the lane.
+        labelAt: { x: corner.x + (lane === 'left' ? 10 : -10), y: corner.y - b.h / 2 - 8, anchor: lane === 'left' ? 'start' : 'end' },
+        dashed: edge.dashed ?? false,
+      };
+    }
+
     let points = route(a, b);
     let side: 1 | -1 = -1;
     const hasReverse = spec.edges.some((other) => other.from === edge.to && other.to === edge.from);
+    const vertical = points.length === 2 && points[0]?.x === points[1]?.x;
+    if (hasReverse && vertical && o.pairLabels === 'stacked') {
+      const first = edge.from < edge.to;
+      points = offset(points, (first ? -1 : 1) * PARALLEL_GAP);
+      const [p, q] = points as [Point, Point];
+      // Left of the pair, where a narrow drawing has room: the outer margin for the left
+      // column, the middle for the right one. The first edge's label sits above the second's.
+      const pairLeft = Math.min(p.x, q.x) - (first ? 0 : PARALLEL_GAP * 2);
+      return {
+        id: `e${index}`,
+        from: edge.from,
+        to: edge.to,
+        points,
+        label: edge.label,
+        labelAt: { x: pairLeft - 10, y: (p.y + q.y) / 2 + (first ? -6 : 12), anchor: 'end' },
+        dashed: edge.dashed ?? false,
+      };
+    }
     if (hasReverse && points.length === 2) {
       // Keep the pair apart: the edge whose source id sorts first goes up (or right), the
       // other down (or left), each with its label on its own outer side.
@@ -251,7 +360,7 @@ export function layoutDiagram(spec: DiagramSpec): DiagramLayout {
     };
   });
 
-  return { width: spec.columns * CELL_W, height: spec.rows * CELL_H, nodes, groups, edges };
+  return { width: spec.columns * o.cellW, height: spec.rows * o.cellH, nodes, groups, edges };
 }
 
 export const toPath = (points: Point[]): string =>
@@ -277,33 +386,22 @@ export interface Callout {
 export interface PlacedCallout {
   label: string;
   target: string;
-  /** Centre of the bubble. */
+  /** Centre of the bubble: the top-right corner of the box. */
   x: number;
   y: number;
   r: number;
-  /** Leader line from the box's top-right corner to the bubble. */
-  leader: [Point, Point];
 }
 
 const CALLOUT_R = 12;
-const CALLOUT_OFFSET = 16;
 
-/**
- * Decision markers on the drawing: a numbered bubble off the top-right corner of the box
- * a decision is about, joined to it by a short 45° leader, like a detail callout.
- */
+/** Decision markers on the drawing: a numbered bubble on the top-right corner of the box a decision is about. */
 export function placeCallouts(layout: DiagramLayout, callouts: Callout[]): PlacedCallout[] {
   const boxes = new Map<string, Rect>();
   for (const box of [...layout.groups, ...layout.nodes]) boxes.set(box.id, box);
 
-  return callouts.flatMap((callout) => {
+  return callouts.map((callout) => {
     const box = boxes.get(callout.target);
     if (!box) throw new Error(`Decision callout ${callout.label} points at an unknown box: ${callout.target}.`);
-    const corner = { x: right(box), y: box.y };
-    const x = corner.x + CALLOUT_OFFSET;
-    const y = corner.y - CALLOUT_OFFSET;
-    // The leader stops at the bubble's edge, along the 45° line.
-    const edge = CALLOUT_R / Math.SQRT2;
-    return [{ ...callout, x, y, r: CALLOUT_R, leader: [corner, { x: x - edge, y: y + edge }] }];
+    return { ...callout, x: right(box), y: box.y, r: CALLOUT_R };
   });
 }

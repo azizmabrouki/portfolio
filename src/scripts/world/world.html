@@ -1,0 +1,625 @@
+<!-- The 3D world of the home page, ported from the design canvas (Motion-v3). Decorative and
+     aria-hidden: loaded by scripts/world/index.ts only where the world runs, and inserted into
+     .world. Each box is six faces (.fb back, .fk/.fr/.fl/.ff sides, .ft top); styles in
+     components/home/World.astro. -->
+<div class="cam" data-cam="1">
+  <div class="p3 plate" data-plate="0" style="left:-210px;top:-150px;width:420px;height:300px">
+    <div class="f shade" style="left:24px;top:30px;width:400px;height:290px"></div>
+    <div class="f fb" style="left:0;top:0;width:420px;height:300px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:16px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:16px;height:300px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:16px;height:300px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:300px;width:420px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);"></div>
+    <div class="f ft ptop" style="left:0;top:0;width:420px;height:300px;transform:translateZ(16px);">
+      <div class="p3 mod" style="left:26px;top:26px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:122px;top:26px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:218px;top:26px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:314px;top:26px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:26px;top:114px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:122px;top:114px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:218px;top:114px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:314px;top:114px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:26px;top:202px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:122px;top:202px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:218px;top:202px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+      <div class="p3 mod" style="left:314px;top:202px;width:80px;height:70px">
+        <div class="f msh" style="left:6px;top:8px;width:80px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:6px;transform-origin:top;transform:rotateX(90deg);background:#14161B"></div>
+        <div class="f fr" style="left:80px;top:0;width:6px;height:70px;transform-origin:left center;transform:translateZ(6px) rotateY(90deg);background:#14161B;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:6px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#14161B;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:70px;width:80px;height:6px;transform-origin:top;transform:translateZ(6px) rotateX(-90deg);background:#14161B"></div>
+        <div class="f ft " style="left:0;top:0;width:80px;height:70px;transform:translateZ(6px);background:linear-gradient(140deg,#262A33,#1A1D24);border-radius:4px"></div>
+        <i class="f infled" style="left:10px;top:10px;transform:translateZ(7px)"></i>
+      </div>
+    </div>
+    <i class="mk" data-mk="L0" style="left:420px;top:300px;transform:translateZ(16px)"></i>
+  </div>
+  <div class="p3 plate" data-plate="1" style="left:-210px;top:-150px;width:420px;height:300px">
+    <div class="f shade" style="left:24px;top:30px;width:400px;height:290px"></div>
+    <div class="f fb" style="left:0;top:0;width:420px;height:300px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:16px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:16px;height:300px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:16px;height:300px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:300px;width:420px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);"></div>
+    <div class="f ft ptop" style="left:0;top:0;width:420px;height:300px;transform:translateZ(16px);">
+      <div class="f kboard" style="left:22px;top:34px;width:118px;height:232px"></div>
+      <div class="p3 pod" style="left:44px;top:54px;width:74px;height:50px;--pd:0.00s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="p3 pod" style="left:44px;top:122px;width:74px;height:50px;--pd:0.16s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="p3 pod" style="left:44px;top:190px;width:74px;height:50px;--pd:0.32s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="f kboard" style="left:154px;top:34px;width:118px;height:232px"></div>
+      <div class="p3 pod" style="left:176px;top:54px;width:74px;height:50px;--pd:0.48s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="p3 pod" style="left:176px;top:122px;width:74px;height:50px;--pd:0.64s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="p3 pod" style="left:176px;top:190px;width:74px;height:50px;--pd:0.80s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="f kboard" style="left:286px;top:34px;width:118px;height:232px"></div>
+      <div class="p3 pod" style="left:308px;top:54px;width:74px;height:50px;--pd:0.96s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="p3 pod" style="left:308px;top:122px;width:74px;height:50px;--pd:1.12s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+      <div class="p3 pod" style="left:308px;top:190px;width:74px;height:50px;--pd:1.28s">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:50px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:16px;transform-origin:top;transform:rotateX(90deg);background:#8A7650"></div>
+        <div class="f fr" style="left:74px;top:0;width:16px;height:50px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);background:#7A6846"></div>
+        <div class="f fl" style="left:0;top:0;width:16px;height:50px;transform-origin:left center;transform:rotateY(-90deg);background:#8A7650"></div>
+        <div class="f ff" style="left:0;top:50px;width:74px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);background:linear-gradient(180deg,#C9B994,#8A7650)"></div>
+        <div class="f ft podtop" style="left:0;top:0;width:74px;height:50px;transform:translateZ(16px);border-radius:4px"></div>
+      </div>
+    </div>
+    <i class="mk" data-mk="L1" style="left:420px;top:300px;transform:translateZ(16px)"></i>
+  </div>
+  <div class="p3 plate" data-plate="2" style="left:-210px;top:-150px;width:420px;height:300px">
+    <div class="f shade" style="left:24px;top:30px;width:400px;height:290px"></div>
+    <div class="f fb" style="left:0;top:0;width:420px;height:300px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:16px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:16px;height:300px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:16px;height:300px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:300px;width:420px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);"></div>
+    <div class="f ft ptop" style="left:0;top:0;width:420px;height:300px;transform:translateZ(16px);">
+      <div class="f groove" style="left:30px;top:138px;width:360px;height:24px"></div>
+      <div class="p3 mod" style="left:40px;top:196px;width:74px;height:56px">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:56px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:12px;transform-origin:top;transform:rotateX(90deg);background:#1C1914"></div>
+        <div class="f fr" style="left:74px;top:0;width:12px;height:56px;transform-origin:left center;transform:translateZ(12px) rotateY(90deg);background:#1C1914;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:12px;height:56px;transform-origin:left center;transform:rotateY(-90deg);background:#1C1914;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:56px;width:74px;height:12px;transform-origin:top;transform:translateZ(12px) rotateX(-90deg);background:#1C1914"></div>
+        <div class="f ft " style="left:0;top:0;width:74px;height:56px;transform:translateZ(12px);background:linear-gradient(140deg,#5E5038,#3A3226);border-radius:4px"></div>
+      </div>
+      <div class="f tick" style="left:75px;top:162px;height:34px"></div>
+      <div class="p3 mod" style="left:128px;top:60px;width:74px;height:56px">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:56px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:12px;transform-origin:top;transform:rotateX(90deg);background:#1C1914"></div>
+        <div class="f fr" style="left:74px;top:0;width:12px;height:56px;transform-origin:left center;transform:translateZ(12px) rotateY(90deg);background:#1C1914;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:12px;height:56px;transform-origin:left center;transform:rotateY(-90deg);background:#1C1914;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:56px;width:74px;height:12px;transform-origin:top;transform:translateZ(12px) rotateX(-90deg);background:#1C1914"></div>
+        <div class="f ft " style="left:0;top:0;width:74px;height:56px;transform:translateZ(12px);background:linear-gradient(140deg,#5E5038,#3A3226);border-radius:4px"></div>
+      </div>
+      <div class="f tick" style="left:163px;top:116px;height:22px"></div>
+      <div class="p3 mod" style="left:216px;top:196px;width:74px;height:56px">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:56px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:12px;transform-origin:top;transform:rotateX(90deg);background:#1C1914"></div>
+        <div class="f fr" style="left:74px;top:0;width:12px;height:56px;transform-origin:left center;transform:translateZ(12px) rotateY(90deg);background:#1C1914;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:12px;height:56px;transform-origin:left center;transform:rotateY(-90deg);background:#1C1914;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:56px;width:74px;height:12px;transform-origin:top;transform:translateZ(12px) rotateX(-90deg);background:#1C1914"></div>
+        <div class="f ft " style="left:0;top:0;width:74px;height:56px;transform:translateZ(12px);background:linear-gradient(140deg,#5E5038,#3A3226);border-radius:4px"></div>
+      </div>
+      <div class="f tick" style="left:251px;top:162px;height:34px"></div>
+      <div class="p3 mod" style="left:304px;top:60px;width:74px;height:56px">
+        <div class="f msh" style="left:6px;top:8px;width:74px;height:56px"></div>
+        <div class="f fk" style="left:0;top:0;width:74px;height:12px;transform-origin:top;transform:rotateX(90deg);background:#B07A2C"></div>
+        <div class="f fr" style="left:74px;top:0;width:12px;height:56px;transform-origin:left center;transform:translateZ(12px) rotateY(90deg);background:#B07A2C;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:12px;height:56px;transform-origin:left center;transform:rotateY(-90deg);background:#B07A2C;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:56px;width:74px;height:12px;transform-origin:top;transform:translateZ(12px) rotateX(-90deg);background:#B07A2C"></div>
+        <div class="f ft " style="left:0;top:0;width:74px;height:56px;transform:translateZ(12px);background:linear-gradient(140deg,#FFE0A8,#F2B95A);border-radius:4px"></div>
+      </div>
+      <div class="f tick" style="left:339px;top:116px;height:22px"></div>
+      <i class="f capsule" style="left:36px;top:142px"></i>
+    </div>
+    <i class="mk" data-mk="L2" style="left:420px;top:300px;transform:translateZ(16px)"></i>
+  </div>
+  <div class="p3 plate" data-plate="3" style="left:-210px;top:-150px;width:420px;height:300px">
+    <div class="f shade" style="left:24px;top:30px;width:400px;height:290px"></div>
+    <div class="f fb" style="left:0;top:0;width:420px;height:300px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:16px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:16px;height:300px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:16px;height:300px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:300px;width:420px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);"></div>
+    <div class="f ft ptop" style="left:0;top:0;width:420px;height:300px;transform:translateZ(16px);">
+      <div class="p3 mod" style="left:24px;top:24px;width:150px;height:110px">
+        <div class="f msh" style="left:6px;top:8px;width:150px;height:110px"></div>
+        <div class="f fk" style="left:0;top:0;width:150px;height:10px;transform-origin:top;transform:rotateX(90deg);background:#16181D"></div>
+        <div class="f fr" style="left:150px;top:0;width:10px;height:110px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);background:#16181D;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:10px;height:110px;transform-origin:left center;transform:rotateY(-90deg);background:#16181D;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:110px;width:150px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);background:#16181D"></div>
+        <div class="f ft " style="left:0;top:0;width:150px;height:110px;transform:translateZ(10px);background:linear-gradient(140deg,#2E323C,#20232A);border-radius:4px"></div>
+      </div>
+      <div class="p3 mod" style="left:190px;top:24px;width:96px;height:110px">
+        <div class="f msh" style="left:6px;top:8px;width:96px;height:110px"></div>
+        <div class="f fk" style="left:0;top:0;width:96px;height:10px;transform-origin:top;transform:rotateX(90deg);background:#16181D"></div>
+        <div class="f fr" style="left:96px;top:0;width:10px;height:110px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);background:#16181D;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:10px;height:110px;transform-origin:left center;transform:rotateY(-90deg);background:#16181D;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:110px;width:96px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);background:#16181D"></div>
+        <div class="f ft " style="left:0;top:0;width:96px;height:110px;transform:translateZ(10px);background:linear-gradient(140deg,#2E323C,#20232A);border-radius:4px"></div>
+      </div>
+      <div class="p3 mod" style="left:302px;top:24px;width:96px;height:110px">
+        <div class="f msh" style="left:6px;top:8px;width:96px;height:110px"></div>
+        <div class="f fk" style="left:0;top:0;width:96px;height:10px;transform-origin:top;transform:rotateX(90deg);background:#16181D"></div>
+        <div class="f fr" style="left:96px;top:0;width:10px;height:110px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);background:#16181D;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:10px;height:110px;transform-origin:left center;transform:rotateY(-90deg);background:#16181D;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:110px;width:96px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);background:#16181D"></div>
+        <div class="f ft " style="left:0;top:0;width:96px;height:110px;transform:translateZ(10px);background:linear-gradient(140deg,#2E323C,#20232A);border-radius:4px"></div>
+      </div>
+      <div class="p3 mod" style="left:24px;top:152px;width:96px;height:124px">
+        <div class="f msh" style="left:6px;top:8px;width:96px;height:124px"></div>
+        <div class="f fk" style="left:0;top:0;width:96px;height:10px;transform-origin:top;transform:rotateX(90deg);background:#16181D"></div>
+        <div class="f fr" style="left:96px;top:0;width:10px;height:124px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);background:#16181D;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:10px;height:124px;transform-origin:left center;transform:rotateY(-90deg);background:#16181D;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:124px;width:96px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);background:#16181D"></div>
+        <div class="f ft " style="left:0;top:0;width:96px;height:124px;transform:translateZ(10px);background:linear-gradient(140deg,#2E323C,#20232A);border-radius:4px"></div>
+      </div>
+      <div class="p3 mod" style="left:136px;top:152px;width:150px;height:124px">
+        <div class="f msh" style="left:6px;top:8px;width:150px;height:124px"></div>
+        <div class="f fk" style="left:0;top:0;width:150px;height:10px;transform-origin:top;transform:rotateX(90deg);background:#16181D"></div>
+        <div class="f fr" style="left:150px;top:0;width:10px;height:124px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);background:#16181D;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:10px;height:124px;transform-origin:left center;transform:rotateY(-90deg);background:#16181D;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:124px;width:150px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);background:#16181D"></div>
+        <div class="f ft " style="left:0;top:0;width:150px;height:124px;transform:translateZ(10px);background:linear-gradient(140deg,#2E323C,#20232A);border-radius:4px"></div>
+      </div>
+      <div class="p3 mod" style="left:302px;top:152px;width:96px;height:124px">
+        <div class="f msh" style="left:6px;top:8px;width:96px;height:124px"></div>
+        <div class="f fk" style="left:0;top:0;width:96px;height:10px;transform-origin:top;transform:rotateX(90deg);background:#16181D"></div>
+        <div class="f fr" style="left:96px;top:0;width:10px;height:124px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);background:#16181D;filter:brightness(0.7)"></div>
+        <div class="f fl" style="left:0;top:0;width:10px;height:124px;transform-origin:left center;transform:rotateY(-90deg);background:#16181D;filter:brightness(0.8)"></div>
+        <div class="f ff" style="left:0;top:124px;width:96px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);background:#16181D"></div>
+        <div class="f ft " style="left:0;top:0;width:96px;height:124px;transform:translateZ(10px);background:linear-gradient(140deg,#2E323C,#20232A);border-radius:4px"></div>
+      </div>
+    </div>
+    <i class="mk" data-mk="L3" style="left:420px;top:300px;transform:translateZ(16px)"></i>
+  </div>
+  <div class="p3 plate glass" data-plate="4" style="left:-210px;top:-150px;width:420px;height:300px">
+    <div class="f shade" style="left:24px;top:30px;width:400px;height:290px"></div>
+    <div class="f fb" style="left:0;top:0;width:420px;height:300px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:16px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:16px;height:300px;transform-origin:left center;transform:translateZ(16px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:16px;height:300px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:300px;width:420px;height:16px;transform-origin:top;transform:translateZ(16px) rotateX(-90deg);"></div>
+    <div class="f ft ptop" style="left:0;top:0;width:420px;height:300px;transform:translateZ(16px);">
+      <svg class="f mongraph" width="420" height="300" viewBox="0 0 420 300" style="left:0;top:0;transform:translateZ(1px)"><line x1="30" x2="390" y1="60" y2="60" stroke="rgba(255,255,255,0.08)"></line><line x1="30" x2="390" y1="96" y2="96" stroke="rgba(255,255,255,0.08)"></line><line x1="30" x2="390" y1="132" y2="132" stroke="rgba(255,255,255,0.08)"></line><line x1="30" x2="390" y1="168" y2="168" stroke="rgba(255,255,255,0.08)"></line><line x1="30" x2="390" y1="204" y2="204" stroke="rgba(255,255,255,0.08)"></line><line x1="30" x2="390" y1="240" y2="240" stroke="rgba(255,255,255,0.08)"></line><polyline points="30.0,190 57.7,176 85.4,182 113.1,150 140.8,158 168.5,132 196.2,140 223.9,118 251.6,126 279.3,98 307.0,110 334.7,92 362.4,104 390.1,86 390,240 30,240" fill="rgba(255,181,71,0.08)" stroke="none"></polyline><polyline class="mline" points="30.0,190 57.7,176 85.4,182 113.1,150 140.8,158 168.5,132 196.2,140 223.9,118 251.6,126 279.3,98 307.0,110 334.7,92 362.4,104 390.1,86" fill="none" stroke="#FFB547" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"></polyline><rect x="30" y="258" width="120" height="8" rx="4" fill="rgba(237,234,227,0.35)"></rect><rect x="170" y="258" width="80" height="8" rx="4" fill="rgba(237,234,227,0.35)"></rect><rect x="270" y="258" width="120" height="8" rx="4" fill="rgba(237,234,227,0.35)"></rect></svg>
+      <i class="f led" data-led="1" style="left:24px;top:22px;transform:translateZ(3px)"></i>
+    </div>
+    <i class="mk" data-mk="L4" style="left:420px;top:300px;transform:translateZ(16px)"></i>
+  </div>
+  <div class="p3 screen" data-screen="1" style="left:-210px;top:-132px;width:420px;height:264px">
+    <div class="f fb" style="left:0;top:0;width:420px;height:264px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:10px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:10px;height:264px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:10px;height:264px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:264px;width:420px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);"></div>
+    <div class="f ft " style="left:0;top:0;width:420px;height:264px;transform:translateZ(10px);">
+      <div class="scr">
+        <div class="scrbar"></div>
+        <span data-screen-text="1"></span>
+      </div>
+    </div>
+  </div>
+  <div class="p3 screen" data-screen="2" style="left:-210px;top:-132px;width:420px;height:264px">
+    <div class="f fb" style="left:0;top:0;width:420px;height:264px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:10px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:10px;height:264px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:10px;height:264px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:264px;width:420px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);"></div>
+    <div class="f ft " style="left:0;top:0;width:420px;height:264px;transform:translateZ(10px);">
+      <div class="scr">
+        <div class="scrbar"></div>
+        <span data-screen-text="2"></span>
+      </div>
+    </div>
+  </div>
+  <div class="p3 screen" data-screen="3" style="left:-210px;top:-132px;width:420px;height:264px">
+    <div class="f fb" style="left:0;top:0;width:420px;height:264px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:10px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:10px;height:264px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:10px;height:264px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:264px;width:420px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);"></div>
+    <div class="f ft " style="left:0;top:0;width:420px;height:264px;transform:translateZ(10px);">
+      <div class="scr">
+        <div class="scrbar"></div>
+        <span data-screen-text="3"></span>
+      </div>
+    </div>
+  </div>
+  <div class="p3 screen" data-screen="4" style="left:-210px;top:-132px;width:420px;height:264px">
+    <div class="f fb" style="left:0;top:0;width:420px;height:264px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:420px;height:10px;transform-origin:top;transform:rotateX(90deg);"></div>
+    <div class="f fr" style="left:420px;top:0;width:10px;height:264px;transform-origin:left center;transform:translateZ(10px) rotateY(90deg);"></div>
+    <div class="f fl" style="left:0;top:0;width:10px;height:264px;transform-origin:left center;transform:rotateY(-90deg);"></div>
+    <div class="f ff" style="left:0;top:264px;width:420px;height:10px;transform-origin:top;transform:translateZ(10px) rotateX(-90deg);"></div>
+    <div class="f ft " style="left:0;top:0;width:420px;height:264px;transform:translateZ(10px);">
+      <div class="scr">
+        <div class="scrbar"></div>
+        <span data-screen-text="4"></span>
+      </div>
+    </div>
+  </div>
+  <div class="p3 ghost" data-ghostp="1" style="left:-210px;top:-150px;width:420px;height:300px">
+    <div class="f gtop" style="left:0;top:0;width:420px;height:300px;transform:translateZ(16px)"></div>
+    <div class="f gtop" style="left:0;top:0;width:420px;height:300px"></div>
+    <i class="mk" data-mk="ghost" style="left:420px;top:150px;transform:translateZ(16px)"></i>
+  </div>
+  <div class="p3 bit" data-bit="0" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="1" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitalert" style="left:10px;top:10px"></i>
+      <i class="f bitline" style="left:24px;top:12px;width:30px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="2" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="3" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="4" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="5" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitalert" style="left:10px;top:10px"></i>
+      <i class="f bitline" style="left:24px;top:12px;width:30px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="6" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="7" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="8" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="9" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitalert" style="left:10px;top:10px"></i>
+      <i class="f bitline" style="left:24px;top:12px;width:30px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="10" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="11" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="12" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitline" style="left:10px;top:12px;width:40px"></i>
+      <i class="f bitline" style="left:10px;top:24px;width:28px"></i>
+    </div>
+  </div>
+  <div class="p3 bit" data-bit="13" style="left:-35px;top:-23px;width:70px;height:46px">
+    <div class="f fb" style="left:0;top:0;width:70px;height:46px;transform:rotateY(180deg);background:#101217"></div>
+    <div class="f fk" style="left:0;top:0;width:70px;height:5px;transform-origin:top;transform:rotateX(90deg);background:#2A2D35"></div>
+    <div class="f fr" style="left:70px;top:0;width:5px;height:46px;transform-origin:left center;transform:translateZ(5px) rotateY(90deg);background:#2A2D35"></div>
+    <div class="f fl" style="left:0;top:0;width:5px;height:46px;transform-origin:left center;transform:rotateY(-90deg);background:#2A2D35"></div>
+    <div class="f ff" style="left:0;top:46px;width:70px;height:5px;transform-origin:top;transform:translateZ(5px) rotateX(-90deg);background:#3A3E48"></div>
+    <div class="f ft " style="left:0;top:0;width:70px;height:46px;transform:translateZ(5px);background:linear-gradient(140deg,#2C2F38,#1C1F26);box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);border-radius:4px">
+      <i class="f bitalert" style="left:10px;top:10px"></i>
+      <i class="f bitline" style="left:24px;top:12px;width:30px"></i>
+    </div>
+  </div>
+  <div class="p3 rig" data-rig="traffic" style="left:-380px;top:-270px;width:760px;height:540px">
+    <div class="f fb" style="left:0;top:0;width:760px;height:540px;transform:rotateY(180deg);background:#0B0C10"></div>
+    <div class="f fk" style="left:0;top:0;width:760px;height:18px;transform-origin:top;transform:rotateX(90deg);background:#16181D"></div>
+    <div class="f fr" style="left:760px;top:0;width:18px;height:540px;transform-origin:left center;transform:translateZ(18px) rotateY(90deg);background:#16181D"></div>
+    <div class="f fl" style="left:0;top:0;width:18px;height:540px;transform-origin:left center;transform:rotateY(-90deg);background:#1C1F26"></div>
+    <div class="f ff" style="left:0;top:540px;width:760px;height:18px;transform-origin:top;transform:translateZ(18px) rotateX(-90deg);background:linear-gradient(180deg,#2B2F38,#121419)"></div>
+    <div class="f ft rtop" style="left:0;top:0;width:760px;height:540px;transform:translateZ(18px);">
+      <svg class="f grooves" width="760" height="540" viewBox="0 0 760 540" style="left:0;top:0;transform:translateZ(1px)"><path class="gv" d="M0 270 L110 270"></path><path class="gv gv-a1" d="M190 270 L250 270 L250 95 L330 95 M420 95 L520 95 L520 270 L590 270"></path><path class="gv gv-a2" d="M190 270 L250 270 L250 210 L330 210 M420 210 L520 210 L520 270 L590 270"></path><path class="gv gv-a3" d="M190 270 L250 270 L250 325 L330 325 M420 325 L520 325 L520 270 L590 270"></path><path class="gv gv-a4" d="M190 270 L250 270 L250 440 L330 440 M420 440 L520 440 L520 270 L590 270"></path></svg>
+      <div class="p3 blk" data-blk="lb" style="left:110px;top:230px;width:80px;height:80px">
+        <div class="f msh" style="left:10px;top:12px;width:80px;height:80px"></div>
+        <div class="f fk" style="left:0;top:0;width:80px;height:34px;transform-origin:top;transform:rotateX(90deg);background:#1E2128"></div>
+        <div class="f fr" style="left:80px;top:0;width:34px;height:80px;transform-origin:left center;transform:translateZ(34px) rotateY(90deg);background:#181A20"></div>
+        <div class="f fl" style="left:0;top:0;width:34px;height:80px;transform-origin:left center;transform:rotateY(-90deg);background:#1E2128"></div>
+        <div class="f ff" style="left:0;top:80px;width:80px;height:34px;transform-origin:top;transform:translateZ(34px) rotateX(-90deg);background:linear-gradient(180deg,#2A2E37,#15171C)"></div>
+        <div class="f ft btop" style="left:0;top:0;width:80px;height:80px;transform:translateZ(34px);background:linear-gradient(140deg,#343844,#22252D);border-radius:4px"></div>
+        <i class="mk" data-mk="lb" style="left:40px;top:40px;transform:translateZ(36px)"></i>
+      </div>
+      <div class="p3 blk" data-blk="a1" style="left:330px;top:60px;width:90px;height:70px">
+        <div class="f msh" style="left:10px;top:12px;width:90px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:90px;height:50px;transform-origin:top;transform:rotateX(90deg);background:#1E2128"></div>
+        <div class="f fr" style="left:90px;top:0;width:50px;height:70px;transform-origin:left center;transform:translateZ(50px) rotateY(90deg);background:#181A20"></div>
+        <div class="f fl" style="left:0;top:0;width:50px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#1E2128"></div>
+        <div class="f ff" style="left:0;top:70px;width:90px;height:50px;transform-origin:top;transform:translateZ(50px) rotateX(-90deg);background:linear-gradient(180deg,#2A2E37,#15171C)"></div>
+        <div class="f ft btop" style="left:0;top:0;width:90px;height:70px;transform:translateZ(50px);background:linear-gradient(140deg,#343844,#22252D);border-radius:4px"></div>
+        <i class="mk" data-mk="a1" style="left:45px;top:35px;transform:translateZ(52px)"></i>
+      </div>
+      <div class="p3 blk" data-blk="a2" style="left:330px;top:175px;width:90px;height:70px">
+        <div class="f msh" style="left:10px;top:12px;width:90px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:90px;height:50px;transform-origin:top;transform:rotateX(90deg);background:#1E2128"></div>
+        <div class="f fr" style="left:90px;top:0;width:50px;height:70px;transform-origin:left center;transform:translateZ(50px) rotateY(90deg);background:#181A20"></div>
+        <div class="f fl" style="left:0;top:0;width:50px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#1E2128"></div>
+        <div class="f ff" style="left:0;top:70px;width:90px;height:50px;transform-origin:top;transform:translateZ(50px) rotateX(-90deg);background:linear-gradient(180deg,#2A2E37,#15171C)"></div>
+        <div class="f ft btop" style="left:0;top:0;width:90px;height:70px;transform:translateZ(50px);background:linear-gradient(140deg,#343844,#22252D);border-radius:4px"></div>
+        <i class="mk" data-mk="a2" style="left:45px;top:35px;transform:translateZ(52px)"></i>
+      </div>
+      <div class="p3 blk" data-blk="a3" style="left:330px;top:290px;width:90px;height:70px">
+        <div class="f msh" style="left:10px;top:12px;width:90px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:90px;height:50px;transform-origin:top;transform:rotateX(90deg);background:#1E2128"></div>
+        <div class="f fr" style="left:90px;top:0;width:50px;height:70px;transform-origin:left center;transform:translateZ(50px) rotateY(90deg);background:#181A20"></div>
+        <div class="f fl" style="left:0;top:0;width:50px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#1E2128"></div>
+        <div class="f ff" style="left:0;top:70px;width:90px;height:50px;transform-origin:top;transform:translateZ(50px) rotateX(-90deg);background:linear-gradient(180deg,#2A2E37,#15171C)"></div>
+        <div class="f ft btop" style="left:0;top:0;width:90px;height:70px;transform:translateZ(50px);background:linear-gradient(140deg,#343844,#22252D);border-radius:4px"></div>
+        <i class="mk" data-mk="a3" style="left:45px;top:35px;transform:translateZ(52px)"></i>
+      </div>
+      <div class="p3 blk" data-blk="a4" style="left:330px;top:405px;width:90px;height:70px">
+        <div class="f msh" style="left:10px;top:12px;width:90px;height:70px"></div>
+        <div class="f fk" style="left:0;top:0;width:90px;height:50px;transform-origin:top;transform:rotateX(90deg);background:#1E2128"></div>
+        <div class="f fr" style="left:90px;top:0;width:50px;height:70px;transform-origin:left center;transform:translateZ(50px) rotateY(90deg);background:#181A20"></div>
+        <div class="f fl" style="left:0;top:0;width:50px;height:70px;transform-origin:left center;transform:rotateY(-90deg);background:#1E2128"></div>
+        <div class="f ff" style="left:0;top:70px;width:90px;height:50px;transform-origin:top;transform:translateZ(50px) rotateX(-90deg);background:linear-gradient(180deg,#2A2E37,#15171C)"></div>
+        <div class="f ft btop" style="left:0;top:0;width:90px;height:70px;transform:translateZ(50px);background:linear-gradient(140deg,#343844,#22252D);border-radius:4px"></div>
+        <i class="mk" data-mk="a4" style="left:45px;top:35px;transform:translateZ(52px)"></i>
+      </div>
+      <div class="p3 blk" data-blk="db" style="left:590px;top:215px;width:100px;height:110px">
+        <div class="f msh" style="left:10px;top:12px;width:100px;height:110px"></div>
+        <div class="f fk" style="left:0;top:0;width:100px;height:62px;transform-origin:top;transform:rotateX(90deg);background:#1E2128"></div>
+        <div class="f fr" style="left:100px;top:0;width:62px;height:110px;transform-origin:left center;transform:translateZ(62px) rotateY(90deg);background:#181A20"></div>
+        <div class="f fl" style="left:0;top:0;width:62px;height:110px;transform-origin:left center;transform:rotateY(-90deg);background:#1E2128"></div>
+        <div class="f ff" style="left:0;top:110px;width:100px;height:62px;transform-origin:top;transform:translateZ(62px) rotateX(-90deg);background:linear-gradient(180deg,#2A2E37,#15171C)"></div>
+        <div class="f ft btop" style="left:0;top:0;width:100px;height:110px;transform:translateZ(62px);background:linear-gradient(140deg,#343844,#22252D);border-radius:4px"></div>
+        <i class="mk" data-mk="db" style="left:50px;top:55px;transform:translateZ(64px)"></i>
+      </div>
+      <i class="f pk" data-pk="0"></i>
+      <i class="f pk" data-pk="1"></i>
+      <i class="f pk" data-pk="2"></i>
+      <i class="f pk" data-pk="3"></i>
+      <i class="f pk" data-pk="4"></i>
+      <i class="f pk" data-pk="5"></i>
+      <i class="f pk" data-pk="6"></i>
+      <i class="f pk" data-pk="7"></i>
+      <i class="f pk" data-pk="8"></i>
+      <i class="f pk" data-pk="9"></i>
+      <i class="f pk" data-pk="10"></i>
+      <i class="f pk" data-pk="11"></i>
+      <i class="f pk" data-pk="12"></i>
+      <i class="f pk" data-pk="13"></i>
+      <i class="f pk" data-pk="14"></i>
+      <i class="f pk" data-pk="15"></i>
+      <i class="f pk" data-pk="16"></i>
+      <i class="f pk" data-pk="17"></i>
+    </div>
+  </div>
+</div>

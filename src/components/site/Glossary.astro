@@ -1,0 +1,53 @@
+---
+/**
+ * Glossary terms in Markdown bodies are written as
+ *   <button type="button" class="term" popovertarget="term-<id>">words</button>
+ * Without JavaScript the button opens a popover with the definition (rendered below).
+ * With it, the definition opens in place instead, at the end of the term's paragraph,
+ * one at a time, as in the design.
+ */
+import { glossary } from '@/config/glossary';
+---
+
+{
+  glossary.map((entry) => (
+    <div class="term-pop" id={`term-${entry.id}`} popover>
+      <strong>{entry.term}</strong>
+      {entry.definition}
+    </div>
+  ))
+}
+
+<script>
+  const terms = [...document.querySelectorAll<HTMLButtonElement>('button.term[popovertarget]')];
+  let open: { button: HTMLButtonElement; def: HTMLElement } | null = null;
+
+  const close = () => {
+    if (!open) return;
+    open.button.setAttribute('aria-expanded', 'false');
+    open.def.remove();
+    open = null;
+  };
+
+  terms.forEach((button, index) => {
+    const pop = document.getElementById(button.getAttribute('popovertarget') ?? '');
+    if (!pop) return;
+    const id = `def-${index}`;
+    button.removeAttribute('popovertarget');
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', id);
+    button.addEventListener('click', () => {
+      const same = open?.button === button;
+      close();
+      if (same) return;
+      const def = document.createElement('span');
+      def.className = 'def';
+      def.id = id;
+      def.setAttribute('role', 'note');
+      def.innerHTML = pop.innerHTML;
+      (button.closest('p, li') ?? button.parentElement)?.append(def);
+      button.setAttribute('aria-expanded', 'true');
+      open = { button, def };
+    });
+  });
+</script>

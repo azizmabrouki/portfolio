@@ -1,13 +1,13 @@
 /**
  * /sitemap.xml, generated at build from the pages and the content collections.
- * The design-system page and the 404 are left out on purpose.
+ * The 404 and draft case studies are left out on purpose.
  */
 import type { APIRoute } from 'astro';
 import { getNotes, getProjects } from '@/lib/content';
 
 export const GET: APIRoute = async ({ site }) => {
   const base = site ?? new URL('http://localhost:4321/');
-  const projects = await getProjects();
+  const projects = (await getProjects()).filter((project) => !project.data.draft);
   const notes = await getNotes();
 
   const entries: { path: string; lastmod?: string }[] = [

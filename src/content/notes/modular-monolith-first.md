@@ -3,8 +3,13 @@ title: Why I start with a modular monolith
 summary: Microservices solve problems a new product doesn’t have yet. Module boundaries solve the ones it does.
 date: 2026-09-27
 tags:
-  - architecture
-  - modular monolith
+  - Architecture
+  - Modular monolith
+related: studiolabcloud
+where:
+  text: 'StudioLabCloud is built this way: one Laravel application, modules that talk through contracts, and one Python service split out for the assistant.'
+  label: See it in the diagram
+  href: /projects/studiolabcloud/#diagram
 ---
 
 When I started designing StudioLabCloud, the question came up in the first week: one application, or several services? The platform had clear areas (billing, the service catalogue, support, messaging) and each one looked like a natural candidate for a service. I chose one Laravel application with <mark>strict internal boundaries</mark> instead: a <button type="button" class="term" popovertarget="term-modular-monolith">modular monolith</button>. Three releases later, I would make the same call.
@@ -47,6 +52,10 @@ The third one already happened in StudioLabCloud, in a small way. The support as
 
 That is the point of starting with modules. When a real reason to split shows up, the boundary is already there, and <mark>you split exactly one piece</mark>.
 
+<section class="short" aria-labelledby="the-short-version">
+
 ## The short version
 
 Start with one deployable and strict modules. Write down why each boundary is where it is. Split a module out when a team, a scaling need or a runtime forces it, and let its contract become its API.
+
+</section>

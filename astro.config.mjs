@@ -15,42 +15,20 @@ export default defineConfig({
     inlineStylesheets: 'always',
   },
 
-  // Code blocks in notes take their colours from CSS variables set in global.css.
-  markdown: {
-    shikiConfig: { theme: 'css-variables' },
-  },
-
   // Downloaded from Fontsource at build time and self-hosted from /_astro/fonts.
-  // Astro generates a metric-matched fallback per family, so text paints at once in the
-  // fallback and swaps with no layout shift. Each family becomes a CSS variable in tokens.css.
+  // Archivo is one variable file with both axes (weight 100–900, width 62–125%), so every
+  // weight and width the design uses costs a single download. Astro generates a
+  // metric-matched fallback, so text paints at once in the fallback and swaps with no
+  // layout shift. The family becomes the --font-archivo variable in tokens.css.
   fonts: [
     {
       provider: fontProviders.fontsource(),
-      name: 'Fraunces',
-      cssVariable: '--font-fraunces',
-      weights: ['100 900'],
-      // Upright only: the italic file alone was ~147 KB for one line of text.
-      styles: ['normal'],
-      subsets: ['latin'],
-      fallbacks: ['serif'],
-    },
-    {
-      provider: fontProviders.fontsource(),
-      name: 'Inter',
-      cssVariable: '--font-inter',
+      name: 'Archivo',
+      cssVariable: '--font-archivo',
       weights: ['100 900'],
       styles: ['normal'],
       subsets: ['latin'],
-      fallbacks: ['sans-serif'],
-    },
-    {
-      provider: fontProviders.fontsource(),
-      name: 'JetBrains Mono',
-      cssVariable: '--font-jetbrains-mono',
-      weights: ['100 800'],
-      styles: ['normal'],
-      subsets: ['latin'],
-      fallbacks: ['monospace'],
+      fallbacks: ['Helvetica Neue', 'Arial', 'sans-serif'],
     },
   ],
 });

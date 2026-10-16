@@ -1,0 +1,73 @@
+---
+/**
+ * The top bar of every page but the home page: brand · All work · Contact.
+ */
+import { site } from '@/config/site';
+
+interface Props {
+  /** Sticks to the top while reading (case studies and notes, not the 404). */
+  sticky?: boolean;
+}
+
+const { sticky = true } = Astro.props;
+---
+
+<header class:list={['bar', { sticky }]}>
+  <div class="wrap bar-in">
+    <a class="brand" href="/">{site.shortName}</a>
+    <nav class="crumbs" aria-label="Site">
+      {site.nav.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .bar {
+    background: rgb(7 8 11 / 0.92);
+  }
+
+  .sticky {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .bar-in {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: var(--bar-h);
+  }
+
+  .brand {
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .brand:hover,
+  .crumbs a:hover {
+    color: var(--gold);
+  }
+</style>

@@ -1,113 +1,183 @@
 ---
-import SectionHead from '@/components/home/SectionHead.astro';
-import TitleBlock from '@/components/drawing/TitleBlock.astro';
-import { site } from '@/config/site';
-import { languages } from '@/config/experience';
-
-const { email, linkedin, github, cv } = site.links;
+/**
+ * "Last stop. Let's build yours.": what I'm looking for, where, how fast I reply, and the
+ * ways to reach me. In the 3D world, hovering "Email me" quickens the heartbeat and lifts
+ * the empty layer on top of the stack (scripts/world reads data-listen).
+ */
+import { contact } from '@/config/home';
+import { mailto, site } from '@/config/site';
 ---
 
-<section id="contact" class="section contact" aria-labelledby="contact-title">
-  <div class="container">
-    <SectionHead
-      number="05"
-      marker="Contact"
-      id="contact-title"
-      title="Hiring? ==Let’s talk.=="
-      lead="I’m looking for a junior software engineer role where I can grow toward architecture, in Tunisia, in Europe or remote. Email is the fastest way to reach me."
-    />
-
-    {
-      email && (
-        <div class="contact__email">
-          <p>
-            <a href={`mailto:${email}`}>{email}</a>
-          </p>
-          <button class="button button--secondary" type="button" data-copy={email} hidden>
-            Copy address
-          </button>
-          <span class="visually-hidden" aria-live="polite" data-copy-status></span>
+<section id="contact" data-sec="contact" class="wrap contact" aria-labelledby="c-title">
+  <div class="ccol">
+    <div class="ctext rv">
+      <h2 id="c-title" class="disp h2c">
+        {
+          contact.lines.map((line, n) => (
+            <span class="mask" style={n > 0 ? '--d: 90ms' : undefined}>
+              <span>{line} </span>
+            </span>
+          ))
+        }
+      </h2>
+      <p class="clede fd" style="--d: 240ms">{contact.lede}</p>
+    </div>
+    <div class="cpanel rv">
+      <dl class="fields fd">
+        {
+          contact.fields.map((field, index) => (
+            <div class:list={{ wide: index === 0 || index === 3 }}>
+              <dt>{field.label}</dt>
+              <dd>{field.value}</dd>
+            </div>
+          ))
+        }
+        <div class="span2">
+          <dt>Works with</dt>
+          <dd>{contact.worksWith.join(', ')}</dd>
         </div>
-      )
-    }
-
-    <ul class="contact__links cluster" role="list">
-      {linkedin && <li><a href={linkedin} rel="me">LinkedIn</a></li>}
-      {github && <li><a href={github} rel="me">GitHub</a></li>}
-      {cv && <li><a href={cv}>CV (PDF)</a></li>}
-    </ul>
-
-    <TitleBlock
-      class="contact__block"
-      fields={[
-        { label: 'Based in', value: site.location },
-        { label: 'Open to', value: 'Tunisia · Europe · Remote' },
-        { label: 'Languages', value: languages.join(' · ') },
-        { label: 'Graduating', value: 'ESPRIT, 2026' },
-      ]}
-    />
+      </dl>
+      <div class="cbtns fd" style="--d: 160ms">
+        <a class="btn btn-gold" href={mailto()} data-listen>Email me</a>
+        <div class="row2">
+          {site.links.linkedin && <a class="btn btn-ghost" href={site.links.linkedin}>LinkedIn</a>}
+          {site.links.github && <a class="btn btn-ghost" href={site.links.github}>GitHub</a>}
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<script>
-  // "Copy address": shown only where the clipboard is available.
-  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
-  const status = document.querySelector<HTMLElement>('[data-copy-status]');
-  if (button && navigator.clipboard) {
-    const label = button.textContent?.trim() ?? 'Copy address';
-    let timer = 0;
-    button.hidden = false;
-    button.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(button.dataset.copy ?? '');
-        button.textContent = 'Copied';
-        if (status) status.textContent = 'Email address copied to the clipboard.';
-      } catch {
-        button.textContent = 'Copy failed: select the address instead';
-      }
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => {
-        button.textContent = label;
-        if (status) status.textContent = '';
-      }, 2400);
-    });
-  }
-</script>
-
 <style>
   .contact {
-    padding-block-end: var(--space-3xl);
+    position: relative;
+    padding-top: 96px;
   }
 
-  .contact__email {
+  .ccol {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-s) var(--space-m);
-    margin-block-end: var(--space-m);
+    flex-direction: column;
+    gap: 28px;
+    max-width: 720px;
   }
 
-  .contact__email p {
-    font-family: var(--font-display);
-    font-size: var(--step-3);
-    line-height: var(--leading-snug);
-    overflow-wrap: anywhere;
+  .ctext {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 
-  .contact__email button[hidden] {
-    display: none;
+  .h2c {
+    font-size: clamp(46px, 6vw, 100px);
   }
 
-  .contact__links {
-    --cluster-gap: var(--space-2xs) var(--space-l);
+  .clede {
+    margin: 0;
+    max-width: 30em;
+    font-size: clamp(17px, 1.5vw, 21px);
+    line-height: 1.5;
+  }
 
-    margin: 0 0 var(--space-xl);
-    padding: 0;
-    list-style: none;
-    font-family: var(--font-mono);
-    font-size: var(--text-label);
-    font-weight: 500;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
+  .cpanel {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 22px 20px;
+    background: var(--surface-raised);
+    box-shadow: inset 0 0 0 1px rgb(255 181 71 / 0.5);
+  }
+
+  .fields {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 18px;
+  }
+
+  .fields dt {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+
+  .fields dd {
+    margin: 4px 0 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .fields .wide,
+  .fields .span2 {
+    grid-column: 1 / -1;
+  }
+
+  .fields .span2 dd {
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .cbtns {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .row2 {
+    display: flex;
+    gap: 24px;
+  }
+
+  @media (min-width: 600px) {
+    .ccol {
+      gap: 30px;
+    }
+
+    .ctext {
+      gap: 22px;
+    }
+
+    .cpanel {
+      padding: 24px;
+    }
+
+    .fields {
+      gap: 16px 24px;
+    }
+
+    .fields .wide {
+      grid-column: auto;
+    }
+
+    .fields dd {
+      font-size: 17px;
+    }
+
+    .fields .span2 dd {
+      font-size: 16px;
+    }
+
+    .cbtns {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 24px;
+    }
+  }
+
+  :global(html.w3d) .contact {
+    min-height: min(100vh, 1000px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 110px;
+    padding-bottom: 110px;
+  }
+
+  :global(html.w3d) .ccol {
+    width: min(46%, 640px);
+    max-width: none;
+    margin-left: auto;
   }
 </style>

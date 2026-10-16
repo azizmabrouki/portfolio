@@ -1,0 +1,562 @@
+---
+/**
+ * "The route so far": the career as a departures board, oldest first, ending on the
+ * visitor's team. Rows with a role open a detail panel, one at a time (scripts/home.ts);
+ * without JavaScript every panel is simply open. In the 3D world the board is pinned and
+ * rows flip in one stop at a time, each pulling a blade out of the rack.
+ */
+import { nextStop, roleOf, route, statusLabel, type StopStatus } from '@/config/experience';
+import { routeIntro } from '@/config/home';
+import { site } from '@/config/site';
+import { getProjects } from '@/lib/content';
+import { rich } from '@/lib/rich';
+
+const published = new Set((await getProjects()).filter((project) => !project.data.draft).map((project) => project.id));
+const flapClass: Record<StopStatus, string> = { departed: 'c-dep', arrived: 'c-arr', 'on-time': 'c-on' };
+const letters = (status: StopStatus) => statusLabel[status].toUpperCase().split('');
+---
+
+<section id="route" data-sec="route" class="route" aria-labelledby="r-title">
+  <div class="rpin wrap">
+    <div class="rcol">
+      <h2 id="r-title" class="disp h2r rv">
+        <span class="mask"><span>{routeIntro.heading}</span></span>
+      </h2>
+      <div class="board" role="table" aria-label="Career departures board">
+        <div class="btop">
+          <span>{routeIntro.board}</span>
+          <span>{site.city} <span class="clk tab" data-clock></span></span>
+        </div>
+        <div class="row hd" role="row">
+          <span role="columnheader">When</span>
+          <span role="columnheader">Stop</span>
+          <span role="columnheader">Detail</span>
+          <span role="columnheader">Status</span>
+        </div>
+        {
+          route.map((stop, index) => {
+            const role = roleOf(stop.role);
+            const panelId = `x-${index}`;
+            const caseStudy = role?.caseStudy;
+            return (
+              <div class="row" role="row" data-row={index}>
+                <span role="cell" class="when tab">
+                  {stop.when}
+                </span>
+                <span role="cell" class="stop">
+                  {role ? (
+                    <button class="xbtn" type="button" aria-expanded="true" aria-controls={panelId} data-xbtn>
+                      {stop.stop}
+                      <svg class="xchev" viewBox="0 0 12 12" aria-hidden="true">
+                        <path d="M2.5 4.5 L6 8 L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+                      </svg>
+                    </button>
+                  ) : (
+                    stop.stop
+                  )}
+                </span>
+                <span role="cell" class="det">
+                  {stop.detail}
+                  {stop.proof && (
+                    <>
+                      {' · '}
+                      {stop.proof.href ? (
+                        <a class="proof" href={stop.proof.href}>
+                          {stop.proof.label}
+                        </a>
+                      ) : (
+                        <span class="soon-s">{stop.proof.label}</span>
+                      )}
+                    </>
+                  )}
+                </span>
+                <span role="cell" class:list={['st', flapClass[stop.status]]}>
+                  <span class="flap">
+                    <span class="sr-only">{statusLabel[stop.status]}</span>
+                    {letters(stop.status).map((letter, i) => (
+                      <b aria-hidden="true" style={`--i: ${i}`}>
+                        {letter === ' ' ? '' : letter}
+                      </b>
+                    ))}
+                  </span>
+                </span>
+                {role && (
+                  <div class="xpanel" role="cell" id={panelId}>
+                    <p class="xmeta">{[role.role, role.period, role.mode, role.note].filter(Boolean).join(' · ')}</p>
+                    <ul class="xlist">
+                      {role.highlights.map((highlight) => (
+                        <li set:html={rich(highlight)} />
+                      ))}
+                    </ul>
+                    <div class="xfoot">
+                      <span>{role.stack.join(' · ')}</span>
+                      {caseStudy &&
+                        (published.has(caseStudy) ? (
+                          <a class="proof" href={`/projects/${caseStudy}/`}>
+                            Read the case study
+                          </a>
+                        ) : (
+                          <span class="soon-s">Case study soon</span>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        }
+        <div class="row next on-gold" role="row" data-row={route.length}>
+          <span role="cell" class="when">{nextStop.when}</span>
+          <span role="cell" class="stop">{nextStop.stop}</span>
+          <span role="cell" class="det">{nextStop.detail}</span>
+          <span role="cell" class="st"><a class="seat" href={nextStop.cta.href}>{nextStop.cta.label}</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .route {
+    position: relative;
+    padding-top: 96px;
+  }
+
+  .rcol {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 760px;
+  }
+
+  .h2r {
+    font-size: var(--text-h2);
+  }
+
+  .board {
+    margin-inline: -8px;
+    background: var(--surface-board);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: inset 0 0 0 1px var(--line-soft);
+  }
+
+  .btop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 6px 6px 8px;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .clk {
+    color: var(--gold);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 4px 12px;
+    align-items: baseline;
+    padding: 12px 10px;
+    background: var(--surface-raised);
+    font-size: 16px;
+    transition:
+      background-color 350ms,
+      color 350ms,
+      box-shadow 350ms;
+  }
+
+  .row .det,
+  .row .st,
+  .row .xpanel {
+    grid-column: 2;
+  }
+
+  .row.hd {
+    display: none;
+  }
+
+  .when,
+  .stop {
+    font-weight: 700;
+  }
+
+  .det {
+    color: var(--text-soft);
+    font-size: 15px;
+    line-height: 1.4;
+    transition: color 350ms;
+  }
+
+  .st {
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  .flap {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  .flap b {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.8em;
+    height: 1.55em;
+    background: #1b1e25;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .flap b::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--surface-sunk);
+  }
+
+  .c-dep {
+    color: var(--text-muted);
+  }
+
+  .c-arr {
+    color: var(--green);
+  }
+
+  .c-on {
+    color: var(--blue);
+  }
+
+  .proof {
+    color: var(--blue);
+    font-weight: 600;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+
+  .proof:hover {
+    color: var(--gold);
+  }
+
+  /* 44 px targets: always in the panel footer, and in the detail column on phones. */
+  .xfoot .proof {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+  }
+
+  @media (max-width: 899px) {
+    .det .proof {
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--target);
+    }
+  }
+
+  .row.next {
+    background: var(--gold);
+    color: var(--text-on-gold);
+    box-shadow: none;
+  }
+
+  .row.next .det,
+  .row.next .when {
+    color: var(--text-on-gold);
+  }
+
+  .seat {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    font-weight: 800;
+    color: var(--text-on-gold);
+    text-underline-offset: 5px;
+    text-decoration-thickness: 2px;
+  }
+
+  .seat:hover {
+    color: var(--text-on-gold);
+    text-decoration-thickness: 3px;
+  }
+
+  .row.next :focus-visible {
+    outline-color: var(--text-on-gold);
+    outline-offset: 2px;
+  }
+
+  /* ---- Detail panels ---- */
+
+  .xbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--target);
+    margin: -10px 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .xchev {
+    width: 22px;
+    height: 22px;
+    padding: 5px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgb(237 234 227 / 0.35);
+    flex: none;
+    transition:
+      transform 300ms var(--ease-out),
+      box-shadow var(--dur-fast),
+      color var(--dur-fast);
+  }
+
+  .xbtn:hover .xchev,
+  .xbtn[aria-expanded='true'] .xchev {
+    color: var(--gold);
+    box-shadow: inset 0 0 0 1px rgb(255 181 71 / 0.75);
+  }
+
+  .xbtn[aria-expanded='true'] .xchev {
+    transform: rotate(180deg);
+  }
+
+  .row:has(.xbtn[aria-expanded='true']) {
+    background: var(--surface-open);
+  }
+
+  .xpanel {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 14px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+    animation: xin 320ms var(--ease-out);
+  }
+
+  .xpanel[hidden] {
+    display: none;
+  }
+
+  .xmeta {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .xlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px 24px;
+  }
+
+  .xlist li {
+    position: relative;
+    padding-left: 16px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--text-body);
+  }
+
+  .xlist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+  }
+
+  .xfoot {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  @keyframes xin {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ---- Four columns once there is room ---- */
+
+  @media (min-width: 900px) {
+    .board {
+      margin-inline: 0;
+      padding: 12px;
+      gap: 5px;
+    }
+
+    .btop {
+      padding: 6px 8px 10px;
+      font-size: 15px;
+    }
+
+    .row {
+      grid-template-columns: 76px minmax(0, 1.3fr) minmax(0, 2fr) 150px;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      font-size: 17px;
+    }
+
+    .row .det,
+    .row .st {
+      grid-column: auto;
+    }
+
+    .row .st {
+      margin-top: 0;
+    }
+
+    .row .xpanel {
+      grid-column: 2 / -1;
+    }
+
+    .row.hd {
+      display: grid;
+      background: transparent;
+      padding-top: 2px;
+      padding-bottom: 2px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #8b8e95;
+    }
+
+    .flap {
+      gap: 3px;
+    }
+
+    .flap b {
+      font-size: 15px;
+    }
+
+    .xbtn {
+      margin: 0;
+    }
+
+    .xchev {
+      width: 20px;
+      height: 20px;
+      padding: 4px;
+    }
+
+    .xlist {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .xfoot {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px 24px;
+    }
+  }
+
+  /* ---- The 3D world: pinned board, one stop at a time ---- */
+
+  :global(html.w3d) .route {
+    height: 4600px;
+    padding-top: 0;
+  }
+
+  :global(html.w3d) .rpin {
+    position: sticky;
+    top: 0;
+    height: min(100vh, 1000px);
+    padding-top: 88px;
+    padding-bottom: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  :global(html.w3d) .rcol {
+    width: min(54%, 760px);
+    max-width: none;
+    max-height: 100%;
+    margin-left: auto;
+  }
+
+  :global(html.w3d) .board {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  :global(html.w3d) .row:not([data-on]) .when,
+  :global(html.w3d) .row:not([data-on]) .stop,
+  :global(html.w3d) .row:not([data-on]) .det {
+    color: var(--text-faint);
+  }
+
+  :global(html.w3d) .row[data-cur] {
+    background: var(--surface-current);
+    box-shadow: inset 0 0 0 1px var(--gold-line);
+  }
+
+  :global(html.w3d) .row[data-cur] .when {
+    color: var(--gold);
+  }
+
+  :global(html.w3d) .flap b {
+    transform: perspective(240px) rotateX(-95deg);
+    opacity: 0;
+    transition:
+      transform 440ms var(--ease-back) calc(var(--i) * 46ms),
+      opacity 90ms linear calc(var(--i) * 46ms);
+  }
+
+  :global(html.w3d) .row[data-on] .flap b {
+    transform: none;
+    opacity: 1;
+  }
+
+  /* "Your team" is gold only once the board reaches it; the link is always there. */
+  :global(html.w3d) .row.next:not([data-on]) {
+    background: var(--surface-raised);
+    color: var(--text-faint);
+  }
+
+  :global(html.w3d) .row.next:not([data-on]) .det,
+  :global(html.w3d) .row.next:not([data-on]) .when,
+  :global(html.w3d) .row.next:not([data-on]) .seat {
+    color: var(--text-faint);
+  }
+
+  :global(html.w3d) .row.next:not([data-on]) .seat:focus-visible {
+    outline-color: var(--blue);
+  }
+</style>

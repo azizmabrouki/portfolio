@@ -1,0 +1,173 @@
+---
+/**
+ * The first screen: the headline, who I am, the way to get in touch and a cue to scroll.
+ * In the 3D world the headline rises line by line; everywhere else it is simply there.
+ */
+import { hero } from '@/config/home';
+import { site } from '@/config/site';
+---
+
+<section id="top" data-sec="hero" class="wrap hero" aria-labelledby="h-title">
+  <div class="herotext">
+    <h1 id="h-title" class="disp h1">
+      {
+        hero.headline.map((line, index) => (
+          <span class:list={['mask', `m${index + 1}`]}>
+            <span>{line}</span>
+          </span>
+        ))
+      }
+    </h1>
+    <p class="lede after">{hero.intro}</p>
+    <div class="ctas after2">
+      <a class="btn btn-gold" href={hero.cta.href}>{hero.cta.label}</a>
+      {site.links.cv && <a class="btn btn-ghost" href={site.links.cv}>Download CV</a>}
+    </div>
+  </div>
+  <span class="cue after2"><i aria-hidden="true"></i>{hero.cue}</span>
+</section>
+
+<style>
+  .hero {
+    min-height: min(100svh, 980px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 24px;
+    padding-top: 72px;
+    padding-bottom: 48px;
+  }
+
+  .herotext {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: min(100%, 760px);
+  }
+
+  .h1 {
+    font-size: var(--text-h1);
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 31em;
+    font-size: var(--text-lede);
+    line-height: 1.5;
+  }
+
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px 28px;
+  }
+
+  .cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  .cue i {
+    position: relative;
+    display: block;
+    width: 2px;
+    height: 44px;
+    background: #2a2d35;
+    overflow: hidden;
+  }
+
+  @media (max-width: 599px) {
+    .hero {
+      min-height: 640px;
+    }
+
+    .ctas {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .cue i {
+      width: 1px;
+      height: 28px;
+      background: var(--text-faint);
+    }
+  }
+
+  /* ---- The 3D world ---- */
+
+  :global(html.w3d) .hero {
+    justify-content: center;
+    gap: 30px;
+    padding-top: 110px;
+    padding-bottom: 64px;
+  }
+
+  :global(html.w3d) .herotext {
+    gap: 26px;
+  }
+
+  :global(html.w3d) .mask > span {
+    animation: rise 1000ms var(--ease-out) both;
+  }
+
+  :global(html.w3d) .m1 > span {
+    animation-delay: 900ms;
+  }
+
+  :global(html.w3d) .m2 > span {
+    animation-delay: 990ms;
+  }
+
+  :global(html.w3d) .after {
+    animation: up 700ms var(--ease-out) 1300ms both;
+  }
+
+  :global(html.w3d) .after2 {
+    animation: up 700ms var(--ease-out) 1450ms both;
+  }
+
+  :global(html.w3d) .cue i::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -14px;
+    width: 2px;
+    height: 14px;
+    background: var(--gold);
+    animation: drop 1800ms var(--ease-io) infinite;
+  }
+
+  @keyframes rise {
+    from {
+      transform: translateY(110%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes drop {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(72px);
+    }
+  }
+</style>

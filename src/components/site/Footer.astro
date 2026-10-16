@@ -1,0 +1,84 @@
+---
+/**
+ * The footer: the name set very large, then one line with the source link and a way back
+ * to the top. The 404 uses the slim version (no large name, no way back).
+ */
+import { footerLine, site } from '@/config/site';
+
+interface Props {
+  /** Id of the element "Back to the top" points to; omitted, the link is left out. */
+  top?: string;
+  slim?: boolean;
+}
+
+const { top, slim = false } = Astro.props;
+---
+
+<footer class:list={['foot', { slim }]}>
+  <div class="wrap">
+    {!slim && <p class="disp fname" aria-hidden="true">{site.shortName}</p>}
+    <div class="frow">
+      <span>{footerLine}</span>
+      <a href={site.repo}>Source on GitHub</a>
+      {top && <a href={`#${top}`}>Back to the top</a>}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    position: relative;
+    padding: 40px 0 32px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  .fname {
+    font-size: clamp(40px, 13vw, 210px);
+    line-height: 0.85;
+    white-space: nowrap;
+  }
+
+  .frow {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0 12px;
+    margin-top: 22px;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  .frow a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    color: var(--text-muted);
+  }
+
+  .frow a:hover {
+    color: var(--gold);
+  }
+
+  .slim {
+    padding: 24px 0 32px;
+  }
+
+  .slim .frow {
+    margin-top: 0;
+    padding-top: 20px;
+    box-shadow: inset 0 1px 0 var(--line);
+  }
+
+  @media (max-width: 600px) {
+    .foot:not(.slim) {
+      padding-top: 72px;
+    }
+
+    .frow {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
