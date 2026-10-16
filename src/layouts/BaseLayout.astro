@@ -13,8 +13,8 @@ interface Props {
   /** Social preview image, 1200 × 630, under public/. */
   image?: string;
   imageAlt?: string;
-  /** Leave the page out of search results (the 404). */
-  noindex?: boolean;
+  /** No canonical URL (the 404, which Cloudflare serves with a 404 status, so it is never indexed). */
+  noCanonical?: boolean;
 }
 
 const {
@@ -24,11 +24,11 @@ const {
   publishedTime,
   image = '/og-image.png',
   imageAlt = `${site.name}, ${site.role.toLowerCase()} in ${site.city}.`,
-  noindex = false,
+  noCanonical = false,
 } = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : `${site.name} — ${site.role}`;
 // Canonical and og:url need the real production URL, so they only render once `site` is set.
-const canonical = Astro.site && !noindex ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const canonical = Astro.site && !noCanonical ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 // Social networks need an absolute image URL.
 const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
 ---
@@ -40,7 +40,6 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex" />}
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#07080B" />

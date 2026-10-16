@@ -15,14 +15,14 @@ interface Props {
   publishedTime?: Date;
   /** Id of the page's title, for "Back to the top". */
   top?: string;
-  /** The 404: a bar that does not stick, the slim footer, no indexing. */
+  /** The 404: a bar that does not stick, the slim footer, no canonical URL. */
   lost?: boolean;
 }
 
 const { top, lost = false, ...meta } = Astro.props;
 ---
 
-<BaseLayout {...meta} noindex={lost}>
+<BaseLayout {...meta} noCanonical={lost}>
   <slot name="head" slot="head" />
   <div class:list={['page', { lost }]}>
     <TopBar sticky={!lost} />
