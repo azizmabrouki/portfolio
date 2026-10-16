@@ -39,7 +39,7 @@ const letters = (status: StopStatus) => statusLabel[status].toUpperCase().split(
             const panelId = `x-${index}`;
             const caseStudy = role?.caseStudy;
             return (
-              <div class="row" role="row" data-row={index}>
+              <div class="row" role="row" data-row={index} data-reveal="row">
                 <span role="cell" class="when tab">
                   {stop.when}
                 </span>
@@ -293,6 +293,20 @@ const letters = (status: StopStatus) => statusLabel[status].toUpperCase().split(
   .row.next :focus-visible {
     outline-color: var(--text-on-gold);
     outline-offset: 2px;
+  }
+
+  /* Still page with motion: each row's status flaps flip in when the row scrolls in. */
+  :global(html.still-anim) .row[data-reveal] .flap b {
+    transform: perspective(240px) rotateX(-95deg);
+    opacity: 0;
+    transition:
+      transform 440ms var(--ease-back) calc(300ms + var(--i) * 46ms),
+      opacity 90ms linear calc(300ms + var(--i) * 46ms);
+  }
+
+  :global(html.still-anim) .row[data-in] .flap b {
+    transform: none;
+    opacity: 1;
   }
 
   /* ---- Detail panels ---- */

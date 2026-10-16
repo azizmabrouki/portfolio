@@ -6,6 +6,7 @@
  */
 import { initChaos } from '@/scripts/chaos';
 import { WORLD_QUERY } from '@/scripts/world/query';
+import { startStillMotion, stopStillMotion } from '@/scripts/still-motion';
 
 const html = document.documentElement;
 const page = document.querySelector<HTMLElement>('[data-home]');
@@ -106,7 +107,7 @@ function initBoard(): void {
 
 /* ---- Principles on the still page: a rule lights the plates it holds up ---- */
 
-function initPrinciples(): () => void {
+function initPrinciples(): { stillPage: () => void; pick: (index: number) => void; count: number } {
   const items = [...document.querySelectorAll<HTMLElement>('[data-pr]')];
   const figure = document.querySelector<HTMLElement>('[data-layers]');
   const plates = figure ? [...figure.querySelectorAll<HTMLElement>('[data-layer]')] : [];
@@ -134,10 +135,14 @@ function initPrinciples(): () => void {
   };
   document.addEventListener('click', onClick);
 
-  // Called whenever the layout switches to the still page.
-  return () => {
-    items.forEach((item) => item.querySelector('[data-prb]')?.removeAttribute('aria-expanded'));
-    pick(Math.max(0, items.findIndex((item) => item.hasAttribute('data-on'))));
+  // stillPage is called whenever the layout switches to the still page.
+  return {
+    stillPage: () => {
+      items.forEach((item) => item.querySelector('[data-prb]')?.removeAttribute('aria-expanded'));
+      pick(Math.max(0, items.findIndex((item) => item.hasAttribute('data-on'))));
+    },
+    pick,
+    count: items.length,
   };
 }
 
@@ -160,15 +165,21 @@ function loadWorld(): Promise<World | null> {
   return loading;
 }
 
-function initWorld(stillPage: () => void): void {
+function initWorld(principles: ReturnType<typeof initPrinciples>): void {
   const query = window.matchMedia(WORLD_QUERY);
+  const still = () => {
+    principles.stillPage();
+    startStillMotion(principles.pick, principles.count);
+  };
   const apply = async () => {
     if (query.matches && !html.classList.contains('w3d-off')) {
+      stopStillMotion();
       world = await loadWorld();
-      world?.start();
+      if (world) world.start();
+      else still();
     } else {
       world?.stop();
-      stillPage();
+      still();
     }
   };
   query.addEventListener('change', () => void apply());
@@ -182,7 +193,7 @@ if (page) {
   initPipeline();
   initBoard();
   initChaos(page, Number(page.dataset.heal ?? 3200));
-  const stillPage = initPrinciples();
-  if (!html.classList.contains('w3d')) stillPage();
-  initWorld(stillPage);
+  const principles = initPrinciples();
+  if (!html.classList.contains('w3d')) principles.stillPage();
+  initWorld(principles);
 }

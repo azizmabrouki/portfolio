@@ -20,7 +20,7 @@ const featured = work.filter((slot) => slot.glance);
         featured.map((slot) => {
           const caseStudy = slot.project && published.has(slot.project) ? `/projects/${slot.project}/` : undefined;
           return (
-            <li>
+            <li data-reveal="card">
               <div class="shead">
                 <span class="badge">{slot.slot}</span>
                 <h3 class="sname">{slot.name}</h3>

@@ -28,7 +28,7 @@ const labelTops = [210, 170, 130, 90, 50];
     <div class="stmts" data-sys="idle">
       {
         system.statements.map((statement, index) => (
-          <div class:list={['stmt', index === 0 ? 'sa' : 'sb']}>
+          <div class:list={['stmt', index === 0 ? 'sa' : 'sb']} data-reveal>
             <h2 class="disp h2">
               {statement.lines.map((line, n) => (
                 <span class="mask" style={n > 0 ? '--d: 90ms' : undefined}>
@@ -36,11 +36,11 @@ const labelTops = [210, 170, 130, 90, 50];
                 </span>
               ))}
             </h2>
-            <p class="sbody">{statement.body}</p>
+            <p class="sbody fd" style="--d: 200ms">{statement.body}</p>
           </div>
         ))
       }
-      <div class="stmt sc">
+      <div class="stmt sc" data-reveal>
         <h2 class="disp h2">
           {
             system.rules.lines.map((line, n) => (
@@ -50,11 +50,11 @@ const labelTops = [210, 170, 130, 90, 50];
             ))
           }
         </h2>
-        <p class="sbody hint">{system.rules.hint}</p>
-        <div class="layers" role="img" aria-label={layersLabel} data-layers>
+        <p class="sbody hint fd" style="--d: 200ms">{system.rules.hint}</p>
+        <div class="layers" role="img" aria-label={layersLabel} data-layers data-reveal="plates">
           {
             plateTops.map((top, layer) => (
-              <div class="pl" data-layer={layer} data-on={isLit(layer) ? '' : undefined} style={`top: ${top}px`} aria-hidden="true" />
+              <div class="pl" data-layer={layer} data-on={isLit(layer) ? '' : undefined} style={`top: ${top}px; --n: ${layer}`} aria-hidden="true" />
             ))
           }
           {
@@ -180,6 +180,35 @@ const labelTops = [210, 170, 130, 90, 50];
     box-shadow:
       inset 0 0 0 2px var(--gold),
       0 0 36px var(--gold-glow);
+  }
+
+  /* Still page with motion: the plates fly in exploded and settle into the stack; a lit
+     plate lifts a little. */
+  :global(html.still-anim) .pl {
+    transition:
+      background-color 300ms,
+      box-shadow 300ms,
+      translate 900ms var(--ease-out) calc((4 - var(--n)) * 70ms),
+      opacity 600ms var(--ease-out) calc((4 - var(--n)) * 70ms);
+  }
+
+  :global(html.still-anim) .layers:not([data-in]) .pl {
+    opacity: 0;
+    translate: 0 calc((var(--n) - 2) * -26px - 40px);
+  }
+
+  :global(html.still-anim) .layers[data-in] .pl[data-on] {
+    translate: 0 -8px;
+  }
+
+  :global(html.still-anim) .layers:not([data-in]) .ll {
+    opacity: 0;
+  }
+
+  :global(html.still-anim) .ll {
+    transition:
+      color 300ms,
+      opacity 500ms var(--ease-out) 600ms;
   }
 
   .ll {

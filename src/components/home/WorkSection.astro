@@ -39,7 +39,7 @@ const caseStudyOf = (project: string | undefined) => (project && published.has(p
         work.map((slot, index) => {
           const caseStudy = caseStudyOf(slot.project);
           return (
-            <article id={`p-${slot.slot.toLowerCase()}`} class="proj" data-proj={index + 1}>
+            <article id={`p-${slot.slot.toLowerCase()}`} class="proj" data-proj={index + 1} data-reveal="card">
               <div class="pin-in">
                 <div class="ph">
                   <span class="badge">{slot.slot}</span>

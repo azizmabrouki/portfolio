@@ -168,6 +168,35 @@ html.w3d .rv.fd[data-in] {
   transform: none;
 }
 
+/* On the still page with motion allowed (html.still-anim, set by scripts/still-motion.ts),
+   the same blocks and the ones marked data-reveal rise into view as they scroll in.
+   Cards and board rows fade up as a whole. */
+html.still-anim :is(.rv, [data-reveal]) .mask > span {
+  transform: translateY(110%);
+  transition: transform 850ms var(--ease-out) var(--d, 0ms);
+}
+
+html.still-anim :is(.rv, [data-reveal])[data-in] .mask > span {
+  transform: none;
+}
+
+html.still-anim :is(.rv, [data-reveal]) .fd,
+html.still-anim .rv.fd,
+html.still-anim :is([data-reveal='card'], [data-reveal='row']) {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms var(--ease-out) var(--d, 0ms),
+    transform 600ms var(--ease-out) var(--d, 0ms);
+}
+
+html.still-anim :is(.rv, [data-reveal])[data-in] .fd,
+html.still-anim .rv.fd[data-in],
+html.still-anim :is([data-reveal='card'], [data-reveal='row'])[data-in] {
+  opacity: 1;
+  transform: none;
+}
+
 /* ---- Small pieces ---- */
 
 .badge {
