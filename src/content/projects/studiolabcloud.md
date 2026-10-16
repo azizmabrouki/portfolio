@@ -1,13 +1,29 @@
 ---
 title: StudioLabCloud
-summary: A SaaS platform for selling and managing cloud services, built as a ==modular monolith== with recurring billing, a support desk and an AI assistant that knows when to hand over.
+summary: A SaaS platform for selling and managing cloud services, built as a modular monolith with recurring billing, a support desk and an AI assistant that knows when to hand over.
+teaser: A SaaS platform for selling and managing cloud services, built as a modular monolith with recurring billing and a support desk.
 brief:
   problem: Sell cloud services, bill them every month in several currencies and support the clients, in one product that a small team can keep running.
-  result: A [[modular monolith]] shipped in **3 releases**, with billing that ==never charges twice==, a support desk whose [[RAG]] assistant hands over to a person, and **609 automated tests**.
+  result: A modular monolith shipped in 3 releases, with billing that ==never charges twice==, a support desk whose assistant hands over to a person, and 609 automated tests.
 sheet: '01'
 period: Feb – Aug 2026
-role: Software architect intern, final-year project
+# Placeholder wording: the exact internship title is still to be confirmed.
+role: Intern, final-year project
 company: StudioLab
+facts:
+  - label: My part
+    value: 'The whole chain: architecture, interface design, implementation, tests and deployment'
+  - label: Team
+    value: Solo, with the product owner
+  - label: Shape
+    value: Final-year project, 6 Scrum sprints, 3 releases
+  - label: Now
+    value: Kept running as a freelancer
+screens:
+  - placeholder: '[Screenshot: client portal, ordering a service]'
+    caption: 'The client portal: order a service, pay for it, get help.'
+  - placeholder: '[Screenshot: support desk, assistant handing over]'
+    caption: The support desk, where the assistant passes a conversation to an agent.
 stack:
   - Laravel 12
   - PHP
@@ -28,7 +44,6 @@ numbers:
     label: OpenAPI specs
   - value: '3'
     label: releases in 6 sprints
-disclosure: Shown with StudioLab’s agreement, at the level of architecture and decisions. No code, screens or client data.
 decisions:
   - title: One deployable, hard module boundaries
     chose: A [[modular monolith]] in Laravel, whose modules talk ==only through explicit contracts== and DTOs.
@@ -49,8 +64,9 @@ decisions:
     tradeoff: A second runtime to deploy and monitor, and a contract to keep in step on both sides.
     node: assistant
 diagram:
-  title: StudioLabCloud, simplified
-  description: Clients and support agents use one Laravel application split into modules. The billing module talks to Stripe and receives its webhooks; the support module hands conversations to and from a separate Python assistant. Everything runs on Kubernetes, watched by Grafana.
+  title: The system, simplified.
+  description: Clients and support agents use one Laravel application split into modules. Billing talks to Stripe and receives its webhooks; the support desk hands conversations to and from a separate Python assistant. Everything runs on Kubernetes, watched by Grafana.
+  alt: 'Architecture diagram. Clients and the back office reach a Laravel modular monolith on Kubernetes over HTTPS. Inside it: accounts, catalogue, provisioning, billing, support desk, messaging and the module contracts. Billing sends charges to Stripe and receives its webhooks, applied once. The support desk sends questions to a Python RAG assistant, which hands conversations back. The application uses one database and sends metrics to Grafana.'
   columns: 6
   rows: 4
   groups:
@@ -107,7 +123,7 @@ diagram:
       y: 2
     - id: contracts
       label: Module contracts
-      note: DTOs · ADRs
+      note: DTOs · decision records
       kind: service
       x: 2
       y: 2
@@ -162,6 +178,29 @@ diagram:
       to: grafana
       label: metrics
       dashed: true
+  narrow:
+    columns: 2
+    rows: 9.1
+    alt: 'Architecture diagram, drawn top to bottom. The client portal and the back office reach a Laravel modular monolith on Kubernetes over HTTPS. Inside it: accounts, catalogue, the module contracts, provisioning, messaging, the support desk and billing. Below it, the support desk sends questions to a Python RAG assistant, which hands conversations back; billing sends charges to Stripe and receives its webhooks, applied once. The application uses one database and sends metrics to Grafana.'
+    groups:
+      app: { x: 0, y: 1.3, w: 2, h: 4.45 }
+    nodes:
+      clients: { x: 0, y: 0 }
+      agents: { x: 1, y: 0 }
+      accounts: { x: 0, y: 1.75 }
+      catalogue: { x: 1, y: 1.75 }
+      contracts: { x: 0, y: 2.75, w: 2 }
+      provisioning: { x: 0, y: 3.75 }
+      messaging: { x: 1, y: 3.75 }
+      support: { x: 0, y: 4.75 }
+      billing: { x: 1, y: 4.75 }
+      assistant: { x: 0, y: 6.7 }
+      stripe: { x: 1, y: 6.7 }
+      database: { x: 0, y: 8.2 }
+      grafana: { x: 1, y: 8.2 }
+    lanes:
+      database: left
+      grafana: right
 ---
 
 ## Context
@@ -178,6 +217,6 @@ And <mark>a small team had to be able to run it</mark> and change it after I lea
 
 ## What I built
 
-A Laravel application split into modules with explicit contracts (a <button type="button" class="term" popovertarget="term-modular-monolith">modular monolith</button>), so <mark>billing never reaches into support</mark> and support never reaches into billing. Recurring Stripe billing in several currencies, with webhook processing that is safe to replay (<button type="button" class="term" popovertarget="term-idempotent">idempotent</button>). A support desk with ticketing, client messaging and video calls. In the last sprint, a Python <button type="button" class="term" popovertarget="term-rag">retrieval-augmented</button> assistant for first-level support, which <mark>hands the conversation to a human agent</mark> when it can’t answer.
+A Laravel application split into modules with explicit contracts, so <mark>billing never reaches into support</mark> and support never reaches into billing. Recurring Stripe billing in several currencies, with webhook processing that is safe to replay. A support desk with ticketing, client messaging and video calls. In the last sprint, a Python retrieval-augmented assistant for first-level support, which <mark>hands the conversation to a human agent</mark> when it can’t answer.
 
-Around it: **609 automated tests**, **25** <button type="button" class="term" popovertarget="term-openapi">OpenAPI</button> specs, <button type="button" class="term" popovertarget="term-adr">architecture decision records</button>, <button type="button" class="term" popovertarget="term-ci-cd">CI/CD</button> pipelines, a Kubernetes deployment and Grafana monitoring.
+Around it: **609 automated tests**, **25** OpenAPI specs, architecture decision records, CI/CD pipelines, a Kubernetes deployment and Grafana monitoring.

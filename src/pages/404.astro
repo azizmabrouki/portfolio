@@ -1,137 +1,285 @@
 ---
 /**
- * Served with a real 404 status by Cloudflare (not_found_handling: "404-page").
- * The building with one floor missing: the page that was asked for.
+ * The 404: "This page isn't in the system." The five layers of the home page as stacked
+ * plates, with an empty dashed slot where the missing page would be.
+ * Served with a real 404 status by Cloudflare (wrangler.jsonc: not_found_handling).
  */
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import Button from '@/components/Button.astro';
-import SectionMarker from '@/components/drawing/SectionMarker.astro';
-import SiteHeader from '@/components/SiteHeader.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import { layers } from '@/config/home';
+import { mailto } from '@/config/site';
+import { getNotes, getProjects } from '@/lib/content';
 
-const left = 70;
-const width = 200;
-const floorHeight = 54;
-const ground = 330;
-const floors = [
-  { n: '04', name: 'Presentation', y: ground - floorHeight * 4 - 36 },
-  { n: '03', name: 'Not drawn', y: ground - floorHeight * 3 - 18, missing: true },
-  { n: '02', name: 'Domain', y: ground - floorHeight * 2, accent: true },
-  { n: '01', name: 'Infrastructure', y: ground - floorHeight },
+const projects = (await getProjects()).filter((project) => !project.data.draft);
+const notes = await getNotes();
+const routes = [
+  ...projects.slice(0, 1).map((project) => ({ label: `${project.data.title} case study`, href: `/projects/${project.id}/` })),
+  ...notes.slice(0, 1).map((note) => ({ label: note.data.title, href: `/notes/${note.id}/` })),
+  { label: 'Report a broken link', href: mailto('Broken link on your site') },
+];
+
+// Labels top to bottom: the top layer, the missing slot, then the rest downwards.
+const [runs, scales, ships, users, stays] = layers;
+const labels = [
+  { ...stays, top: 70 },
+  { name: 'The page you asked for', text: 'Not on any layer', top: 146, miss: true },
+  { ...users, top: 222 },
+  { ...ships, top: 278 },
+  { ...scales, top: 334 },
+  { ...runs, top: 390 },
 ];
 ---
 
-<BaseLayout title="Page not found" description="This page does not exist on the drawing.">
-  <SiteHeader />
-  <main id="main" class="missing container">
-    <div class="missing__text">
-      <SectionMarker as="p" number="404" title="Not on the drawing" />
-      <h1>This floor hasn’t been drawn.</h1>
-      <p class="lead muted">The page you asked for isn’t part of the building. It may have moved, or it was never planned.</p>
-      <p class="cluster">
-        <Button href="/" variant="secondary">Back to the entrance</Button>
-        <Button href="/#work" variant="text" arrow>See the case studies</Button>
+<PageLayout title="Page not found" description="This page isn't in the system." lost>
+  <div class="wrap lost">
+    <div class="txt">
+      <p class="kick"><span class="code tab">404</span><span>Page not found</span></p>
+      <h1 class="disp h1">This page isn't in the system.</h1>
+      <p class="lede">
+        Every layer is accounted for, except the one you asked for. The link may be old, or the page moved when the
+        site was rebuilt.
       </p>
+      <div class="cta">
+        <a class="btn btn-gold" href="/">Back to the home page</a>
+        <a class="btn btn-ghost" href="/#work">See the work</a>
+      </div>
+      <nav class="routes" aria-labelledby="r-title">
+        <p id="r-title" class="lbl">Or go straight to</p>
+        <ul>
+          {routes.map((route) => <li><a href={route.href}>{route.label}</a></li>)}
+        </ul>
+      </nav>
     </div>
 
-    <svg class="missing__drawing" viewBox="0 0 440 372" aria-hidden="true">
-      <line class="construction" x1={left} y1="16" x2={left} y2="360" />
-      <line class="construction" x1={left + width} y1="16" x2={left + width} y2="360" />
-      <rect class="foundation" x={left} y={ground} width={width} height="18" />
-      <line class="ground" x1="20" y1={ground} x2="420" y2={ground} />
-      {
-        floors.map((floor) => (
-          <g class:list={['floor', { 'floor--missing': floor.missing, 'floor--accent': floor.accent }]}>
-            <rect x={left} y={floor.y} width={width} height={floorHeight} />
-            <text x={left + width + 14} y={floor.y + floorHeight / 2 + 4}>
-              {floor.n} · {floor.name.toUpperCase()}
-            </text>
-          </g>
-        ))
-      }
-      <text class="question" x={left + width / 2} y={ground - floorHeight * 3 - 18 + floorHeight / 2 + 9}>?</text>
-    </svg>
-  </main>
-</BaseLayout>
+    <div
+      class="draw"
+      role="img"
+      aria-label="The five layers of the system drawn as stacked plates, with an empty dashed slot between what users touch and how it stays up, marked with a question mark: the missing page."
+    >
+      <div class="stack" aria-hidden="true">
+        <div class="pl" style="top: 310px"></div>
+        <div class="pl" style="top: 254px"></div>
+        <div class="pl" style="top: 198px"></div>
+        <div class="pl" style="top: 142px"></div>
+        <div class="pl miss" style="top: 66px"></div>
+        <div class="q" style="top: 144px">?</div>
+        <div class="pl" style="top: -10px"></div>
+      </div>
+      <div class="labs" aria-hidden="true">
+        {
+          labels.map((label) => (
+            <div class:list={['lab', { miss: label.miss }]} style={`top: ${label.top}px`}>
+              <i />
+              <span>
+                <b>{label.name}</b>
+                <span>{label.text}</span>
+              </span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</PageLayout>
 
 <style>
-  .missing {
+  .lost {
     display: grid;
-    gap: var(--space-xl);
+    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    gap: 56px 64px;
     align-items: center;
-    min-block-size: calc(100vh - 4rem);
-    min-block-size: calc(100dvh - 4rem);
-    padding-block: var(--space-xl);
+    width: 100%;
+    padding-top: 72px;
+    padding-bottom: 96px;
   }
 
-  @media (min-width: 860px) {
-    .missing {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  .txt {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .kick {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+
+  .code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    height: 30px;
+    padding: 0 10px;
+    background: var(--gold);
+    color: var(--text-on-gold);
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .h1 {
+    font-size: clamp(48px, 6.6vw, 104px);
+    max-width: 9em;
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 28em;
+    font-size: clamp(19px, 1.7vw, 23px);
+    line-height: 1.45;
+    color: var(--text-body);
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    align-items: center;
+  }
+
+  .routes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 22px;
+    box-shadow: inset 0 1px 0 var(--line);
+  }
+
+  .routes ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+  }
+
+  .routes a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    font-weight: 600;
+    font-size: 16px;
+    text-underline-offset: 4px;
+  }
+
+  .draw {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    height: 520px;
+    justify-self: center;
+  }
+
+  .stack {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 300px;
+    height: 520px;
+  }
+
+  .pl {
+    position: absolute;
+    left: 50px;
+    width: 200px;
+    height: 200px;
+    transform: rotateX(62deg) rotateZ(-45deg);
+    background: var(--surface-plate);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.14),
+      0 18px 30px rgb(0 0 0 / 0.5);
+  }
+
+  .pl.miss {
+    border: 2px dashed var(--gold);
+    background: rgb(255 181 71 / 0.05);
+    box-shadow: none;
+    animation: hover 3.6s ease-in-out infinite;
+  }
+
+  .q {
+    position: absolute;
+    left: 0;
+    width: 300px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 44px;
+    line-height: 1;
+    color: var(--gold);
+  }
+
+  @keyframes hover {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -6px;
     }
   }
 
-  .missing__text {
-    display: grid;
-    gap: var(--space-m);
+  .labs {
+    position: absolute;
+    left: 300px;
+    top: 0;
+    right: 0;
+    height: 520px;
   }
 
-  .cluster {
-    --cluster-gap: var(--space-s) var(--space-l);
+  .lab {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    line-height: 1.3;
+    white-space: nowrap;
   }
 
-  .missing__drawing {
-    inline-size: 100%;
-    max-inline-size: 30rem;
-    block-size: auto;
-    fill: none;
-    stroke: var(--color-ink);
-    stroke-width: var(--line-regular);
+  .lab i {
+    flex: none;
+    width: 36px;
+    height: 0;
+    border-top: 1px solid var(--text-faint);
   }
 
-  .construction {
-    stroke: var(--color-ink-muted);
-    stroke-width: var(--line-thin);
-    stroke-dasharray: var(--dash-construction-on) var(--dash-construction-off);
+  .lab b {
+    display: block;
+    font-weight: 700;
+    color: var(--text);
   }
 
-  .ground {
-    stroke-width: var(--line-strong);
+  .lab span span {
+    color: var(--text-muted);
   }
 
-  .foundation {
-    fill: var(--color-paper-sunk);
+  .lab.miss i {
+    border-top: 2px dashed var(--gold);
   }
 
-  .floor rect {
-    fill: var(--color-paper-raised);
+  .lab.miss b {
+    color: var(--gold);
   }
 
-  .floor--accent rect {
-    stroke: var(--color-accent);
+  @media (max-width: 620px) {
+    .draw {
+      height: 400px;
+      transform: scale(0.78);
+      transform-origin: top left;
+      margin-bottom: -88px;
+    }
   }
 
-  .floor--missing rect {
-    fill: none;
-    stroke: var(--color-accent);
-    stroke-dasharray: var(--dash-planned-on) var(--dash-planned-off);
-  }
-
-  text {
-    fill: var(--color-ink-muted);
-    stroke: none;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-  }
-
-  .floor--missing text,
-  .question {
-    fill: var(--color-accent-text);
-  }
-
-  .question {
-    font-family: var(--font-display);
-    font-size: 28px;
-    text-anchor: middle;
+  @media (prefers-reduced-motion: reduce) {
+    .pl.miss {
+      animation: none;
+    }
   }
 </style>

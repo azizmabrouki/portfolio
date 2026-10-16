@@ -1,397 +1,571 @@
 ---
 /**
- * A case study as one drawing sheet: the 30-second brief, context and problem (Markdown
- * body), the architecture drawn from frontmatter, the key decisions with their trade-offs
- * (linked to the drawing), numbers and stack. A sheet index sticks to the top.
+ * The case study template: title and short facts, the numbers, the problem and the result
+ * in two sentences, screens, the story (the Markdown body), the architecture drawn from
+ * frontmatter, the key decisions (each can light its box in the drawing), the stack, and
+ * where to go next. Drafts (frontmatter `draft: true`) get no page yet.
  */
 import { render, type CollectionEntry } from 'astro:content';
 import PageLayout from '@/layouts/PageLayout.astro';
-import ArchitectureDiagram from '@/components/diagram/ArchitectureDiagram.astro';
-import DimensionLine from '@/components/drawing/DimensionLine.astro';
-import SectionMarker from '@/components/drawing/SectionMarker.astro';
-import TitleBlock from '@/components/drawing/TitleBlock.astro';
-import CaseBrief from '@/components/reading/CaseBrief.astro';
-import ContentsBar from '@/components/reading/ContentsBar.astro';
+import Diagram from '@/components/case/Diagram.astro';
 import { getProjects } from '@/lib/content';
 import { plain, rich } from '@/lib/rich';
+import { mailto } from '@/config/site';
+import { work } from '@/config/work';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
-  return projects.map((project, index) => ({
-    params: { slug: project.id },
-    props: { project, previous: projects[index - 1], next: projects[index + 1] },
-  }));
+  return projects
+    .map((project, index) => ({ project, next: projects[index + 1] ?? projects[0] }))
+    .filter(({ project }) => !project.data.draft)
+    .map(({ project, next }) => ({
+      params: { slug: project.id },
+      props: { project, next: next && next.id !== project.id ? next : undefined },
+    }));
 }
 
 interface Props {
   project: CollectionEntry<'projects'>;
-  previous?: CollectionEntry<'projects'> | undefined;
   next?: CollectionEntry<'projects'> | undefined;
 }
 
-const { project, previous, next } = Astro.props;
-const { Content, headings } = await render(project);
+const { project, next } = Astro.props;
+const { Content } = await render(project);
 const data = project.data;
+const slotOf = (id: string) => work.find((slot) => slot.project === id);
+const slot = slotOf(project.id);
+const nextSlot = next ? slotOf(next.id) : undefined;
 
-// The sheet index: the Markdown body's sections, then the fixed ones.
-const contents = [
-  ...headings.filter((heading) => heading.depth === 2).map((heading) => ({ id: heading.slug, label: heading.text })),
-  { id: 'architecture', label: 'Architecture' },
-  { id: 'decisions', label: 'Decisions' },
-  ...(data.numbers.length > 0 ? [{ id: 'numbers', label: 'Numbers' }] : []),
-  { id: 'stack', label: 'Stack' },
-  ...(data.differently ? [{ id: 'differently', label: 'Differently' }] : []),
-];
-
-const pad = (n: number) => String(n).padStart(2, '0');
+const words = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'];
+const decisionsTitle = `${words[data.decisions.length] ?? data.decisions.length} decision${data.decisions.length === 1 ? '' : 's'}.`;
 const callouts = data.decisions.flatMap((decision, index) =>
-  decision.node ? [{ label: pad(index + 1), target: decision.node }] : [],
+  decision.node ? [{ label: String(index + 1), target: decision.node }] : [],
 );
-
-const fields = [
-  { label: 'Role', value: data.role },
-  ...(data.company ? [{ label: 'Company', value: data.company }] : []),
-  { label: 'Period', value: data.period },
-  { label: 'Sheet', value: `P / ${data.sheet}` },
-];
+const kicker = ['Case study', data.company, data.period].filter(Boolean).join(' · ');
 ---
 
-<PageLayout title={data.title} description={plain(data.summary)} type="article">
-  <article class="case container">
-    <header class="case__head" style={`view-transition-name: sheet-${project.id}`}>
-      <SectionMarker as="p" sheet="P" number={data.sheet} title="Case study" />
-      <h1 style={`view-transition-name: title-${project.id}`}>{data.title}</h1>
-      <p class="lead prose" set:html={rich(data.summary)} />
-      <TitleBlock fields={fields} />
-      {data.disclosure && <p class="case__disclosure annotation">{data.disclosure}</p>}
-    </header>
-
+<PageLayout title={data.title} description={plain(data.summary)} type="article" top="cs-title">
+  <section class="wrap hero" aria-labelledby="cs-title">
+    <p class="kick">
+      {slot && <span class="badge">{slot.slot}</span>}
+      <span>{kicker}</span>
+    </p>
+    <h1 id="cs-title" class="disp h1">{data.title}</h1>
+    <p class="lede">{plain(data.summary)}</p>
     {
-      data.brief && (
-        <CaseBrief
-          role={data.role}
-          company={data.company}
-          period={data.period}
-          problem={data.brief.problem}
-          result={data.brief.result}
-          numbers={data.numbers}
-        />
-      )
-    }
-
-    <ContentsBar items={contents} />
-
-    <div class="case__body flow prose">
-      <Content />
-    </div>
-
-    <section class="case__section" aria-labelledby="architecture">
-      <h2 id="architecture">Architecture</h2>
-      <ArchitectureDiagram spec={data.diagram} id={`${project.id}-diagram`} callouts={callouts} />
-    </section>
-
-    <section class="case__section" aria-labelledby="decisions">
-      <h2 id="decisions">Key decisions</h2>
-      <ol class="decisions" role="list">
-        {
-          data.decisions.map((decision, index) => (
-            <li
-              class="decision"
-              id={`decision-${pad(index + 1)}`}
-              data-decision-node={decision.node}
-              data-decision-label={pad(index + 1)}
-            >
-              <SectionMarker as="span" variant="bubble" sheet="D" number={pad(index + 1)} />
-              <div class="decision__body">
-                <h3>{decision.title}</h3>
-                <dl>
-                  <div class="decision__chose">
-                    <dt>Chose</dt>
-                    <dd set:html={rich(decision.chose)} />
-                  </div>
-                  <div>
-                    <dt>Over</dt>
-                    <dd set:html={rich(decision.over)} />
-                  </div>
-                  <div>
-                    <dt>Why</dt>
-                    <dd set:html={rich(decision.why)} />
-                  </div>
-                  <div class="decision__cost">
-                    <dt>Trade-off</dt>
-                    <dd set:html={rich(decision.tradeoff)} />
-                  </div>
-                </dl>
-                {decision.node && (
-                  <p>
-                    <button class="button button--text decision__show" type="button" data-show-on-drawing hidden>
-                      Show on the drawing <span aria-hidden="true">↑</span>
-                    </button>
-                  </p>
-                )}
-              </div>
-            </li>
-          ))
-        }
-      </ol>
-    </section>
-
-    {
-      data.numbers.length > 0 && (
-        <section class="case__section" aria-labelledby="numbers">
-          <h2 id="numbers">In numbers</h2>
-          <ul class="numbers" role="list">
-            {data.numbers.map((number) => (
-              <li>
-                <DimensionLine />
-                <p class="numbers__value">{number.value}</p>
-                <p class="numbers__label">{number.label}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
-    }
-
-    <section class="case__section" aria-labelledby="stack">
-      <h2 id="stack">Stack</h2>
-      <ul class="chips" role="list">
-        {data.stack.map((item) => <li>{item}</li>)}
-      </ul>
-    </section>
-
-    {
-      data.differently && (
-        <section class="case__section" aria-labelledby="differently">
-          <h2 id="differently">What I would do differently</h2>
-          <p class="prose">{data.differently}</p>
-        </section>
-      )
-    }
-
-    {
-      data.links.length > 0 && (
-        <ul class="case__links cluster" role="list">
-          {data.links.map((link) => (
-            <li>
-              <a class="button button--secondary" href={link.href}>
-                {link.label}
-              </a>
-            </li>
+      data.facts.length > 0 && (
+        <dl class="facts">
+          {data.facts.map((fact) => (
+            <div>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
           ))}
-        </ul>
+        </dl>
       )
     }
+  </section>
 
-    <nav class="case__nav" aria-label="Other case studies">
+  {
+    data.numbers.length > 0 && (
+      <section class="wrap nums" aria-label="In numbers">
+        {data.numbers.map((number) => (
+          <div class="num">
+            <b class="tab">{number.value}</b>
+            <span>{number.label}</span>
+          </div>
+        ))}
+      </section>
+    )
+  }
+
+  {
+    data.brief && (
+      <section class="wrap brief" aria-label="In short">
+        <div>
+          <p class="lbl">The problem</p>
+          <p set:html={rich(data.brief.problem)} />
+        </div>
+        <div>
+          <p class="lbl">The result</p>
+          <p set:html={rich(data.brief.result)} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    data.screens.length > 0 && (
+      <section class="wrap screens" aria-label="Screens">
+        {data.screens.map((screen) => (
+          <figure>
+            {screen.src ? (
+              <img class="shot" src={screen.src} alt={screen.alt ?? ''} loading="lazy" />
+            ) : (
+              <div class="shot">{screen.placeholder}</div>
+            )}
+            <figcaption>{screen.caption}</figcaption>
+          </figure>
+        ))}
+      </section>
+    )
+  }
+
+  <section class="wrap story" aria-label="The story">
+    <Content />
+  </section>
+
+  <section id="diagram" class="wrap sec" aria-labelledby="d-title">
+    <h2 id="d-title" class="disp h2">{data.diagram.title}</h2>
+    <p class="sub">{data.diagram.description}</p>
+    <Diagram diagram={data.diagram} callouts={callouts} />
+  </section>
+
+  <section class="wrap sec" aria-labelledby="dec-title">
+    <h2 id="dec-title" class="disp h2">{decisionsTitle}</h2>
+    <p class="sub">Each one written down as a decision record at the time, with the option it beat and the price it costs.</p>
+    <div class="decs">
       {
-        previous ? (
-          <a href={`/projects/${previous.id}/`} rel="prev">
-            <span class="label">← Previous sheet</span>
-            <span>{previous.data.title}</span>
-          </a>
-        ) : (
-          <a href="/#work">
-            <span class="label">← All work</span>
-            <span>Back to the case studies</span>
-          </a>
-        )
+        data.decisions.map((decision, index) => (
+          <article class="dec">
+            <div class="dhead">
+              <span class="badge">{index + 1}</span>
+              <h3>{plain(decision.title)}</h3>
+              {decision.node && (
+                <a class="locate" href="#diagram" data-locate={decision.node}>
+                  See it in the diagram
+                </a>
+              )}
+            </div>
+            <dl class="dl">
+              <div class="chose">
+                <dt>Chose</dt>
+                <dd>{plain(decision.chose)}</dd>
+              </div>
+              <div>
+                <dt>Over</dt>
+                <dd>{plain(decision.over)}</dd>
+              </div>
+              <div>
+                <dt>Why</dt>
+                <dd>{plain(decision.why)}</dd>
+              </div>
+              <div class="trade">
+                <dt>Trade-off</dt>
+                <dd>{plain(decision.tradeoff)}</dd>
+              </div>
+            </dl>
+          </article>
+        ))
       }
-      {
-        next ? (
-          <a href={`/projects/${next.id}/`} rel="next">
-            <span class="label">Next sheet →</span>
-            <span>{next.data.title}</span>
-          </a>
+    </div>
+  </section>
+
+  <section class="wrap sec" aria-labelledby="st-title">
+    <h2 id="st-title" class="lbl st-title">Built with</h2>
+    <ul class="stack">
+      {data.stack.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="wrap next" aria-label="Keep reading">
+    {
+      next &&
+        (next.data.draft ? (
+          <div class="ncard">
+            <span class="lbl">Next case study · soon</span>
+            <span class="t">
+              {nextSlot && <span class="badge">{nextSlot.slot}</span>}
+              {nextSlot?.name ?? next.data.title}
+            </span>
+            <p>{next.data.teaser ?? plain(next.data.summary)}</p>
+          </div>
         ) : (
-          <a href="/#contact">
-            <span class="label">Contact →</span>
-            <span>Let’s talk</span>
+          <a class="ncard" href={`/projects/${next.id}/`}>
+            <span class="lbl">Next case study</span>
+            <span class="t">
+              {nextSlot && <span class="badge">{nextSlot.slot}</span>}
+              {nextSlot?.name ?? next.data.title}
+            </span>
+            <p>{next.data.teaser ?? plain(next.data.summary)}</p>
           </a>
-        )
-      }
-    </nav>
-  </article>
+        ))
+    }
+    <div class="ncard">
+      <span class="lbl">Building something like this?</span>
+      <p>Tell me what you are building and I'll reply within 48 hours.</p>
+      <div class="cta">
+        <a class="btn btn-gold" href={mailto()}>Email me</a>
+        <a class="btn btn-ghost" href="/#work">All work</a>
+      </div>
+    </div>
+  </section>
 </PageLayout>
 
 <script>
-  import { initDecisions } from '@/scripts/decisions';
-
-  initDecisions();
+  // "See it in the diagram": scroll to the drawing and light the decision's box.
+  document.querySelectorAll<HTMLAnchorElement>('[data-locate]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const id = link.dataset.locate;
+      document.querySelectorAll<HTMLElement>('[data-node]').forEach((node) => {
+        node.toggleAttribute('data-on', node.dataset.node === id);
+      });
+    });
+  });
 </script>
 
 <style>
-  .case {
-    display: grid;
-    gap: var(--space-2xl);
-    padding-block: var(--space-xl) var(--space-3xl);
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: clamp(64px, 8vw, 120px);
+    padding-bottom: 72px;
   }
 
-  .case__head {
-    display: grid;
-    gap: var(--space-m);
-  }
-
-  h1 {
-    font-size: var(--step-6);
-    max-inline-size: 18ch;
-  }
-
-  .case__disclosure {
-    padding-inline-start: var(--space-s);
-    border-inline-start: var(--line-regular) solid var(--color-accent);
-    max-inline-size: var(--measure);
-  }
-
-  .case__section {
-    display: grid;
-    gap: var(--space-m);
-  }
-
-  /* Anchors land below the sticky sheet index. */
-  .case :global(:is(h2, h3)),
-  .case__section,
-  .decision {
-    scroll-margin-block-start: 4.5rem;
-  }
-
-  .decisions {
-    display: grid;
-    gap: var(--space-l);
+  .kick {
     margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+
+  .h1 {
+    font-size: clamp(56px, 9vw, 148px);
+  }
+
+  .lede {
+    margin: 0;
+    max-width: 34em;
+    font-size: clamp(19px, 1.7vw, 24px);
+    line-height: 1.45;
+  }
+
+  .facts {
+    margin: 16px 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: 24px 32px;
+    padding-top: 24px;
+    box-shadow: inset 0 1px 0 var(--line);
+  }
+
+  .facts dt,
+  .dl dt {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-faint);
+  }
+
+  .facts dd {
+    margin: 6px 0 0;
+    font-size: 17px;
+    line-height: 1.45;
+  }
+
+  .nums {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+    gap: 3px;
+    padding-bottom: 96px;
+  }
+
+  .num {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 28px 24px;
+    background: var(--surface);
+  }
+
+  .num b {
+    font-weight: 700;
+    font-size: clamp(64px, 7vw, 112px);
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--gold);
+  }
+
+  .num span {
+    font-size: 17px;
+    color: var(--text-soft);
+  }
+
+  .brief {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+    gap: 48px;
+    padding-bottom: 120px;
+  }
+
+  .brief div {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .brief p:not(.lbl) {
+    margin: 0;
+    font-size: clamp(20px, 1.8vw, 26px);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr));
+    gap: 24px;
+    padding-bottom: 140px;
+  }
+
+  .screens figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .shot {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--surface-raised);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-faint);
+    text-align: center;
+    object-fit: cover;
+  }
+
+  img.shot {
     padding: 0;
-    list-style: none;
   }
 
-  .decision {
+  .screens figcaption {
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  /* The story: each chapter's heading on the left, its paragraphs on the right. */
+  .story {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-s);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 18px 48px;
     align-items: start;
+    padding-bottom: 140px;
   }
 
-  .decision__body {
-    display: grid;
-    gap: var(--space-s);
-    max-inline-size: 52rem;
-  }
-
-  .decision dl {
-    display: grid;
-    gap: var(--line-thin);
+  .story :global(h2) {
+    grid-column: 1;
     margin: 0;
-    border: var(--line-thin) solid var(--color-ink);
-    background: var(--color-ink);
+    font-weight: 700;
+    font-size: clamp(28px, 2.6vw, 40px);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
   }
 
-  .decision dl div {
-    display: grid;
-    gap: var(--space-3xs) var(--space-s);
-    padding: var(--space-2xs) var(--space-xs);
-    background: var(--color-paper-raised);
-  }
-
-  @media (min-width: 720px) {
-    .decision dl div {
-      grid-template-columns: 7rem minmax(0, 1fr);
-    }
-  }
-
-  .decision dt {
-    padding-block-start: 0.2em;
-    font-family: var(--font-mono);
-    font-size: var(--text-label);
-    font-weight: 500;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-annotation);
-  }
-
-  .decision dd {
+  .story :global(p) {
+    grid-column: 2;
     margin: 0;
+    max-width: 40em;
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--text-body);
   }
 
-  .decision__chose dd {
+  .story :global(h2:not(:first-child)),
+  .story :global(h2:not(:first-child) + p) {
+    margin-top: 54px;
+  }
+
+  .story :global(p strong) {
+    color: var(--gold);
+  }
+
+  .sec {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 140px;
+  }
+
+  .h2 {
+    font-size: var(--text-h2);
+  }
+
+  .sub {
+    margin: 0;
+    max-width: 40em;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--text-soft);
+  }
+
+  .decs {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: 20px 48px;
+    padding: 32px 28px;
+    background: var(--surface);
+  }
+
+  .dhead {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .dhead h3 {
+    margin: 0;
+    font-weight: 700;
+    font-size: clamp(26px, 2.4vw, 36px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .locate {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--target);
+    font-weight: 600;
+    font-size: 15px;
+    text-underline-offset: 4px;
+  }
+
+  .dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+    gap: 20px 32px;
+    grid-column: span 2;
+  }
+
+  .dl dd {
+    margin: 6px 0 0;
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .dl .chose dd {
+    color: var(--text);
     font-weight: 600;
   }
 
-  .decision__show[hidden] {
-    display: none;
+  .dl .trade dt {
+    color: var(--gold);
   }
 
-  .decision__cost dt {
-    color: var(--color-accent-text);
+  .st-title {
+    font-size: 15px;
   }
 
-  .numbers {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-    gap: var(--space-l);
+  .stack {
+    list-style: none;
     margin: 0;
     padding: 0;
-    list-style: none;
-  }
-
-  .numbers li {
-    display: grid;
-    gap: var(--space-2xs);
-  }
-
-  .numbers__value {
-    font-family: var(--font-display);
-    font-size: var(--step-5);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .numbers__value {
-    color: var(--color-accent-text);
-  }
-
-  .chips {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs);
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    gap: 8px;
   }
 
-  .chips li {
-    padding: var(--space-3xs) var(--space-xs);
-    border: var(--line-thin) solid var(--color-ink);
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
+  .stack li {
+    padding: 10px 14px;
+    background: var(--surface-raised);
+    box-shadow: inset 0 0 0 1px var(--line);
+    font-weight: 600;
+    font-size: 16px;
   }
 
-  .case__links {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .case__nav {
+  .next {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: var(--space-m);
-    padding-block-start: var(--space-l);
-    border-block-start: var(--line-thin) solid var(--color-ink);
+    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+    gap: 3px;
+    padding-bottom: 120px;
   }
 
-  .case__nav a {
-    display: grid;
-    gap: var(--space-3xs);
-    font-family: var(--font-display);
-    font-size: var(--step-2);
+  .ncard {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 32px 28px;
+    background: var(--surface);
     text-decoration: none;
+    color: var(--text);
+    transition: background-color var(--dur-fast);
   }
 
-  .case__nav a:last-child {
-    text-align: end;
+  a.ncard:hover {
+    background: var(--surface-hover);
+    color: var(--text);
   }
 
-  .case__nav a:hover span:last-child {
-    text-decoration: underline;
-    text-decoration-color: var(--color-accent);
+  .ncard .t {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 700;
+    font-size: clamp(28px, 3vw, 44px);
+    letter-spacing: -0.02em;
+  }
+
+  .ncard p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    align-items: center;
+  }
+
+  @media (max-width: 700px) {
+    .story {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .story :global(p) {
+      grid-column: 1;
+      font-size: 17px;
+    }
+
+    .story :global(h2:not(:first-child) + p) {
+      margin-top: 0;
+    }
+
+    .dl {
+      grid-column: auto;
+    }
+
+    .nums,
+    .brief,
+    .screens,
+    .story,
+    .sec,
+    .next {
+      padding-bottom: 88px;
+    }
+
+    .cta .btn-gold {
+      flex: 1;
+    }
   }
 </style>

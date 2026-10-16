@@ -1,0 +1,529 @@
+---
+/**
+ * "Every product starts as noise", "My job is the system underneath", "Four rules hold
+ * it up": three statements, then the four principles, each lighting the layers it holds up.
+ *
+ * In the 3D world the section is pinned for a long scroll: the statements replace one
+ * another and each principle opens in turn, lighting its plates (scripts/world). A rule's
+ * title is a button, so focusing or clicking it scrolls to its step.
+ * On the still page the statements follow one another, the rules are all open, and
+ * tapping a rule lights its layers on a flat stack of plates (scripts/home.ts).
+ */
+import { layers, lightsLabel, system } from '@/config/home';
+import { rich } from '@/lib/rich';
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const first = system.principles[0];
+const isLit = (layer: number) => first?.lights.includes(layer) ?? false;
+const layersLabel = `The five layers of the system as stacked plates. ${first?.title} lights up: ${first?.lights
+  .map((index) => layers[index]?.name)
+  .join(', ')}.`;
+// The flat stack, bottom plate first; labels read top to bottom.
+const plateTops = [150, 110, 70, 30, -10];
+const labelTops = [210, 170, 130, 90, 50];
+---
+
+<section id="system" data-sec="sys" class="sys" aria-label="Approach">
+  <div class="pin wrap">
+    <div class="stmts" data-sys="idle">
+      {
+        system.statements.map((statement, index) => (
+          <div class:list={['stmt', index === 0 ? 'sa' : 'sb']}>
+            <h2 class="disp h2">
+              {statement.lines.map((line, n) => (
+                <span class="mask" style={n > 0 ? '--d: 90ms' : undefined}>
+                  <span>{line} </span>
+                </span>
+              ))}
+            </h2>
+            <p class="sbody">{statement.body}</p>
+          </div>
+        ))
+      }
+      <div class="stmt sc">
+        <h2 class="disp h2">
+          {
+            system.rules.lines.map((line, n) => (
+              <span class="mask" style={n > 0 ? '--d: 90ms' : undefined}>
+                <span>{line} </span>
+              </span>
+            ))
+          }
+        </h2>
+        <p class="sbody hint">{system.rules.hint}</p>
+        <div class="layers" role="img" aria-label={layersLabel} data-layers>
+          {
+            plateTops.map((top, layer) => (
+              <div class="pl" data-layer={layer} data-on={isLit(layer) ? '' : undefined} style={`top: ${top}px`} aria-hidden="true" />
+            ))
+          }
+          {
+            layers.map((layer, index) => (
+              <div
+                class="ll"
+                data-layer={index}
+                data-on={isLit(index) ? '' : undefined}
+                style={`top: ${labelTops[index]}px`}
+                aria-hidden="true"
+              >
+                <i />
+                {layer.name}
+              </div>
+            ))
+          }
+        </div>
+        <ol class="prin">
+          {
+            system.principles.map((principle, index) => (
+              <li data-pr={index} data-on={index === 0 ? '' : undefined} data-lights={principle.lights.join(' ')}>
+                <span class="pn tab">{pad(index + 1)}</span>
+                <div>
+                  <h3 class="pt">
+                    <button class="pbtn" type="button" data-prb={index}>
+                      {principle.title}
+                      <span class="dotx" aria-hidden="true" />
+                    </button>
+                  </h3>
+                  <div class="pwrap">
+                    <div class="pinner">
+                      <p class="pb">
+                        <Fragment set:html={rich(principle.body)} />
+                        {principle.link && (
+                          <>
+                            {' '}
+                            <a href={principle.link.href}>{principle.link.label}</a>
+                          </>
+                        )}
+                      </p>
+                      <p class="ptag">
+                        Lights up
+                        {lightsLabel(principle.lights).map((name) => (
+                          <span>{name}</span>
+                        ))}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ---- The still page ---- */
+
+  .sys {
+    position: relative;
+    padding-top: 96px;
+  }
+
+  .stmts {
+    max-width: 720px;
+  }
+
+  .stmt + .stmt {
+    margin-top: 56px;
+  }
+
+  .stmt {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .h2 {
+    font-size: var(--text-h2);
+  }
+
+  .sbody {
+    margin: 14px 0 0;
+    max-width: 28em;
+    font-size: clamp(17px, 1.4vw, 21px);
+    line-height: 1.5;
+    color: var(--text-soft);
+  }
+
+  .hint {
+    display: none;
+  }
+
+  :global(html.js) .hint {
+    display: block;
+  }
+
+  .layers {
+    position: relative;
+    height: 300px;
+    margin-top: 28px;
+  }
+
+  .pl {
+    position: absolute;
+    left: 30px;
+    width: 140px;
+    height: 140px;
+    transform: rotateX(62deg) rotateZ(-45deg);
+    background: var(--surface-plate);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.14),
+      0 14px 24px rgb(0 0 0 / 0.55);
+    transition:
+      background-color 300ms,
+      box-shadow 300ms;
+  }
+
+  .pl[data-on] {
+    background: var(--surface-plate-lit);
+    box-shadow:
+      inset 0 0 0 2px var(--gold),
+      0 0 36px rgb(255 181 71 / 0.35);
+  }
+
+  .ll {
+    position: absolute;
+    left: 206px;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.2;
+    color: var(--text-muted);
+    transition: color 300ms;
+  }
+
+  .ll i {
+    flex: none;
+    width: 22px;
+    height: 0;
+    border-top: 1px solid #4a4d55;
+  }
+
+  .ll[data-on] {
+    color: var(--gold);
+  }
+
+  .ll[data-on] i {
+    border-top-color: var(--gold);
+  }
+
+  .prin {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .prin li {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 0 10px;
+    padding: 12px 0 16px;
+    box-shadow: inset 0 1px 0 var(--line);
+  }
+
+  .pn {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-faint);
+    padding-top: 14px;
+    transition: color 300ms;
+  }
+
+  .prin li[data-on] .pn {
+    color: var(--gold);
+  }
+
+  .pt {
+    margin: 0;
+    font-weight: 700;
+    font-size: clamp(22px, 2vw, 28px);
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+
+  .pbtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: var(--target);
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .pbtn:hover {
+    color: var(--gold);
+  }
+
+  .dotx {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px var(--text-faint);
+  }
+
+  .pbtn[aria-pressed='true'] .dotx {
+    background: var(--gold);
+    box-shadow: none;
+  }
+
+  :global(html:not(.js)) .dotx {
+    display: none;
+  }
+
+  .pwrap {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 500ms var(--ease-out);
+  }
+
+  .pinner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .pb {
+    margin: 6px 0 0;
+    max-width: 30em;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-soft);
+  }
+
+  .pb a {
+    color: var(--blue);
+    font-weight: 600;
+    text-underline-offset: 3px;
+  }
+
+  .pb a:hover {
+    color: var(--gold);
+  }
+
+  .pb :global(.metric) {
+    color: var(--gold);
+  }
+
+  .ptag {
+    margin: 10px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .ptag span::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-right: 7px;
+    vertical-align: 1px;
+  }
+
+  @media (min-width: 900px) {
+    .sys {
+      padding-top: 140px;
+    }
+
+    .stmt + .stmt {
+      margin-top: 96px;
+    }
+
+    .sbody {
+      margin-top: 22px;
+    }
+
+    .pb {
+      font-size: 17px;
+      margin-top: 10px;
+    }
+  }
+
+  /* ---- The 3D world: pinned, one statement at a time, one rule per step ---- */
+
+  :global(html.w3d) .sys {
+    height: 5000px;
+    padding-top: 0;
+  }
+
+  :global(html.w3d) .pin {
+    position: sticky;
+    top: 0;
+    height: min(100vh, 1000px);
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+  }
+
+  :global(html.w3d) .stmts {
+    position: relative;
+    width: min(42%, 600px);
+  }
+
+  :global(html.w3d) .stmt + .stmt {
+    margin-top: 0;
+  }
+
+  :global(html.w3d) .stmt {
+    gap: 22px;
+  }
+
+  :global(html.w3d) .sbody {
+    margin: 0;
+  }
+
+  :global(html.w3d) .hint,
+  :global(html.w3d) .layers,
+  :global(html.w3d) .dotx {
+    display: none;
+  }
+
+  :global(html.w3d) .stmts .sb,
+  :global(html.w3d) .stmts .sc {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  :global(html.w3d) .stmts .mask > span {
+    transform: translateY(110%);
+    transition: transform 850ms var(--ease-out) var(--d, 0ms);
+  }
+
+  :global(html.w3d) .stmts .sbody {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+  }
+
+  :global(html.w3d) .stmts[data-sys='noise'] .sa .mask > span {
+    transform: none;
+  }
+
+  :global(html.w3d) .stmts[data-sys='noise'] .sa .sbody {
+    opacity: 1;
+    transform: none;
+    transition-delay: 260ms;
+  }
+
+  :global(html.w3d) .stmts[data-sys='system'] .sa .mask > span,
+  :global(html.w3d) .stmts[data-sys='prin'] .sa .mask > span {
+    transform: translateY(-110%);
+    transition: transform 520ms var(--ease-io);
+  }
+
+  :global(html.w3d) .stmts[data-sys='system'] .sb .mask > span {
+    transform: none;
+    transition-delay: calc(var(--d, 0ms) + 380ms);
+  }
+
+  :global(html.w3d) .stmts[data-sys='system'] .sb .sbody {
+    opacity: 1;
+    transform: none;
+    transition-delay: 640ms;
+  }
+
+  /* The rules block is hidden by opacity, never visibility, so it stays in the tab order. */
+  :global(html.w3d) .stmts .sc {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms;
+  }
+
+  :global(html.w3d) .stmts[data-sys='prin'] .sc {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  :global(html.w3d) .stmts[data-sys='prin'] .sb .mask > span {
+    transform: translateY(-110%);
+    transition: transform 520ms var(--ease-io);
+  }
+
+  :global(html.w3d) .stmts[data-sys='prin'] .sc .mask > span {
+    transform: none;
+    transition-delay: calc(var(--d, 0ms) + 380ms);
+  }
+
+  :global(html.w3d) .stmts .prin {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 500ms var(--ease-out),
+      transform 500ms var(--ease-out);
+  }
+
+  :global(html.w3d) .stmts[data-sys='prin'] .prin {
+    opacity: 1;
+    transform: none;
+    transition-delay: 560ms;
+  }
+
+  /* Focus inside the hidden block brings it forward: the world scrolls to that rule. */
+  :global(html.w3d) .stmts .sc:focus-within {
+    opacity: 1;
+  }
+
+  :global(html.w3d) .prin li {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 0 12px;
+    padding: 14px 0;
+    transition: opacity 400ms var(--ease-out);
+  }
+
+  :global(html.w3d) .pn {
+    padding-top: 6px;
+  }
+
+  :global(html.w3d) .pbtn {
+    display: inline-flex;
+    width: auto;
+  }
+
+  :global(html.w3d) .prin li:not([data-on]) .pt,
+  :global(html.w3d) .prin li:not([data-on]) .pn {
+    color: var(--text-faint);
+  }
+
+  :global(html.w3d) .prin li:not([data-on]) .pbtn {
+    color: inherit;
+  }
+
+  :global(html.w3d) .prin li:not([data-on]) .pwrap {
+    grid-template-rows: 0fr;
+  }
+
+  :global(html.w3d) .prin li:not([data-on]) .pinner {
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+
+  :global(html.w3d) .prin li:focus-within .pinner {
+    opacity: 1;
+  }
+</style>

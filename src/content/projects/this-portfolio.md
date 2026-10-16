@@ -1,5 +1,8 @@
 ---
+# Rewritten on the v3 template in Phase 3; until then the home page says "Case study soon".
+draft: true
 title: This portfolio
+teaser: 'The page you are reading: a 3D model of how I build, shipped through CI with performance and accessibility gates.'
 summary: A static site that behaves like a set of technical drawings, ==shipped through CI with performance and accessibility gates==. The code is public.
 brief:
   problem: Ambitious motion usually costs speed and accessibility.

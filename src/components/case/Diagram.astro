@@ -1,0 +1,416 @@
+---
+/**
+ * A case study's architecture, drawn from its frontmatter (lib/diagram.ts lays it out).
+ * Boxes are HTML, edges one SVG. Two drawings of the same system: the wide one scrolls
+ * sideways inside a focusable frame when the screen is narrower than it, and a phone
+ * version drawn top to bottom replaces it on small screens when the frontmatter has one.
+ * Each box carries data-node, so "See it in the diagram" can light it (scripts/case.ts).
+ */
+import type { CollectionEntry } from 'astro:content';
+import {
+  layoutDiagram,
+  narrowSpec,
+  NARROW,
+  placeCallouts,
+  toPath,
+  WIDE,
+  type DiagramLayout,
+  type PlacedCallout,
+} from '@/lib/diagram';
+
+interface Props {
+  diagram: CollectionEntry<'projects'>['data']['diagram'];
+  /** Numbered markers: decision number → box id. */
+  callouts: { label: string; target: string }[];
+}
+
+const { diagram, callouts } = Astro.props;
+
+interface Drawing {
+  key: 'wide' | 'narrow';
+  layout: DiagramLayout;
+  callouts: PlacedCallout[];
+  alt: string;
+}
+
+const wideLayout = layoutDiagram(diagram, WIDE);
+const drawings: Drawing[] = [
+  {
+    key: 'wide',
+    layout: wideLayout,
+    callouts: placeCallouts(wideLayout, callouts),
+    alt: diagram.alt ?? diagram.description,
+  },
+];
+if (diagram.narrow) {
+  const narrowLayout = layoutDiagram(narrowSpec(diagram, diagram.narrow), NARROW);
+  drawings.push({
+    key: 'narrow',
+    layout: narrowLayout,
+    callouts: placeCallouts(narrowLayout, callouts),
+    alt: diagram.narrow.alt ?? diagram.alt ?? diagram.description,
+  });
+}
+
+// An edge that has a twin going the other way "comes back on its own": dashed and gold.
+const returns = (from: string, to: string, dashed: boolean) =>
+  dashed && diagram.edges.some((edge) => edge.from === to && edge.to === from);
+const px = (n: number) => `${Math.round(n)}px`;
+---
+
+{
+  drawings.map((drawing) => {
+    const frame = (
+      <div
+        class="dhost"
+        role="img"
+        aria-label={drawing.alt}
+        style={`width: ${px(drawing.layout.width)}; height: ${px(drawing.layout.height)}`}
+      >
+        {drawing.layout.groups.map((group) => (
+          <>
+            <div
+              class="group"
+              style={`left: ${px(group.x)}; top: ${px(group.y)}; width: ${px(group.w)}; height: ${px(group.h)}`}
+            />
+            <div class="glabel" style={`left: ${px(group.x + 14)}; top: ${px(group.y + 10)}; width: ${px(group.w - 28)}`}>
+              {group.label}
+            </div>
+          </>
+        ))}
+        <svg
+          class="edges"
+          width={drawing.layout.width}
+          height={drawing.layout.height}
+          viewBox={`0 0 ${drawing.layout.width} ${drawing.layout.height}`}
+          aria-hidden="true"
+        >
+          <defs>
+            {['', '-back'].map((suffix) => (
+              <marker
+                id={`head-${drawing.key}${suffix}`}
+                viewBox="0 0 4 4"
+                refX="2"
+                refY="2"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto"
+                overflow="visible"
+              >
+                <path d="M0 0 L4 2 L0 4 Z" class:list={['head', { back: suffix }]} />
+              </marker>
+            ))}
+          </defs>
+          {drawing.layout.edges.map((edge) => (
+            <path
+              class:list={['edge', { dashed: edge.dashed, back: returns(edge.from, edge.to, edge.dashed) }]}
+              d={toPath(edge.points)}
+              marker-end={`url(#head-${drawing.key}${returns(edge.from, edge.to, edge.dashed) ? '-back' : ''})`}
+            />
+          ))}
+        </svg>
+        {drawing.layout.nodes.map((node) => (
+          <div
+            class:list={['node', node.kind, { accent: node.accent }]}
+            data-node={node.id}
+            style={`left: ${px(node.x)}; top: ${px(node.y)}; width: ${px(node.w)}; height: ${px(node.h)}`}
+          >
+            <span>
+              <b>{node.label}</b>
+              {node.note && <small>{node.note}</small>}
+            </span>
+          </div>
+        ))}
+        {drawing.layout.edges.map(
+          (edge) =>
+            edge.label && (
+              <div
+                class:list={['elabel', edge.labelAt.anchor, { back: returns(edge.from, edge.to, edge.dashed) }]}
+                style={`left: ${px(edge.labelAt.x)}; top: ${px(edge.labelAt.y - 13)}`}
+              >
+                {edge.label}
+              </div>
+            ),
+        )}
+        {drawing.callouts.map((callout) => (
+          <div class="callout" style={`left: ${px(callout.x - callout.r)}; top: ${px(callout.y - callout.r)}`}>
+            {callout.label}
+          </div>
+        ))}
+      </div>
+    );
+    return drawing.key === 'wide' ? (
+      <div
+        class:list={['dbox', 'wide', { 'has-narrow': drawings.length > 1 }]}
+        tabindex="0"
+        role="region"
+        aria-label="Architecture diagram; scrolls sideways on narrow screens"
+      >
+        {frame}
+      </div>
+    ) : (
+      <div class="dbox narrow">{frame}</div>
+    );
+  })
+}
+
+<p class="legend">
+  <span><i class="k-module"></i>Module in the platform</span>
+  <span><i class="k-service"></i>Contract or service I built</span>
+  <span><i class="k-external"></i>Outside service</span>
+  <span><i class="k-accent"></i>Where a decision lives</span>
+  <span><i class="k-back"></i>Comes back on its own</span>
+</p>
+
+<style>
+  .dbox {
+    background: var(--surface-sunk);
+    box-shadow: inset 0 0 0 1px var(--line-soft);
+  }
+
+  .wide {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .narrow {
+    display: none;
+    justify-content: center;
+    padding: 16px 4px;
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  @media (max-width: 760px) {
+    .wide.has-narrow {
+      display: none;
+    }
+
+    .narrow {
+      display: flex;
+    }
+  }
+
+  .dhost {
+    position: relative;
+    flex: none;
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .wide .dhost {
+    margin: 0 auto;
+  }
+
+  .group {
+    position: absolute;
+    background: var(--blue-wash);
+    border: 1px solid var(--blue-line);
+    border-radius: 10px;
+  }
+
+  .glabel {
+    position: absolute;
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 600;
+    color: var(--blue-label);
+  }
+
+  .edges {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+  }
+
+  .edge {
+    fill: none;
+    stroke: var(--text-faint);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .edge.dashed {
+    stroke-dasharray: 6 6;
+  }
+
+  .edge.back {
+    stroke: var(--gold);
+  }
+
+  .head {
+    fill: var(--text-faint);
+  }
+
+  .head.back {
+    fill: var(--gold);
+  }
+
+  .node {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    text-align: center;
+    color: var(--text);
+    background: var(--surface-raised);
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+  }
+
+  .node small {
+    display: block;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-muted);
+  }
+
+  .node.client {
+    background: transparent;
+    border-color: var(--line-text);
+  }
+
+  .node.service {
+    background: var(--surface-blue);
+    border-color: var(--blue);
+  }
+
+  .node.external {
+    background: transparent;
+    border: 1px dashed var(--text-faint);
+  }
+
+  .node.store {
+    border-radius: 36px;
+  }
+
+  .node.accent {
+    background: var(--surface-gold);
+    border-color: var(--gold);
+  }
+
+  .node[data-on] {
+    box-shadow:
+      0 0 0 3px var(--gold),
+      0 0 48px rgb(255 181 71 / 0.35);
+    animation: ping 1200ms ease-out 2;
+  }
+
+  @keyframes ping {
+    0% {
+      box-shadow:
+        0 0 0 3px var(--gold),
+        0 0 0 0 rgb(255 181 71 / 0.6);
+    }
+    100% {
+      box-shadow:
+        0 0 0 3px var(--gold),
+        0 0 0 18px rgb(255 181 71 / 0);
+    }
+  }
+
+  .elabel {
+    position: absolute;
+    font-size: 13px;
+    line-height: 16px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .elabel.middle {
+    transform: translateX(-50%);
+  }
+
+  .elabel.end {
+    transform: translateX(-100%);
+  }
+
+  /* Room is short on a phone: long labels wrap toward the middle of the drawing. */
+  .narrow .elabel {
+    width: max-content;
+    max-width: 96px;
+    white-space: normal;
+  }
+
+  .narrow .elabel.end {
+    text-align: right;
+  }
+
+  .elabel.back {
+    color: var(--gold);
+  }
+
+  .callout {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--gold);
+    color: var(--text-on-gold);
+    font-size: 13px;
+    line-height: 24px;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .legend {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .legend i {
+    display: inline-block;
+    flex: none;
+    width: 22px;
+    height: 14px;
+    border-radius: 3px;
+  }
+
+  .k-module {
+    border: 1px solid rgb(255 255 255 / 0.3);
+    background: var(--surface-raised);
+  }
+
+  .k-service {
+    border: 1px solid var(--blue);
+  }
+
+  .k-external {
+    border: 1px dashed var(--text-faint);
+  }
+
+  .k-accent {
+    border: 1px solid var(--gold);
+  }
+
+  .legend .k-back {
+    height: 0;
+    border-top: 2px dashed var(--gold);
+    border-radius: 0;
+  }
+
+  @media (max-width: 760px) {
+    .legend {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .node[data-on] {
+      animation: none;
+    }
+  }
+</style>

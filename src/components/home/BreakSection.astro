@@ -1,0 +1,325 @@
+---
+/**
+ * "Try to break it": a live model of how I build. Take a server down; the others pick up
+ * the work and a replacement starts on its own. The readout is a live region, so the
+ * outcome is announced as well as drawn.
+ *
+ * In the 3D world the model is the rig behind the text (scripts/world). On the still page
+ * it is the flat model below: a front door and three servers. Both run on the same state
+ * machine (scripts/chaos.ts), which marks the page root with data-chaos.
+ */
+import { breakIt } from '@/config/home';
+
+const servers = [
+  { id: 1, name: 'Server 1' },
+  { id: 2, name: 'Server 2' },
+  { id: 3, name: 'Server 3' },
+];
+---
+
+<section id="break" data-sec="brk" class="brk" aria-labelledby="b-title">
+  <div class="bpin wrap">
+    <div class="btext rv">
+      <h2 id="b-title" class="disp h2">
+        <span class="mask"><span>{breakIt.heading}</span></span>
+      </h2>
+      <p class="sbody fd" style="--d: 160ms">{breakIt.body}</p>
+      <div class="model" aria-hidden="true">
+        <div class="lb">Requests in</div>
+        <div class="wires">
+          {servers.map((server, index) => <i data-srv={server.id} style={`left: ${40 + index * 109}px`} />)}
+        </div>
+        <div class="srvs">
+          {
+            servers.map((server) => (
+              <div class="srv" data-srv={server.id}>
+                <span class="leds">
+                  <b />
+                  <b />
+                  <b />
+                </span>
+                <span class="sname">
+                  {server.id === 2 ? (
+                    <>
+                      <span class="c-idle c-down">{server.name}</span>
+                      <span class="c-healed">Server 4</span>
+                    </>
+                  ) : (
+                    server.name
+                  )}
+                </span>
+                <small>
+                  {server.id === 2 ? (
+                    <>
+                      <span class="c-idle">up</span>
+                      <span class="c-down">down</span>
+                      <span class="c-healed">replacement up</span>
+                    </>
+                  ) : (
+                    <>
+                      <span class="c-idle c-healed">up</span>
+                      <span class="c-down">taking more</span>
+                    </>
+                  )}
+                </small>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <p class="readout tab fd" style="--d: 260ms" aria-live="polite" aria-atomic="true">
+        <small>{breakIt.caption}</small>
+        <span class="ro c-idle">{breakIt.readout.idle}</span>
+        <span class="ro c-down ro-down">{breakIt.readout.down}</span>
+        <span class="ro c-healed ro-healed">{breakIt.readout.healed}</span>
+      </p>
+      <div class="bctl fd" style="--d: 340ms">
+        <button class="btn btn-line" type="button" data-chaos-btn>
+          <span class="c-idle">{breakIt.button.idle}</span>
+          <span class="c-down">{breakIt.button.down}</span>
+          <span class="c-healed">{breakIt.button.healed}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .brk {
+    position: relative;
+    padding-top: 96px;
+  }
+
+  .btext {
+    display: flex;
+    flex-direction: column;
+    max-width: 720px;
+  }
+
+  .h2 {
+    font-size: var(--text-h2);
+  }
+
+  .sbody {
+    margin: 14px 0 0;
+    max-width: 28em;
+    font-size: clamp(17px, 1.4vw, 21px);
+    line-height: 1.5;
+    color: var(--text-soft);
+  }
+
+  /* Only the words for the current state show; data-chaos sits on the page root. */
+  .c-idle,
+  .c-down,
+  .c-healed {
+    display: none;
+  }
+
+  :global([data-chaos='idle']) .c-idle,
+  :global([data-chaos='down']) .c-down,
+  :global([data-chaos='healed']) .c-healed {
+    display: inline;
+  }
+
+  .model {
+    margin-top: 24px;
+    padding: 18px 16px 20px;
+    background: var(--surface-board);
+    box-shadow: inset 0 0 0 1px var(--line-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 420px;
+  }
+
+  .lb {
+    width: 180px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-raised);
+    box-shadow: inset 0 0 0 1px rgb(143 180 255 / 0.6);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .wires {
+    position: relative;
+    width: 300px;
+    height: 44px;
+  }
+
+  .wires i {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 44px;
+    background: #4a4d55;
+  }
+
+  :global([data-chaos='down']) .wires [data-srv='2'] {
+    width: 0;
+    background: none;
+    border-left: 2px dashed var(--red);
+  }
+
+  .srvs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+  }
+
+  .srv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 6px 12px;
+    background: var(--surface-plate);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .srv small {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--green);
+  }
+
+  .leds {
+    display: flex;
+    gap: 4px;
+  }
+
+  .leds b {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  :global([data-chaos='down']) .srv[data-srv='2'] {
+    background: var(--surface-down);
+    box-shadow: inset 0 0 0 2px var(--red);
+  }
+
+  :global([data-chaos='down']) .srv[data-srv='2'] small {
+    color: var(--red);
+  }
+
+  :global([data-chaos='down']) .srv[data-srv='2'] .leds b {
+    background: var(--red);
+  }
+
+  :global([data-chaos='healed']) .srv[data-srv='2'] {
+    box-shadow: inset 0 0 0 2px var(--green);
+  }
+
+  :global([data-chaos='down']) .srv:not([data-srv='2']) small {
+    color: var(--gold);
+  }
+
+  :global([data-chaos='down']) .srv:not([data-srv='2']) .leds b {
+    background: var(--gold);
+  }
+
+  .readout {
+    margin: 16px 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    background: var(--surface-readout);
+    box-shadow: inset 0 0 0 1px var(--line-soft);
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .readout small {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+
+  .readout .ro {
+    display: none;
+  }
+
+  :global([data-chaos='idle']) .readout .c-idle,
+  :global([data-chaos='down']) .readout .c-down,
+  :global([data-chaos='healed']) .readout .c-healed {
+    display: block;
+  }
+
+  .ro-down {
+    color: var(--red);
+  }
+
+  .ro-healed {
+    color: var(--green);
+  }
+
+  /* The model needs JavaScript; without it the section is the text alone. */
+  .bctl,
+  .model,
+  .readout {
+    display: none;
+  }
+
+  :global(html.js) .bctl,
+  :global(html.js) .readout {
+    display: flex;
+  }
+
+  :global(html.js) .model {
+    display: flex;
+  }
+
+  .bctl .btn {
+    width: 100%;
+  }
+
+  @media (min-width: 600px) {
+    .bctl .btn {
+      width: auto;
+    }
+  }
+
+  /* ---- The 3D world: pinned text, the model is the rig behind it ---- */
+
+  :global(html.w3d) .brk {
+    height: 2200px;
+    padding-top: 0;
+  }
+
+  :global(html.w3d) .bpin {
+    position: sticky;
+    top: 0;
+    height: min(100vh, 1000px);
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+  }
+
+  :global(html.w3d) .btext {
+    gap: 22px;
+    width: min(40%, 560px);
+  }
+
+  :global(html.w3d) .sbody,
+  :global(html.w3d) .readout {
+    margin: 0;
+  }
+
+  :global(html.w3d) .readout {
+    padding: 16px 18px;
+  }
+
+  :global(html.w3d) .model {
+    display: none;
+  }
+</style>

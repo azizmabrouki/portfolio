@@ -1,9 +1,8 @@
 /*
- * Base styles, typography, links, buttons and layout utilities.
- * Reads only tokens from tokens.css.
+ * Base styles shared by every page: reset, type, links, focus, buttons and the small
+ * pieces (badge, label, tag) components reuse. Section styles live in their components.
  */
 
-/* ─── Reset ───────────────────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -11,494 +10,340 @@
 }
 
 html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
   -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  min-block-size: 100vh;
-  min-block-size: 100dvh;
-  background-color: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  font-size: var(--step-0);
-  line-height: var(--leading-body);
-  font-optical-sizing: auto;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--text-body-size);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  caret-color: var(--gold);
 }
 
 img,
 svg {
-  max-inline-size: 100%;
+  display: block;
+  max-width: 100%;
 }
 
-::selection {
-  background: var(--color-selection);
-}
-
-/* ─── Typography ──────────────────────────────────────────────────────────── */
-h1,
-h2,
-h3,
-h4,
-.display {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-display);
-  text-wrap: balance;
-}
-
-.display {
-  font-size: var(--step-6);
-}
-
-h1,
-.h1 {
-  font-size: var(--step-5);
-}
-
-h2,
-.h2 {
-  font-size: var(--step-4);
-  font-weight: 500;
-}
-
-h3,
-.h3 {
-  font-size: var(--step-2);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-h4,
-.h4 {
-  font-size: var(--step-1);
-  letter-spacing: 0;
-}
-
-p {
-  margin: 0;
-  text-wrap: pretty;
-}
-
-.lead {
-  font-family: var(--font-display);
-  font-size: var(--step-1);
-  line-height: var(--leading-snug);
-}
-
-.prose {
-  max-inline-size: var(--measure);
-}
-
-.muted {
-  color: var(--color-ink-muted);
-}
-
-small,
-.small {
-  font-size: var(--step--1);
-}
-
-/* Drawing labels: small, uppercase, letter-spaced monospace. */
-.label {
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--color-annotation);
-}
-
-/* Dates, periods and places: monospace, sentence case, umber. */
-.meta {
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
-  color: var(--color-annotation);
-}
-
-/* Annotations: monospace notes that stay in sentence case. */
-.annotation {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  line-height: 1.5;
-  color: var(--color-annotation);
-}
-
-/* ─── Emphasis ────────────────────────────────────────────────────────────── */
-/* Key phrases: a sand band behind the words (the lower half in headings). On desktop the
-   band sweeps in from the left when it scrolls into view (details.ts adds .is-pending). */
-mark {
-  padding-inline: 0.08em;
-  background-color: transparent;
-  background-image: linear-gradient(var(--color-mark), var(--color-mark));
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 100% 100%;
-  color: inherit;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  transition: background-size var(--duration-deliberate) var(--ease-out);
-}
-
-:is(h1, h2, h3, .display) mark {
-  background-size: 100% 42%;
-}
-
-mark.is-pending {
-  background-size: 0% 100%;
-}
-
-:is(h1, h2, h3, .display) mark.is-pending {
-  background-size: 0% 42%;
-}
-
-/* Numbers and results. */
-.metric,
-.flow strong {
-  color: var(--color-accent-text);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Glossary terms: a dotted navy underline; the definition opens in a popover. */
-.term {
-  display: inline;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
+button {
   font: inherit;
-  text-decoration: underline dotted var(--color-structure);
-  text-decoration-thickness: var(--line-regular);
-  text-underline-offset: 0.3em;
-  cursor: help;
 }
 
-.term:hover {
-  text-decoration-style: solid;
-}
-
-code,
-kbd,
-samp {
-  font-family: var(--font-mono);
-  font-size: 0.875em;
-}
-
-:not(pre) > code {
-  padding: 0.1em 0.35em;
-  border-radius: var(--radius-s);
-  background: var(--color-paper-sunk);
-}
-
-/* ─── Links ───────────────────────────────────────────────────────────────── */
-/* Links are navy with a thin underline; on hover a vermilion line draws in from the left,
-   like a pen stroke, while the thin one fades. */
 a {
-  color: var(--color-structure);
-  text-decoration-line: underline;
-  text-decoration-color: var(--color-structure);
-  text-decoration-thickness: var(--line-thin);
-  text-underline-offset: 0.3em;
-  background-image: linear-gradient(var(--color-accent), var(--color-accent));
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 0% var(--line-strong);
-  transition:
-    color var(--duration-quick) var(--ease-out),
-    text-decoration-color var(--duration-quick) var(--ease-out),
-    background-size var(--duration-moderate) var(--ease-out);
+  color: var(--blue);
 }
 
 a:hover {
-  color: var(--color-structure);
-  text-decoration-color: transparent;
-  background-size: 100% var(--line-strong);
+  color: var(--gold);
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--text-on-gold);
 }
 
 :focus-visible {
-  outline: var(--line-strong) solid var(--color-focus);
-  outline-offset: 3px;
+  outline: var(--focus);
+  outline-offset: var(--focus-offset);
 }
 
-.skip-link {
+mark {
+  background: var(--gold-wash);
+  color: inherit;
+  padding: 0 2px;
+}
+
+/* ---- Layout ---- */
+
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.sr-only {
   position: absolute;
-  inset-inline-start: var(--space-s);
-  inset-block-start: -4rem;
-  z-index: 10;
-  padding: var(--space-2xs) var(--space-xs);
-  background: var(--color-ink);
-  color: var(--color-on-ink);
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -120px;
+  z-index: 50;
+  padding: 14px 18px;
+  background: var(--gold);
+  color: var(--text-on-gold);
+  font-weight: 700;
+  font-size: 16px;
   text-decoration: none;
 }
 
-.skip-link:focus {
-  inset-block-start: var(--space-s);
+.skip:focus {
+  top: 12px;
 }
 
-/* ─── Buttons ─────────────────────────────────────────────────────────────── */
-.button {
+.skip:hover {
+  color: var(--text-on-gold);
+}
+
+/* A dark ring wherever the background is gold: the blue one is 1.2:1 there. */
+.skip:focus-visible,
+.on-gold :focus-visible,
+.btn-gold:focus-visible {
+  outline-color: var(--text-on-gold);
+}
+
+/* ---- Type ---- */
+
+.disp {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  line-height: 0.95;
+}
+
+.tab {
+  font-variant-numeric: tabular-nums;
+}
+
+.lbl {
+  margin: 0;
+  font-weight: 600;
+  font-size: var(--text-label);
+  color: var(--text-faint);
+}
+
+.metric {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* A heading line that rises into view from behind its own edge. */
+.mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.mask > span {
+  display: block;
+}
+
+/* In the 3D world, blocks marked .rv reveal when they scroll in (data-in, set by
+   scripts/world): .mask lines rise, .fd parts fade up, each after its --d delay. */
+html.w3d .rv .mask > span {
+  transform: translateY(110%);
+  transition: transform 950ms var(--ease-out) var(--d, 0ms);
+}
+
+html.w3d .rv[data-in] .mask > span {
+  transform: none;
+}
+
+html.w3d .rv .fd,
+html.w3d .rv.fd {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 700ms var(--ease-out) var(--d, 0ms),
+    transform 700ms var(--ease-out) var(--d, 0ms);
+}
+
+html.w3d .rv[data-in] .fd,
+html.w3d .rv.fd[data-in] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Small pieces ---- */
+
+.badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2xs);
-  min-block-size: 2.75rem;
-  padding: 0.625em 1.25em;
-  border: var(--line-regular) solid var(--color-ink);
-  border-radius: var(--radius-s);
-  background: var(--color-ink);
-  color: var(--color-on-ink);
-  font-family: var(--font-sans);
-  font-size: var(--step--1);
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: 0.01em;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--text-on-gold);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0;
+  flex: none;
+}
+
+.wip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 13px;
+  box-shadow: inset 0 0 0 1px rgb(255 181 71 / 0.6);
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* Text where a link will be once its page exists: never a dead link. */
+.soon {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 4px;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text-faint);
+}
+
+.soon-s {
+  font-weight: 600;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* ---- Buttons ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 26px;
+  border: 0;
+  font: 600 17px/1 var(--font);
   text-decoration: none;
   cursor: pointer;
   transition:
-    background-color var(--duration-quick) var(--ease-out),
-    border-color var(--duration-quick) var(--ease-out),
-    color var(--duration-quick) var(--ease-out);
+    transform 140ms var(--ease-out),
+    background-color var(--dur-fast) ease,
+    color var(--dur-fast) ease;
 }
 
-.button:hover {
-  border-color: var(--color-structure);
-  background: var(--color-structure);
-  color: var(--color-paper);
+.btn:active {
+  transform: scale(0.97);
 }
 
-.button--secondary {
+.btn-gold {
+  background: var(--gold);
+  color: var(--text-on-gold);
+}
+
+.btn-gold:hover {
+  background: var(--gold-hover);
+  color: var(--text-on-gold);
+}
+
+.btn-ghost {
   background: transparent;
-  color: var(--color-ink);
+  color: var(--text);
+  padding: 0 4px;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
 }
 
-.button--secondary:hover {
-  border-color: var(--color-ink);
-  background: var(--color-ink);
-  color: var(--color-on-ink);
+.btn-ghost:hover {
+  color: var(--gold);
 }
 
-.button--text {
-  padding-inline: 0;
-  border-color: transparent;
-  background: transparent;
-  color: var(--color-structure);
+.btn-line {
+  background: var(--surface-button);
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--gold-line);
 }
 
-.button--text:hover {
-  border-color: transparent;
-  background: transparent;
-  color: var(--color-structure);
+.btn-line:hover {
+  background: var(--surface-button-hover);
+  color: var(--gold);
 }
 
-.button__arrow {
-  transition: transform var(--duration-quick) var(--ease-out);
+.btn-line[aria-disabled='true'] {
+  cursor: default;
+  color: var(--text-muted);
 }
 
-.button:hover .button__arrow {
-  transform: translateX(0.25em);
-}
+/* ---- Glossary terms (notes): a definition opens in place ---- */
 
-/* ─── Layout utilities ────────────────────────────────────────────────────── */
-.container {
-  inline-size: min(100% - 2 * var(--gutter), var(--container));
-  margin-inline: auto;
-}
-
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: var(--stack-gap, var(--space-s));
-}
-
-.cluster {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--cluster-gap, var(--space-s));
-}
-
-.visually-hidden {
-  position: absolute !important;
-  inline-size: 1px;
-  block-size: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+.term {
+  font: inherit;
+  color: var(--text);
+  background: none;
   border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline dotted var(--blue);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
 }
 
-/* Sheet backgrounds: a faint ruled grid or dot grid, aligned to --grid-cell. */
-.sheet-ruled {
-  background-color: var(--color-paper);
-  background-image:
-    linear-gradient(var(--color-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-  background-size: var(--grid-cell) var(--grid-cell);
-  background-position: -1px -1px;
+.term:hover,
+.term[aria-expanded='true'] {
+  color: var(--blue);
 }
 
-.sheet-dots {
-  background-color: var(--color-paper);
-  background-image: radial-gradient(var(--color-line-faint) 1px, transparent 1.5px);
-  background-size: var(--grid-cell) var(--grid-cell);
-  background-position: calc(var(--grid-cell) / -2) calc(var(--grid-cell) / -2);
-}
-
-/* ─── Page sections ───────────────────────────────────────────────────────── */
-.section {
-  padding-block-start: var(--space-3xl);
-  scroll-margin-block-start: var(--space-s);
-}
-
-/* ─── Long-form text (Markdown bodies of case studies and notes) ──────────── */
-.flow {
-  line-height: 1.65;
-}
-
-.flow > * + * {
-  margin-block-start: var(--flow-space, 1em);
-}
-
-.flow > :is(h2, h3) {
-  --flow-space: var(--space-l);
-}
-
-.flow > :is(h2, h3) + * {
-  --flow-space: var(--space-2xs);
-}
-
-.flow h2 {
-  font-size: var(--step-3);
-}
-
-.flow h3 {
-  font-size: var(--step-2);
-}
-
-.flow :is(ul, ol) {
-  padding-inline-start: 1.25em;
-}
-
-.flow li + li {
-  margin-block-start: 0.4em;
-}
-
-.flow li::marker {
-  color: var(--color-accent);
-}
-
-.flow blockquote {
-  margin-inline: 0;
-  padding-inline-start: var(--space-s);
-  border-inline-start: var(--line-regular) solid var(--color-accent);
-  font-family: var(--font-display);
-  font-size: var(--step-1);
-}
-
-.flow pre {
-  padding: var(--space-s);
-  overflow-x: auto;
-  border: var(--line-thin) solid var(--color-line-faint);
-  font-size: var(--step--1);
+.def {
+  display: block;
+  margin-top: 10px;
+  padding: 14px 16px;
+  background: var(--surface-blue);
+  box-shadow: inset 0 0 0 1px var(--blue-line);
+  font-size: 16px;
   line-height: 1.5;
+  color: var(--text-soft);
 }
 
-/* Code blocks: Shiki's css-variables theme, coloured from the palette. */
-:root {
-  --astro-code-foreground: var(--color-ink);
-  --astro-code-background: var(--color-paper-raised);
-  --astro-code-token-constant: var(--color-accent-text);
-  --astro-code-token-string: var(--color-ink);
-  --astro-code-token-comment: var(--color-ink-muted);
-  --astro-code-token-keyword: var(--color-accent-text);
-  --astro-code-token-parameter: var(--color-ink);
-  --astro-code-token-function: var(--color-ink);
-  --astro-code-token-string-expression: var(--color-ink);
-  --astro-code-token-punctuation: var(--color-ink-muted);
-  --astro-code-token-link: var(--color-accent-text);
+.def strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+  font-size: 15px;
 }
 
-/* ─── Page transitions ────────────────────────────────────────────────────── */
-/* Cross-document View Transitions: no router, no JavaScript. A case-study card and the
-   case study's header share a name, so the sheet morphs into the page it opens. Browsers
-   without support simply navigate; reduced motion keeps plain navigation too. */
-@media (prefers-reduced-motion: no-preference) {
-  @view-transition {
-    navigation: auto;
-  }
-}
-
-::view-transition-group(*) {
-  animation-duration: var(--duration-slow);
-  animation-timing-function: var(--ease-out);
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: var(--duration-moderate);
-}
-
-/* ─── Details (Phase 5) ───────────────────────────────────────────────────── */
-/* Coordinates beside the pointer on drawing surfaces: desktop, fine pointer, motion OK. */
-.coords-on [data-coords] {
-  cursor: crosshair;
-}
-
-.coords {
-  position: fixed;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  z-index: 20;
-  padding: 2px 6px;
-  border: var(--line-thin) solid var(--color-line-faint);
-  background: var(--color-paper);
-  color: var(--color-annotation);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--duration-quick) var(--ease-out);
-}
-
-.coords.is-visible {
-  opacity: 1;
-}
-
-/* ─── Glossary popovers (reading aid) ─────────────────────────────────────── */
-/* Without JavaScript the browser centres them; glossary.ts places them under their term. */
+/* Without JavaScript the same definitions open as popovers. */
 .term-pop {
-  max-inline-size: min(24rem, 100vw - 2rem);
-  padding: var(--space-xs) var(--space-s);
-  border: var(--line-thin) solid var(--color-ink);
-  background: var(--color-paper-raised);
-  color: var(--color-ink);
-  font-size: var(--step--1);
+  max-width: min(28rem, calc(100vw - 32px));
+  margin: auto;
+  padding: 16px 18px;
+  border: 0;
+  background: var(--surface-blue);
+  box-shadow: inset 0 0 0 1px var(--blue-line);
+  color: var(--text-soft);
+  font-size: 16px;
   line-height: 1.5;
-  box-shadow: 4px 4px 0 -1px var(--color-paper), 4px 4px 0 0 var(--color-ink);
 }
 
 .term-pop strong {
   display: block;
-  margin-block-end: var(--space-3xs);
-  font-family: var(--font-mono);
-  font-size: var(--text-label);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--color-structure);
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

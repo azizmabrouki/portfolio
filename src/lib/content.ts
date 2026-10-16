@@ -24,3 +24,9 @@ export function readingMinutes(markdown: string | undefined): number {
 export function formatDate(date: Date): string {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
+
+/** "27 Sep 2026": the short form used in lists and page headers. */
+export function shortDate(date: Date): string {
+  const month = date.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }).slice(0, 3);
+  return `${date.getUTCDate()} ${month} ${date.getUTCFullYear()}`;
+}

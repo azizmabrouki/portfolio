@@ -1,15 +1,26 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
-import HeroSequence from '@/components/hero/HeroSequence.astro';
+/**
+ * The home page: one page, two ways to read it.
+ * - The still page (phones, tablets held upright, reduced motion, no JavaScript): the
+ *   sections in order, flat drawings, every word on the page.
+ * - The 3D world (wide screens with motion): the same sections pinned over a scroll story
+ *   told by a CSS 3D model (scripts/world). html.w3d, set before first paint, switches.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Footer from '@/components/site/Footer.astro';
+import HomeBar from '@/components/home/HomeBar.astro';
+import World from '@/components/home/World.astro';
+import Hero from '@/components/home/Hero.astro';
+import SystemSection from '@/components/home/SystemSection.astro';
+import BreakSection from '@/components/home/BreakSection.astro';
 import WorkSection from '@/components/home/WorkSection.astro';
-import PrinciplesSection from '@/components/home/PrinciplesSection.astro';
-import ExperienceSection from '@/components/home/ExperienceSection.astro';
+import RouteSection from '@/components/home/RouteSection.astro';
 import NotesSection from '@/components/home/NotesSection.astro';
 import ContactSection from '@/components/home/ContactSection.astro';
-import { getNotes, getProjects } from '@/lib/content';
+import { breakIt } from '@/config/home';
 import { site } from '@/config/site';
+import { getNotes } from '@/lib/content';
 
-const projects = await getProjects();
 const notes = await getNotes();
 
 // Structured data: tells search engines who the site is about.
@@ -17,7 +28,7 @@ const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: site.name,
-  jobTitle: 'Software engineer',
+  jobTitle: site.role,
   description: site.description,
   url: Astro.site?.href,
   email: site.links.email ? `mailto:${site.links.email}` : undefined,
@@ -27,15 +38,39 @@ const person = {
 };
 ---
 
-<PageLayout home>
-  <Fragment slot="head">
-    <script type="application/ld+json" set:html={JSON.stringify(person)} />
-  </Fragment>
+<BaseLayout>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(person)} />
+  <div class="home" data-home data-chaos="idle" data-tz={site.timeZone} data-heal={breakIt.healAfter}>
+    <World />
+    <HomeBar />
+    <main id="main" class="content">
+      <Hero />
+      <SystemSection />
+      <BreakSection />
+      <WorkSection />
+      <RouteSection />
+      {notes.length > 0 && <NotesSection notes={notes.slice(0, 3)} />}
+      <ContactSection />
+    </main>
+    <Footer top="top" />
+  </div>
+</BaseLayout>
 
-  <HeroSequence />
-  <WorkSection projects={projects} />
-  <PrinciplesSection />
-  <ExperienceSection />
-  {notes.length > 0 && <NotesSection notes={notes.slice(0, 3)} />}
-  <ContactSection />
-</PageLayout>
+<script>
+  import '@/scripts/home';
+</script>
+
+<style>
+  .home {
+    position: relative;
+  }
+
+  .content {
+    position: relative;
+    padding-bottom: 96px;
+  }
+
+  :global(html.w3d) .content {
+    padding-bottom: 0;
+  }
+</style>
