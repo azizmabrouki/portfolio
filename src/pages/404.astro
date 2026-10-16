@@ -115,7 +115,7 @@ const labels = [
     min-width: 56px;
     height: 30px;
     padding: 0 10px;
-    background: var(--gold);
+    background: var(--gold-fill);
     color: var(--text-on-gold);
     font-weight: 800;
     font-size: 14px;
@@ -191,13 +191,13 @@ const labels = [
     transform: rotateX(62deg) rotateZ(-45deg);
     background: var(--surface-plate);
     box-shadow:
-      inset 0 0 0 1px rgb(255 255 255 / 0.14),
-      0 18px 30px rgb(0 0 0 / 0.5);
+      inset 0 0 0 1px var(--plate-edge),
+      0 18px 30px var(--plate-drop);
   }
 
   .pl.miss {
     border: 2px dashed var(--gold);
-    background: rgb(255 181 71 / 0.05);
+    background: var(--surface-gold);
     box-shadow: none;
     animation: hover 3.6s ease-in-out infinite;
   }

@@ -7,6 +7,7 @@
  */
 import { stages } from '@/config/home';
 import { site } from '@/config/site';
+import ThemeToggle from '@/components/site/ThemeToggle.astro';
 ---
 
 <header class="bar">
@@ -25,7 +26,7 @@ import { site } from '@/config/site';
               <span class="stage-top">
                 <span class="sq">
                   <svg viewBox="0 0 10 10" aria-hidden="true">
-                    <path d="M2 5.2 L4.2 7.4 L8.2 2.8" fill="none" stroke="#07080B" stroke-width="1.8" />
+                    <path d="M2 5.2 L4.2 7.4 L8.2 2.8" fill="none" stroke="currentColor" stroke-width="1.8" />
                   </svg>
                 </span>
                 {stage.label}
@@ -44,6 +45,7 @@ import { site } from '@/config/site';
         <span>Available</span>
         <span class="tz">· <span class="city">{site.city} </span><span class="tab" data-clock></span></span>
       </a>
+      <ThemeToggle />
       <button class="menu" type="button" aria-expanded="false" aria-controls="sheet" aria-label="Menu" data-menu>
         <svg class="i-open" viewBox="0 0 22 22" aria-hidden="true">
           <path d="M3 7h16M3 15h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -72,14 +74,14 @@ import { site } from '@/config/site';
     position: sticky;
     top: 0;
     z-index: 5;
-    background: rgb(7 8 11 / 0.94);
+    background: var(--bar-bg-strong);
   }
 
   :global(html.w3d) .bar {
     position: fixed;
     left: 0;
     right: 0;
-    background: rgb(7 8 11 / 0.92);
+    background: var(--bar-bg);
     animation: fadein 800ms var(--ease-out) 1250ms both;
   }
 
@@ -129,7 +131,7 @@ import { site } from '@/config/site';
     gap: 8px;
     font-weight: 600;
     font-size: 14px;
-    color: #8b8e95;
+    color: var(--stage-idle);
     white-space: nowrap;
     transition: color 250ms;
   }
@@ -146,9 +148,13 @@ import { site } from '@/config/site';
     justify-content: center;
     width: 14px;
     height: 14px;
-    background: #2a2d35;
+    background: var(--stage-square);
     flex: none;
     transition: background-color 250ms;
+  }
+
+  .sq {
+    color: var(--bg);
   }
 
   .sq svg {
@@ -174,7 +180,7 @@ import { site } from '@/config/site';
   .track {
     display: block;
     height: 2px;
-    background: #22252c;
+    background: var(--track);
     overflow: hidden;
   }
 
@@ -193,7 +199,7 @@ import { site } from '@/config/site';
   .chev {
     width: 12px;
     height: 12px;
-    color: #4a4e58;
+    color: var(--chevron);
     flex: none;
     margin-bottom: 9px;
   }
@@ -298,13 +304,26 @@ import { site } from '@/config/site';
     letter-spacing: -0.01em;
     color: var(--text);
     text-decoration: none;
-    box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.08);
+    box-shadow: inset 0 -1px 0 var(--line-faint);
   }
 
   .sheet a span {
     font-weight: 600;
     font-size: 13px;
     color: var(--text-faint);
+  }
+
+  /* Small phones: the clock goes first, then the status (the hero and the menu reach Contact). */
+  @media (max-width: 479px) {
+    .tz {
+      display: none;
+    }
+  }
+
+  @media (max-width: 399px) {
+    .status {
+      display: none;
+    }
   }
 
   @media (min-width: 900px) {

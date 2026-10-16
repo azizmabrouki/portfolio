@@ -9,7 +9,7 @@ The site has two jobs: show how I think about systems, and be a working example 
 | Layer | Choice |
 | --- | --- |
 | Framework | [Astro](https://astro.build) 7, TypeScript (strict) |
-| Styling | CSS custom properties as design tokens (`src/styles/tokens.css`), one dark theme |
+| Styling | CSS custom properties as design tokens (`src/styles/tokens.css`), dark and light themes |
 | Fonts | Archivo (one variable file: weight and width axes) via Astro's fonts API: self-hosted, metric-matched fallback |
 | Motion | A CSS 3D world driven by one vanilla module (`src/scripts/world`), springs and native scrolling; no animation library |
 | Content | Markdown content collections with typed (Zod) frontmatter: case studies and notes |
@@ -50,6 +50,8 @@ So the italic face went (it served one line of text), fonts stay preloaded, and 
 **One Markdown file per case study, diagram included.** A case study's context and problem are Markdown; its architecture diagram, key decisions, numbers and stack are typed frontmatter. The diagram is described on a coarse grid (boxes, groups, edges) and `src/lib/diagram.ts` lays it out and routes the arrows, so adding a project never means hand-drawing SVG. The same data renders a plain-text version of every drawing, for screen readers and small screens.
 
 **No smooth-scroll library.** The browser keeps its own scrolling (wheel, trackpad, keyboard, assistive tech); the 3D world follows it. Focusing one of the four rules scrolls the story to that rule, so the pinned section works from the keyboard too.
+
+**Two themes, one set of tokens.** Dark is the default; the sun / crescent switch in the top bar picks light and remembers it, applied before first paint so the page never flashes. Light redefines the same tokens, with gold split in two: the bright fill stays under dark text (buttons, badges), while gold text becomes a deep amber (5.9:1). The 3D world is drawn once, in dark, and inverted for light with a CSS filter; its lights (requests, LEDs) are inverted back so they still glow.
 
 **Colour has jobs.** Off-white is the text. Gold is emphasis: what you are reading now, numbers, the primary button. Blue is for links, focus and the contracts I built. Green and red-orange only report state on the live model and the departures board.
 

@@ -45,7 +45,7 @@ a:hover {
 }
 
 ::selection {
-  background: var(--gold);
+  background: var(--gold-fill);
   color: var(--text-on-gold);
 }
 
@@ -83,7 +83,7 @@ mark {
   top: -120px;
   z-index: 50;
   padding: 14px 18px;
-  background: var(--gold);
+  background: var(--gold-fill);
   color: var(--text-on-gold);
   font-weight: 700;
   font-size: 16px;
@@ -177,7 +177,7 @@ html.w3d .rv.fd[data-in] {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--gold-fill);
   color: var(--text-on-gold);
   font-weight: 800;
   font-size: 14px;
@@ -240,7 +240,7 @@ html.w3d .rv.fd[data-in] {
 }
 
 .btn-gold {
-  background: var(--gold);
+  background: var(--gold-fill);
   color: var(--text-on-gold);
 }
 

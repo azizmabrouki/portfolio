@@ -1,0 +1,118 @@
+---
+/**
+ * The theme switch: a sun in the light theme, a crescent in the dark one. Pressing it
+ * flips html[data-theme] and remembers the choice (localStorage "theme"); BaseLayout applies
+ * the saved choice before first paint. The sun becomes the crescent by sliding a mask over
+ * its disc while the rays fold in. Needs JavaScript, so it only shows with html.js.
+ */
+---
+
+<button class="theme" type="button" aria-label="Light theme" aria-pressed="false" data-theme-toggle>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <mask id="theme-mask">
+      <rect width="24" height="24" fill="#fff"></rect>
+      <circle class="bite" cx="17" cy="7" r="7" fill="#000"></circle>
+    </mask>
+    <circle class="disc" cx="12" cy="12" r="5.5" mask="url(#theme-mask)"></circle>
+    <g class="rays">
+      <path d="M12 1.5v2.5M12 20v2.5M1.5 12H4M20 12h2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"></path>
+    </g>
+  </svg>
+</button>
+
+<script>
+  const html = document.documentElement;
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  const sync = () => {
+    const light = html.dataset.theme === 'light';
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => button.setAttribute('aria-pressed', String(light)));
+    meta?.setAttribute('content', light ? '#F6F4EF' : '#07080B');
+  };
+  document.querySelectorAll('[data-theme-toggle]').forEach((button) =>
+    button.addEventListener('click', () => {
+      const next = html.dataset.theme === 'light' ? 'dark' : 'light';
+      html.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        // Private mode: the choice lasts for this page only.
+      }
+      sync();
+    }),
+  );
+  sync();
+</script>
+
+<style>
+  .theme {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--target);
+    height: var(--target);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  :global(html.js) .theme {
+    display: inline-flex;
+  }
+
+  .theme:hover {
+    color: var(--gold);
+  }
+
+  svg {
+    width: 22px;
+    height: 22px;
+    overflow: visible;
+  }
+
+  .disc {
+    fill: currentColor;
+    transform-origin: 12px 12px;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .bite {
+    transition:
+      cx 500ms var(--ease-out),
+      cy 500ms var(--ease-out);
+  }
+
+  .rays {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    transform-origin: 12px 12px;
+    transition:
+      transform 500ms var(--ease-out),
+      opacity 300ms var(--ease-out);
+  }
+
+  /* Dark theme: the crescent. A mask circle bites the disc, the rays fold away. */
+  :global(html:not([data-theme='light'])) .bite {
+    cx: 17px;
+    cy: 7px;
+  }
+
+  :global(html:not([data-theme='light'])) .disc {
+    transform: scale(1.35);
+  }
+
+  :global(html:not([data-theme='light'])) .rays {
+    opacity: 0;
+    transform: rotate(-60deg) scale(0.4);
+  }
+
+  /* Light theme: the sun. The bite slides off the disc, the rays open. */
+  :global(html[data-theme='light']) .bite {
+    cx: 30px;
+    cy: -6px;
+  }
+</style>
