@@ -14,6 +14,8 @@
  * always smooth. One requestAnimationFrame loop reads the layout and writes transforms.
  */
 import worldMarkup from './world.html?raw';
+import hologramMarkup from './hologram.html?raw';
+import oliveSymbols from './olive.svg?raw';
 import { breakServer, chaosState, onChaos } from '@/scripts/chaos';
 import { work } from '@/config/work';
 import { system } from '@/config/home';
@@ -29,6 +31,8 @@ type Section = (typeof SECTIONS)[number];
 
 /** Plates each work slot lights (index = slot number, 1-based). */
 const LIT: Record<number, number[]> = Object.fromEntries(work.map((slot, index) => [index + 1, slot.lights]));
+/** The work slot (1-based) whose step projects the olive hologram instead of landing a screen. */
+const HOLO_SLOT = work.findIndex((slot) => slot.hologram) + 1;
 /** Plates each principle lights: 0 runs, 1 scales, 2 ships, 3 users touch, 4 stays up. */
 const PRIN = system.principles.map((principle) => principle.lights);
 
@@ -64,6 +68,15 @@ export function createWorld(root: HTMLElement) {
     });
   }
 
+  // ---- the hologram's own layer: the tree's symbols and its markup, inserted once ----
+  const holoStage = q('.holo-stage');
+  if (holoStage && !holoStage.querySelector('[data-hcam]')) {
+    const strip = (markup: string) => markup.replace(/<!--[\s\S]*?-->/g, '').replace(/>\s+</g, '><').trim();
+    // The phone card may have inserted the symbols already.
+    const symbols = document.getElementById('olA') ? '' : strip(oliveSymbols);
+    holoStage.insertAdjacentHTML('beforeend', symbols + strip(hologramMarkup));
+  }
+
   // ---- elements ----
   const E = {
     cam: q('[data-cam]') as HTMLElement,
@@ -89,8 +102,23 @@ export function createWorld(root: HTMLElement) {
     rows: qa('[data-row]'),
     listen: q('[data-listen]'),
     scene: q('[data-scene]'),
+    holo: {
+      stage: holoStage,
+      cam: q('[data-hcam]'),
+      base: q('[data-hbase]'),
+      group: q('[data-holo]'),
+      ringGlow: qa<SVGElement>('[data-ring-glow]'),
+      ringLine: qa<SVGElement>('[data-ring-line]'),
+      ringTicks: qa<SVGElement>('[data-ring-ticks]'),
+      cones: qa('[data-cone]'),
+      clips: qa('[data-hclip]'),
+      edges: qa('[data-hedge]'),
+      scan: q('[data-hscan]'),
+      anom: q<SVGElement>('[data-anom]'),
+    },
   };
   const sceneWords = JSON.parse(stage.dataset.scenes ?? '[]') as string[];
+  const holoCaption = stage.dataset.holoCaption ?? '';
 
   // ---- fixed randomness: the same scatter on every visit ----
   let seed = 20261016;
@@ -133,6 +161,8 @@ export function createWorld(root: HTMLElement) {
   const sc: Spring[] = E.screens.map(() => ({ x: null, v: [0, 0, 0, 0, 0, 0, 0] }));
   const gh: Spring = { x: null, v: [0, 0, 0, 0, 0, 0, 0] };
   let cam: Vec | null = null;
+  /** The hologram's timeline, 0…1 (the design's T): plays forward while its step is current. */
+  let holoT = 0;
   let rigW = 0;
   let autoDone = false;
   let autoAt = 0;
@@ -242,6 +272,96 @@ export function createWorld(root: HTMLElement) {
       el.style.transform = `translate3d(${(x - 11).toFixed(1)}px,${(y - 5).toFixed(1)}px,5px) rotateZ(${ang}deg)`;
       const edge = f < 0.04 ? f / 0.04 : f > 0.96 ? (1 - f) / 0.04 : 1;
       el.style.opacity = hide ? '0' : (edge * Math.min(1, rigW)).toFixed(3);
+    }
+  }
+
+  /**
+   * The hologram, as a function of its timeline (timings from the design canvas):
+   * 0–0.14 the ring draws, 0.10–0.22 it glows, 0.14–0.30 the cone rises, 0.24–0.66 the tree
+   * projects bottom to top, 0.68–0.86 the scan disc rises through the crown, 0.778 one clump
+   * flags red, 0.848 it is handled. Leaving the step folds the tree back into the ring.
+   */
+  function holo(dt: number, t: number, active: boolean): void {
+    const H = E.holo;
+    if (!H.stage || !H.cam || !H.base) return;
+    if (active) holoT = Math.min(1, holoT + dt / 2.2);
+    else {
+      if (holoT > 0.66) holoT = 0.66;
+      holoT = Math.max(0, holoT - dt / 0.8);
+    }
+    const T = holoT;
+    const on = T > 0.001;
+    toggle(H.stage, 'data-on', on);
+    toggle(stage, 'data-holo', on);
+    H.base.style.visibility = on ? 'visible' : 'hidden';
+    const lab = E.lab.anom;
+    if (!on) {
+      if (lab) lab.style.opacity = '0';
+      return;
+    }
+    // same camera, and the top plate's pose, as the world underneath
+    H.cam.style.transform = E.cam.style.transform;
+    const top = E.plates[E.plates.length - 1];
+    if (top) H.base.style.transform = top.style.transform;
+
+    const sg = (a: number, b: number) => cl((T - a) / (b - a));
+    const eo = (x: number) => 1 - Math.pow(1 - x, 3);
+    const eio = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    const ring = eo(sg(0, 0.14));
+    const glow = sg(0.1, 0.22);
+    const cone = eo(sg(0.14, 0.3));
+    const rev = eio(sg(0.24, 0.66));
+    const sc = sg(0.68, 0.86);
+    const scO = T > 0.68 && T < 0.86 ? Math.min(1, Math.min(sc, 1 - sc) * 10) : 0;
+    const TA = 0.778;
+    const flag = T >= TA && T < TA + 0.07;
+    const handled = T >= TA + 0.07;
+    const pulse = flag ? 0.5 - 0.5 * Math.cos(Math.PI * 4 * sg(TA, TA + 0.07)) : 0;
+    const drift = T >= 1 && !reduce ? 2 * Math.sin((t * 2 * Math.PI) / 5) : 0;
+
+    H.ringLine.forEach((el) => {
+      el.setAttribute('stroke-dashoffset', (1 - ring).toFixed(3));
+      el.setAttribute('opacity', ring > 0.001 ? '1' : '0');
+    });
+    H.ringGlow.forEach((el) => el.setAttribute('stroke-opacity', (0.32 * glow).toFixed(3)));
+    H.ringTicks.forEach((el) => el.setAttribute('opacity', glow.toFixed(3)));
+    // the cone: a trapezoid rising from the ring to the crown
+    H.cones.forEach((el, i) => {
+      const b = i === 0 ? 15.6 : 19.2;
+      const topEdge = (1 - cone) * 100;
+      const l = b * (1 - cone);
+      el.style.clipPath = `polygon(${b}% 100%,${100 - b}% 100%,${(100 - l).toFixed(2)}% ${topEdge.toFixed(2)}%,${l.toFixed(2)}% ${topEdge.toFixed(2)}%)`;
+      el.style.opacity = (cone * 0.9).toFixed(3);
+    });
+    // the tree: revealed bottom to top, with a gold edge riding the cut
+    const cut = rev >= 1 ? 0 : 100 - rev * 88;
+    H.clips.forEach((el) => {
+      el.style.clipPath = `inset(${cut.toFixed(2)}% 0 0 0)`;
+      el.style.opacity = rev > 0.002 ? '1' : '0';
+    });
+    H.edges.forEach((el) => {
+      el.style.top = `${cut.toFixed(2)}%`;
+      el.style.opacity = (rev > 0.01 ? Math.min(1, (1 - rev) / 0.06) : 0).toFixed(3);
+    });
+    if (H.group) H.group.style.transform = `translateZ(${drift.toFixed(2)}px)`;
+    if (H.scan) {
+      H.scan.style.transform = `translateZ(${(120 + 130 * sc + drift).toFixed(1)}px)`;
+      H.scan.style.opacity = scO.toFixed(3);
+    }
+    if (H.anom) {
+      H.anom.style.color = flag ? '#F2826A' : '#FFB547';
+      H.anom.setAttribute('stroke-width', (0.8 + 1.4 * pulse).toFixed(2));
+    }
+    // the label, on the flat labels layer, next to the flagged clump
+    const mark = E.mk.anom;
+    if (lab && mark) {
+      const show = active && (flag || handled);
+      lab.style.opacity = show ? '1' : '0';
+      if (show) {
+        const r = mark.getBoundingClientRect();
+        lab.dataset.state = handled ? 'ok' : 'bad';
+        lab.style.transform = `translate(${(r.left - 4).toFixed(1)}px,${r.top.toFixed(1)}px) translateY(-50%)`;
+      }
     }
   }
 
@@ -386,7 +506,7 @@ export function createWorld(root: HTMLElement) {
     const wHero = bump(s, 0, 0.6);
     E.screens.forEach((se, j) => {
       const hero = j === 0 && wHero > 0.5;
-      const mine = actT === j + 1 && wWork > 0.5;
+      const mine = actT === j + 1 && wWork > 0.5 && j + 1 !== HOLO_SLOT;
       const stg = hero
         ? [0, 0, heroTopZ, 0, 0, 0, 1]
         : mine
@@ -444,7 +564,7 @@ export function createWorld(root: HTMLElement) {
 
     // ---- the caption: what the world shows now, in words ----
     if (E.scene) {
-      const words = sceneWords[near];
+      const words = near === 4 && actT === HOLO_SLOT ? holoCaption : sceneWords[near];
       if (E.scene.textContent !== (words ?? '')) E.scene.textContent = words ?? '';
     }
 
@@ -475,6 +595,9 @@ export function createWorld(root: HTMLElement) {
     const base = Math.min(vw / 1440, wh / 900);
     E.cam.style.transform = `translate(${(cam[2] * vw).toFixed(1)}px,${(cam[3] * wh).toFixed(1)}px) scale(${(cam[4] * base).toFixed(4)}) rotateX(${cam[0].toFixed(2)}deg) rotateZ(${cam[1].toFixed(2)}deg)`;
     E.spot?.style.setProperty('--sx', `${(50 + cam[2] * 100).toFixed(1)}%`);
+
+    // ---- the HMA4Tech hologram ----
+    holo(dt, t, actT === HOLO_SLOT && wWork > 0.5);
 
     // ---- labels that follow the 3D ----
     const wL = Math.max(bump(s, 2, 0.3), bump(s, 4, 0.3));
@@ -602,6 +725,10 @@ export function createWorld(root: HTMLElement) {
     qa('.rv').forEach((n) => n.setAttribute('data-in', ''));
     E.beats.forEach((b) => b.removeAttribute('style'));
     if (E.scene) E.scene.textContent = '';
+    holoT = 0;
+    E.holo.stage?.removeAttribute('data-on');
+    if (E.holo.base) E.holo.base.style.visibility = 'hidden';
+    if (E.lab.anom) E.lab.anom.style.opacity = '0';
     E.projs.forEach((proj) => proj.removeAttribute('data-cur'));
     E.rows.forEach((row) => {
       row.removeAttribute('data-on');

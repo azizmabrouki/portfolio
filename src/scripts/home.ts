@@ -7,6 +7,7 @@
 import { initChaos } from '@/scripts/chaos';
 import { WORLD_QUERY } from '@/scripts/world/query';
 import { startStillMotion, stopStillMotion } from '@/scripts/still-motion';
+import { initOliveCard } from '@/scripts/olive-card';
 
 const html = document.documentElement;
 const page = document.querySelector<HTMLElement>('[data-home]');
@@ -170,6 +171,7 @@ function initWorld(principles: ReturnType<typeof initPrinciples>): void {
   const still = () => {
     principles.stillPage();
     startStillMotion(principles.pick, principles.count);
+    initOliveCard(!window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   };
   const apply = async () => {
     if (query.matches && !html.classList.contains('w3d-off')) {
