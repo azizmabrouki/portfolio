@@ -48,6 +48,9 @@ export const scenes = [
   'The next layer: your team',
 ];
 
+/** The caption while HMA4Tech's olive hologram plays (it replaces scene 4's words). */
+export const hologramCaption = 'HMA4Tech: a plant, scanned for anomalies';
+
 export interface Principle {
   title: string;
   body: string;

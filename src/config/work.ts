@@ -23,6 +23,11 @@ export interface WorkSlot {
   lights: number[];
   /** Placeholder shown on the slot's screen in the 3D world until a screenshot exists. */
   screen: string;
+  /**
+   * Instead of a screen landing on the stack, the top plate projects a gold hologram of an
+   * olive tree (scripts/world/hologram.html), and the phone card shows it flat.
+   */
+  hologram?: boolean;
   /** Shown in "Selected work" under the hero: my role and the strongest result, one line each. */
   glance?: { role: string; result: string };
 }
@@ -71,6 +76,7 @@ export const work: WorkSlot[] = [
     builtWith: 'Java, Spring Boot, Spring Security, JWT, PostgreSQL, Docker',
     project: 'hma4tech',
     lights: [0, 3],
+    hologram: true,
     glance: {
       role: 'Full-stack engineer in an agile startup team, for a year',
       result: 'A Spring Boot API secured with JWT and roles, containerized with Docker',
