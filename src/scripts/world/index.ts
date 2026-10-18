@@ -63,8 +63,19 @@ export function createWorld(root: HTMLElement) {
   if (!stage.querySelector('[data-cam]')) {
     stage.insertAdjacentHTML('beforeend', worldMarkup.replace(/<!--[\s\S]*?-->/, '').replace(/>\s+</g, '><').trim());
     const screens = JSON.parse(stage.dataset.screens ?? '[]') as string[];
+    const images = JSON.parse(stage.dataset.screenImages ?? '[]') as string[];
     stage.querySelectorAll<HTMLElement>('[data-screen-text]').forEach((span) => {
-      span.textContent = screens[Number(span.dataset.screenText) - 1] ?? '';
+      const i = Number(span.dataset.screenText) - 1;
+      if (!images[i]) {
+        span.textContent = screens[i] ?? '';
+        return;
+      }
+      // a screenshot replaces the placeholder text
+      const img = document.createElement('img');
+      img.src = images[i];
+      img.alt = '';
+      img.decoding = 'async';
+      span.replaceWith(img);
     });
   }
 

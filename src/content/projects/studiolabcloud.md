@@ -30,8 +30,12 @@ facts:
 screens:
   - placeholder: '[Screenshot: client portal, ordering a service]'
     caption: 'The client portal: order a service, pay for it, get help.'
+    src: /shots/studiolabcloud/order.webp
+    alt: 'The client portal in French: the cart is open over the catalogue with three monthly services, the totals before and after 20% VAT, and a button to pay with Stripe.'
   - placeholder: '[Screenshot: support desk, assistant handing over]'
     caption: The support desk, where the assistant passes a conversation to an agent.
+    src: /shots/studiolabcloud/handover.webp
+    alt: 'Two screens in French. On the right, the assistant answers a refund request by passing it to an advisor and opening ticket 5. On the left, the support inbox lists the open and closed tickets.'
 stack:
   - Laravel 12
   - PHP
