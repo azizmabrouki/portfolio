@@ -23,6 +23,8 @@ export interface WorkSlot {
   lights: number[];
   /** Placeholder shown on the slot's screen in the 3D world until a screenshot exists. */
   screen: string;
+  /** The screenshot on that screen, under public/ (16:10); without it the placeholder shows. */
+  screenImage?: string;
   /**
    * Instead of a screen landing on the stack, the top plate projects a gold hologram of an
    * olive tree (scripts/world/hologram.html), and the phone card shows it flat.
@@ -53,6 +55,7 @@ export const work: WorkSlot[] = [
     project: 'studiolabcloud',
     lights: [0, 1, 2, 3, 4],
     screen: 'Screenshot: StudioLabCloud',
+    screenImage: '/shots/studiolabcloud/catalogue.webp',
     glance: {
       role: 'Sole engineer, from architecture to deployment, with the product owner',
       result: '3 releases over 6 sprints, 609 automated tests, and I still run it',

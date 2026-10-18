@@ -25,6 +25,7 @@ const servers = [
   class="world"
   aria-hidden="true"
   data-screens={JSON.stringify(work.map((slot) => slot.screen))}
+  data-screen-images={JSON.stringify(work.map((slot) => slot.screenImage ?? ''))}
   data-scenes={JSON.stringify(scenes)}
   data-holo-caption={hologramCaption}
 >
@@ -133,8 +134,9 @@ const servers = [
     filter: invert(1) hue-rotate(180deg);
   }
 
-  /* Lights stay lights: requests, shipping capsules and the monitor LED are inverted back. */
-  :root[data-theme='light'] .world :is(.pk, .capsule, .led) {
+  /* Lights stay lights: requests, shipping capsules, the monitor LED and the screenshots are
+     inverted back. */
+  :root[data-theme='light'] .world :is(.pk, .capsule, .led, .scr img) {
     filter: invert(1) hue-rotate(180deg);
   }
 
@@ -417,6 +419,13 @@ const servers = [
     color: var(--text-faint);
     text-align: center;
     padding: 0 20px;
+  }
+  .world .scr img {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    object-fit: cover;
+    object-position: top left;
   }
 
   /* The live model: a front door, four servers, the data */
