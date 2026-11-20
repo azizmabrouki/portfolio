@@ -1,0 +1,114 @@
+---
+/**
+ * The side projects: this board (a paper frame) and Orbit (a dashed frame, not laid yet).
+ */
+import Frame from '@/components/board/Frame.astro';
+import Checks from '@/components/board/Checks.astro';
+import { frames } from '@/config/board';
+import { site } from '@/config/site';
+---
+
+<section id="side-projects" class="group side" data-stop="5" aria-labelledby="side-h">
+  <h2 id="side-h" class="sr-only">Side projects</h2>
+
+  <Frame frame={frames.thisBoard} labelledby="folio-h" class="col">
+    <h3 id="folio-h" class="disp title">This board</h3>
+    <p class="lead">
+      You’re inside it: a static site with a board you can pan, zoom and tour, that also reads as a plain list without
+      JavaScript.
+    </p>
+    <p class="gates">Every change passes four gates before it ships:</p>
+    <Checks class="list" items={['Type-check', 'Build', 'No broken links', 'Lighthouse 95+ in all four categories']} />
+    <div class="foot">
+      <a class="lnk" href={site.repo}>Source on GitHub</a>
+      <span>Astro, TypeScript, Cloudflare</span>
+    </div>
+  </Frame>
+
+  <Frame frame={frames.orbit} kind="ghost" labelledby="orbit-h" class="col">
+    <h3 id="orbit-h" class="disp title">Orbit</h3>
+    <p class="lead">My own internal developer platform, built alone. This frame is still empty on purpose.</p>
+    <p class="disp sticky">In progress. Building it now.</p>
+    <a class="lnk orbit-link" href={site.links.github}>Follow it on GitHub</a>
+  </Frame>
+</section>
+
+<style>
+  .side {
+    position: relative;
+    display: grid;
+    gap: 72px;
+  }
+
+  @media (min-width: 900px) {
+    .side {
+      grid-template-columns: 3fr 2fr;
+      gap: 40px;
+    }
+  }
+
+  :global(html.board) .side {
+    display: contents;
+  }
+
+  .col :global(.frame-in) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-size: clamp(36px, 9.5cqi, 72px);
+  }
+
+  .lead {
+    margin-top: 16px;
+    font-size: clamp(17px, 2.8cqi, 21px);
+    line-height: 1.4;
+  }
+
+  .gates {
+    margin-top: clamp(22px, 4.7cqi, 36px);
+    font-weight: 700;
+  }
+
+  .col :global(.list) {
+    margin-top: 14px;
+  }
+
+  .foot {
+    margin-top: auto;
+    padding-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 16px;
+    color: var(--ink-soft);
+    font-size: var(--text-small);
+  }
+
+  .foot .lnk {
+    color: var(--ink);
+    font-size: var(--text-body);
+  }
+
+  .sticky {
+    align-self: flex-start;
+    width: min(260px, 100%);
+    margin-top: 40px;
+    padding: 24px;
+    background: var(--yellow);
+    color: var(--ink);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    transform: rotate(3deg);
+    box-shadow: var(--shadow-note);
+  }
+
+  .orbit-link {
+    margin-top: auto;
+    padding-top: 32px;
+    align-self: flex-start;
+  }
+</style>

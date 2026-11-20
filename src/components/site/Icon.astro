@@ -1,0 +1,39 @@
+---
+/**
+ * The site's icons: one stroke (2 px on a 24 px grid), round caps, drawn here so every icon
+ * matches. Decorative by default; pass `label` when the icon is the only content of a control.
+ */
+interface Props {
+  name: keyof typeof paths;
+  label?: string;
+  class?: string;
+}
+
+const paths = {
+  arrow: 'M5 12h14M13 6l6 6-6 6',
+  back: 'M19 12H5M11 18l-6-6 6-6',
+  check: 'M5 12.5l4.5 4.5L19 7.5',
+  prev: 'M15 6l-6 6 6 6',
+  next: 'M9 6l6 6-6 6',
+  up: 'M6 15l6-6 6 6',
+  down: 'M6 9l6 6 6-6',
+  minus: 'M5 12h14',
+  plus: 'M12 5v14M5 12h14',
+  fit: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',
+  list: 'M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01',
+  board: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
+  close: 'M6 6l12 12M18 6L6 18',
+} as const;
+
+const { name, label, class: className } = Astro.props;
+---
+
+<svg
+  class:list={['ic', className]}
+  viewBox="0 0 24 24"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+>
+  <path d={paths[name]}></path>
+</svg>

@@ -1,28 +1,34 @@
 ---
 /**
- * The home page: one page, two ways to read it.
- * - The still page (phones, tablets held upright, reduced motion, no JavaScript): the
- *   sections in order, flat drawings, every word on the page.
- * - The 3D world (wide screens with motion): the same sections pinned over a scroll story
- *   told by a CSS 3D model (scripts/world). html.w3d, set before first paint, switches.
+ * The home page: the board. One HTML document, three ways to read it, picked before first
+ * paint by the inline script below:
+ * - html.board (screens 1024 × 600 and up, unless the visitor chose List): every frame lies
+ *   at its place on the mat (config/board.ts) and scripts/board/camera.ts flies a camera
+ *   between them, with rulers, a tour bar and a minimap.
+ * - html.tour (smaller screens): the frames scroll as one column, with a tour bar that steps
+ *   through them and zooms the column out into the whole board (scripts/board/tour.ts).
+ * - neither (the List view, or no JavaScript): the same column, nothing else.
  */
+import { getEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Footer from '@/components/site/Footer.astro';
-import HomeBar from '@/components/home/HomeBar.astro';
-import World from '@/components/home/World.astro';
-import Hero from '@/components/home/Hero.astro';
-import SelectedWork from '@/components/home/SelectedWork.astro';
-import SystemSection from '@/components/home/SystemSection.astro';
-import BreakSection from '@/components/home/BreakSection.astro';
-import WorkSection from '@/components/home/WorkSection.astro';
-import RouteSection from '@/components/home/RouteSection.astro';
-import NotesSection from '@/components/home/NotesSection.astro';
-import ContactSection from '@/components/home/ContactSection.astro';
-import { breakIt } from '@/config/home';
+import TopBar from '@/components/site/TopBar.astro';
+import IntroFrame from '@/components/board/IntroFrame.astro';
+import StudioLabFrame from '@/components/board/StudioLabFrame.astro';
+import ScreensGroup from '@/components/board/ScreensGroup.astro';
+import HmaFrame from '@/components/board/HmaFrame.astro';
+import SofinrecFrame from '@/components/board/SofinrecFrame.astro';
+import SideGroup from '@/components/board/SideGroup.astro';
+import HowRegion from '@/components/board/HowRegion.astro';
+import ExperienceFrame from '@/components/board/ExperienceFrame.astro';
+import ContactFrame from '@/components/board/ContactFrame.astro';
+import BoardMarks from '@/components/board/BoardMarks.astro';
+import BoardTools from '@/components/board/BoardTools.astro';
+import TourBar from '@/components/board/TourBar.astro';
+import { bounds } from '@/config/board';
 import { site } from '@/config/site';
-import { getNotes } from '@/lib/content';
 
-const notes = await getNotes();
+const studiolab = await getEntry('projects', 'studiolabcloud');
+if (!studiolab) throw new Error('The board needs src/content/projects/studiolabcloud.md');
 
 // Structured data: tells search engines who the site is about.
 const person = {
@@ -41,38 +47,148 @@ const person = {
 
 <BaseLayout>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(person)} />
-  <div class="home" data-home data-chaos="idle" data-tz={site.timeZone} data-heal={breakIt.healAfter}>
-    <World />
-    <HomeBar />
-    <main id="main" class="content">
-      <Hero />
-      <SelectedWork />
-      <SystemSection />
-      <BreakSection />
-      <WorkSection />
-      <RouteSection />
-      {notes.length > 0 && <NotesSection notes={notes.slice(0, 3)} />}
-      <ContactSection />
-    </main>
-    <Footer top="top" />
-  </div>
+  {/* Picks the reading before first paint, and on the board places the camera on the
+      whole board so the first frame painted is already the overview. */}
+  <script slot="head" is:inline define:vars={{ bounds }}>
+    const html = document.documentElement;
+    const wide = window.matchMedia('(min-width: 1024px) and (min-height: 600px)').matches;
+    let view = null;
+    try {
+      view = localStorage.getItem('view');
+    } catch (e) {}
+    if (wide && view !== 'list') {
+      html.classList.add('board');
+      const L = 24, T = 56 + 24 + 34, R = 24, B = 124;
+      const aw = innerWidth - L - R - 40, ah = innerHeight - T - B;
+      const z = Math.min(aw / bounds.w, ah / bounds.h, 1.2);
+      const x = L + (innerWidth - L - R) / 2 - (bounds.x + bounds.w / 2) * z;
+      const y = T + ah / 2 - (bounds.y + bounds.h / 2) * z;
+      html.style.setProperty('--cam', `translate(${x}px, ${y}px) scale(${z})`);
+      html.style.setProperty('--z', String(z));
+      html.classList.add('far');
+    } else if (!wide) {
+      html.classList.add('tour');
+    }
+  </script>
+
+  <TopBar home />
+  {/* The tour's controls come before the frames, so Tab reaches them first. */}
+  <BoardTools />
+  <TourBar />
+  <main id="main" class="root" data-board aria-label="Portfolio board">
+    <div class="world" data-world>
+      <IntroFrame />
+      <StudioLabFrame project={studiolab} />
+      <ScreensGroup project={studiolab} />
+      <HmaFrame />
+      <SofinrecFrame />
+      <SideGroup />
+      <HowRegion />
+      <ExperienceFrame />
+      <ContactFrame />
+      <BoardMarks />
+    </div>
+  </main>
 </BaseLayout>
 
 <script>
-  import '@/scripts/home';
+  import '@/scripts/board/mode';
 </script>
 
 <style>
-  .home {
-    position: relative;
+  /* ---- The reading column: the List view, phones, no JavaScript ---- */
+
+  .world {
+    display: flex;
+    flex-direction: column;
+    gap: 104px;
+    max-width: var(--wrap);
+    margin: 0 auto;
+    padding: 80px var(--gutter) 120px;
   }
 
-  .content {
-    position: relative;
-    padding-bottom: 96px;
+  :global(html.tour) .world {
+    gap: 88px;
+    padding-top: 56px;
+    padding-bottom: 136px;
   }
 
-  :global(html.w3d) .content {
-    padding-bottom: 0;
+  /* ---- The board ---- */
+
+  :global(html.board) {
+    overflow: hidden;
+  }
+
+  :global(html.board) .root {
+    position: fixed;
+    inset: 0;
+    overflow: clip;
+    background-color: var(--mat);
+    background-image:
+      linear-gradient(var(--grid-minor, var(--mat-line-soft)) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-minor, var(--mat-line-soft)) 1px, transparent 1px),
+      linear-gradient(var(--mat-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--mat-line) 1px, transparent 1px);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  :global(html.board) .root.dragging {
+    cursor: grabbing;
+  }
+
+  :global(html.board) .world {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: 0;
+    height: 0;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    transform: var(--cam);
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  /* ---- Phones: the column zoomed out into the whole board ---- */
+
+  :global(html.map) {
+    overflow: hidden;
+  }
+
+  :global(html.map) .world {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    transform-origin: 0 0;
+    cursor: pointer;
+  }
+
+  .world :global(.maplab) {
+    display: none;
+  }
+
+  :global(html.map) .world :global(.maplab) {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    display: block;
+    margin-left: calc(16px / var(--s, 1));
+    color: var(--on-mat);
+    font: 700 calc(15px / var(--s, 1)) / 1.25 var(--font-sans);
+    white-space: nowrap;
+  }
+
+  :global(html.map) .world :global(.maplab span) {
+    display: block;
+    color: var(--on-mat-soft);
+    font-size: 0.85em;
+    font-weight: 500;
   }
 </style>

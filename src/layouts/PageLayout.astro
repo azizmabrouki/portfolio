@@ -1,11 +1,12 @@
 ---
 /**
- * Case studies, notes and the 404: the shared top bar, <main> and footer around
- * BaseLayout's <head>. The home page has its own bar and uses BaseLayout directly.
+ * Pages off the board (case studies, notes, the 404): the top bar with where you are, a
+ * reading column of sheets on the mat, and the contact sheet to close. The home page uses
+ * BaseLayout directly.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Footer from '@/components/site/Footer.astro';
 import TopBar from '@/components/site/TopBar.astro';
+import ContactBlock from '@/components/site/ContactBlock.astro';
 import Glossary from '@/components/site/Glossary.astro';
 
 interface Props {
@@ -13,37 +14,42 @@ interface Props {
   description?: string;
   type?: 'website' | 'article';
   publishedTime?: Date;
-  /** Id of the page's title, for "Back to the top". */
-  top?: string;
-  /** The 404: a bar that does not stick, the slim footer, no canonical URL. */
+  /** Where this page is: "Aziz Mabrouki / <crumb>". */
+  crumb: string;
+  /** The 404: no contact sheet, no canonical URL. */
   lost?: boolean;
 }
 
-const { top, lost = false, ...meta } = Astro.props;
+const { crumb, lost = false, ...meta } = Astro.props;
 ---
 
 <BaseLayout {...meta} noCanonical={lost}>
   <slot name="head" slot="head" />
-  <div class:list={['page', { lost }]}>
-    <TopBar sticky={!lost} />
-    <main id="main">
-      <slot />
-    </main>
-    <Footer top={top} slim={lost} />
-  </div>
+  <TopBar crumb={crumb} />
+  <main id="main" class="column">
+    <slot />
+    {
+      !lost && (
+        <section class="paper sheet close" aria-labelledby="contact-h">
+          <ContactBlock />
+        </section>
+      )
+    }
+  </main>
   {!lost && <Glossary />}
 </BaseLayout>
 
 <style>
-  .lost {
-    min-height: 100vh;
+  .column {
     display: flex;
     flex-direction: column;
+    gap: 96px;
+    max-width: var(--wrap);
+    margin: 0 auto;
+    padding: 72px var(--gutter) 112px;
   }
 
-  .lost main {
-    flex: 1;
-    display: flex;
-    align-items: center;
+  .close {
+    background: var(--yellow);
   }
 </style>

@@ -28,6 +28,10 @@ facts:
   - label: Now
     value: Kept running as a freelancer
 screens:
+  - placeholder: '[Screenshot: the catalogue]'
+    caption: 'The catalogue: compare offers by category, with prices before and after VAT.'
+    src: /shots/studiolabcloud/catalogue.webp
+    alt: 'The StudioLabCloud catalogue in French: a side menu, categories for hosting, virtual machines, email, storage and telecom, and three hosting offers with monthly prices before and after VAT.'
   - placeholder: '[Screenshot: client portal, ordering a service]'
     caption: 'The client portal: order a service, pay for it, get help.'
     src: /shots/studiolabcloud/order.webp

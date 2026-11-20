@@ -1,0 +1,58 @@
+---
+/**
+ * A short list where every item is done: a filled tick on the mat's green, then the text.
+ */
+import Icon from '@/components/site/Icon.astro';
+
+interface Props {
+  items: string[];
+  class?: string;
+}
+
+const { items, class: className } = Astro.props;
+---
+
+<ul class:list={['checks', className]}>
+  {
+    items.map((item) => (
+      <li>
+        <i>
+          <Icon name="check" />
+        </i>
+        {item}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .checks {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    line-height: 1.35;
+  }
+
+  i {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--mat);
+    color: var(--on-mat);
+  }
+
+  i :global(.ic) {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.6;
+  }
+</style>

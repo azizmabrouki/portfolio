@@ -1,0 +1,197 @@
+---
+/**
+ * The first frame: who I am, the one action (write to me), and the board's table of
+ * contents, so a visitor can jump straight to what they came for.
+ */
+import Frame from '@/components/board/Frame.astro';
+import Icon from '@/components/site/Icon.astro';
+import { frames } from '@/config/board';
+import { mailto, site } from '@/config/site';
+
+const index = [
+  { href: '#studiolabcloud', name: 'StudioLabCloud', text: 'SaaS for cloud services, built alone · 2026' },
+  { href: '#hma4tech', name: 'HMA4Tech', text: 'Back end of an AI platform · 2024–25' },
+  { href: '#sofinrec', name: 'Sofinrec', text: 'Meeting planner for 20+ staff · 2023' },
+  { href: '#side-projects', name: 'This board and Orbit', text: 'Side projects, now' },
+  { href: '#how-i-work', name: 'How I work', text: 'Four rules I build by' },
+  { href: '#experience', name: 'Experience', text: '2021 to now, on one line' },
+  { href: '#contact', name: 'Contact', text: 'Email, LinkedIn, GitHub' },
+];
+---
+
+<Frame frame={frames.intro} id="intro" labelledby="intro-h" class="intro">
+  <div class="grid">
+    <div class="who">
+      <div>
+        <h1 id="intro-h" class="disp name">
+          <span>Aziz</span>
+          <span>Mabrouki</span>
+        </h1>
+        <p class="lead">
+          Full-stack engineer in {site.city}. I design and build whole products, from the interface people click
+          to the servers that keep it running.
+        </p>
+      </div>
+      <div>
+        <div class="acts">
+          <a class="btn" href={mailto()}>Email me<Icon name="arrow" /></a>
+          {site.links.cv && <a class="lnk" href={site.links.cv}>Download CV (PDF)</a>}
+        </div>
+        <p class="meta">
+          Open to full-time roles, remote or relocation · French and English<br />
+          Now: running StudioLabCloud as a freelancer, building Orbit
+        </p>
+      </div>
+    </div>
+
+    <nav class="index" aria-labelledby="idx-h">
+      <h2 id="idx-h" class="idx-h">On this board</h2>
+      <ul>
+        {
+          index.map((item) => (
+            <li>
+              <a href={item.href}>
+                <span>
+                  <b>{item.name}</b>
+                  <span>{item.text}</span>
+                </span>
+                <Icon name="arrow" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="hint hint-board">
+        Press <b>Next</b> or use the arrow keys to follow the tour. Drag to look around; pinch or Ctrl + scroll to zoom.
+      </p>
+      <p class="hint hint-tour">Swipe through the frames, or tap <b>Board</b> to see them all at once.</p>
+    </nav>
+  </div>
+</Frame>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 48px;
+    height: 100%;
+  }
+
+  @container (min-width: 900px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) 400px;
+      gap: 88px;
+    }
+  }
+
+  .who {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-width: 0;
+  }
+
+  .name {
+    font-size: clamp(56px, 10.3cqi, 132px);
+    line-height: 0.86;
+  }
+
+  .name span {
+    display: block;
+  }
+
+  .lead {
+    margin-top: clamp(20px, 2.5cqi, 32px);
+    max-width: 30ch;
+    font-size: clamp(19px, 2.1cqi, 27px);
+    line-height: 1.35;
+    font-weight: 500;
+  }
+
+  .acts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+  }
+
+  .meta {
+    margin-top: 22px;
+    color: var(--ink-soft);
+    font-size: var(--text-small);
+  }
+
+  .index {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .idx-h {
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--ink);
+    color: var(--ink-soft);
+    font-size: var(--text-small);
+    font-weight: 700;
+  }
+
+  .index a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+  }
+
+  .index a b {
+    display: block;
+    font-size: 19px;
+    line-height: 1.2;
+  }
+
+  .index a > span > span {
+    display: block;
+    margin-top: 3px;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+
+  .index :global(.ic) {
+    color: var(--ink-soft);
+    transition:
+      transform 200ms var(--ease-out),
+      color var(--dur-hover);
+  }
+
+  .index a:hover :global(.ic) {
+    transform: translateX(5px);
+    color: var(--ink);
+  }
+
+  .hint {
+    display: none;
+    margin-top: 24px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: var(--paper-tint);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  :global(html.board) .hint-board,
+  :global(html.tour) .hint-tour {
+    display: block;
+  }
+
+  :global(html.board) .hint-board {
+    margin-top: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .index :global(.ic) {
+      transition: none;
+    }
+  }
+</style>

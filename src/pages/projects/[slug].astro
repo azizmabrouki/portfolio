@@ -1,632 +1,548 @@
 ---
 /**
- * The case study template: title and short facts, the numbers, the problem and the result
- * in two sentences, what I built myself, the story (the Markdown body), the architecture
- * drawn from frontmatter, the key decisions (each can light its box in the drawing), the
- * evidence (screens), what I'd change, the stack, and where to go next. Drafts (frontmatter `draft: true`) get no page yet.
+ * A case study, zoomed in from its frame on the board: the overview sheet (what, my part,
+ * problem and result, what I built), the client's path through real screens, the story
+ * (the Markdown body), the system as tiles, the decisions with their trade-offs stuck on
+ * as notes, and the next stop on the board. Drafts (frontmatter `draft: true`) get no page.
  */
 import { render, type CollectionEntry } from 'astro:content';
 import PageLayout from '@/layouts/PageLayout.astro';
-import Diagram from '@/components/case/Diagram.astro';
+import SystemTiles from '@/components/board/SystemTiles.astro';
+import Icon from '@/components/site/Icon.astro';
+import { stops } from '@/config/board';
 import { getProjects } from '@/lib/content';
 import { plain, rich } from '@/lib/rich';
-import { mailto } from '@/config/site';
-import { work } from '@/config/work';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
-  return projects
-    .map((project, index) => ({ project, next: projects[index + 1] ?? projects[0] }))
-    .filter(({ project }) => !project.data.draft)
-    .map(({ project, next }) => ({
-      params: { slug: project.id },
-      props: { project, next: next && next.id !== project.id ? next : undefined },
-    }));
+  return projects.filter((project) => !project.data.draft).map((project) => ({ params: { slug: project.id }, props: { project } }));
 }
 
 interface Props {
   project: CollectionEntry<'projects'>;
-  next?: CollectionEntry<'projects'> | undefined;
 }
 
-const { project, next } = Astro.props;
+const { project } = Astro.props;
 const { Content } = await render(project);
 const data = project.data;
-const slotOf = (id: string) => work.find((slot) => slot.project === id);
-const slot = slotOf(project.id);
-const nextSlot = next ? slotOf(next.id) : undefined;
-
-const words = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'];
-const decisionsTitle = `${words[data.decisions.length] ?? data.decisions.length} decision${data.decisions.length === 1 ? '' : 's'}.`;
-const callouts = data.decisions.flatMap((decision, index) =>
-  decision.node ? [{ label: String(index + 1), target: decision.node }] : [],
-);
-const kicker = ['Case study', data.company, data.period].filter(Boolean).join(' · ');
+const screens = data.screens.filter((screen) => screen.src);
+const steps = ['Order', 'Get help', 'Next'];
+const here = stops.findIndex((stop) => stop.id === project.id);
+const nextStop = here >= 0 ? stops.slice(here + 1).find((stop) => stop.id !== 'clients-path') : undefined;
+// "[What I'd change with more time.]" is a placeholder: the section waits for real words.
+const differently = data.differently && !data.differently.trim().startsWith('[') ? data.differently : undefined;
+const turns = ['2.5deg', '-2deg', '1.5deg', '-1.5deg'];
 ---
 
-<PageLayout title={data.title} description={plain(data.summary)} type="article" top="cs-title">
-  <section class="wrap hero" aria-labelledby="cs-title">
-    <p class="kick">
-      {slot && <span class="badge">{slot.slot}</span>}
-      <span>{kicker}</span>
-    </p>
-    <h1 id="cs-title" class="disp h1">{data.title}</h1>
-    <p class="lede">{plain(data.summary)}</p>
-    {
-      data.facts.length > 0 && (
-        <dl class="facts">
-          {data.facts.map((fact) => (
-            <div>
-              <dt>{fact.label}</dt>
-              <dd>{fact.value}</dd>
-            </div>
-          ))}
-        </dl>
-      )
-    }
-  </section>
-
-  {
-    data.numbers.length > 0 && (
-      <section class="wrap nums" aria-label="In numbers">
-        {data.numbers.map((number) => (
-          <div class="num">
-            <b class="tab">{number.value}</b>
-            <span>{number.label}</span>
-          </div>
-        ))}
-      </section>
-    )
-  }
-
-  {
-    data.brief && (
-      <section class="wrap brief" aria-label="In short">
-        <div>
-          <p class="lbl">The problem</p>
-          <p set:html={rich(data.brief.problem)} />
-        </div>
-        <div>
-          <p class="lbl">The result</p>
-          <p set:html={rich(data.brief.result)} />
-        </div>
-      </section>
-    )
-  }
-
-  {
-    data.contribution.length > 0 && (
-      <section class="wrap sec mine" aria-labelledby="mine-title">
-        <h2 id="mine-title" class="lbl st-title">My contribution</h2>
-        <ul class="mlist">
-          {data.contribution.map((item) => (
-            <li set:html={rich(item)} />
-          ))}
-        </ul>
-      </section>
-    )
-  }
-
-  <section class="wrap story" aria-label="The story">
-    <Content />
-  </section>
-
-  <section id="diagram" class="wrap sec" aria-labelledby="d-title">
-    <h2 id="d-title" class="disp h2">{data.diagram.title}</h2>
-    <p class="sub">{data.diagram.description}</p>
-    <Diagram diagram={data.diagram} callouts={callouts} />
-  </section>
-
-  <section class="wrap sec" aria-labelledby="dec-title">
-    <h2 id="dec-title" class="disp h2">{decisionsTitle}</h2>
-    <p class="sub">Each one written down as a decision record at the time, with the option it beat and the price it costs.</p>
-    <div class="decs">
+<PageLayout title={data.title} description={plain(data.summary)} type="article" crumb={data.title}>
+  <section class="slot" aria-labelledby="cs-title">
+    <p class="strip">{data.title} / Overview<span class="mono">case study</span></p>
+    <div class="paper sheet hero">
+      <span class="sel" aria-hidden="true"><i class="h tl"></i><i class="h tr"></i><i class="h bl"></i><i class="h br"></i></span>
+      <h1 id="cs-title" class="disp title">{data.title}</h1>
+      <p class="lead" set:html={rich(data.summary)} />
       {
-        data.decisions.map((decision, index) => (
-          <article class="dec">
-            <div class="dhead">
-              <span class="badge">{index + 1}</span>
-              <h3>{plain(decision.title)}</h3>
-              {decision.node && (
-                <a class="locate" href="#diagram" data-locate={decision.node}>
-                  See it in the diagram
-                </a>
-              )}
+        data.facts.length > 0 && (
+          <dl class="facts">
+            {data.facts.map((fact) => (
+              <div>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+      {
+        data.brief && (
+          <div class="brief">
+            <div>
+              <h2>The problem</h2>
+              <p set:html={rich(data.brief.problem)} />
             </div>
-            <dl class="dl">
-              <div class="chose">
-                <dt>Chose</dt>
-                <dd>{plain(decision.chose)}</dd>
-              </div>
-              <div>
-                <dt>Over</dt>
-                <dd>{plain(decision.over)}</dd>
-              </div>
-              <div>
-                <dt>Why</dt>
-                <dd>{plain(decision.why)}</dd>
-              </div>
-              <div class="trade">
-                <dt>Trade-off</dt>
-                <dd>{plain(decision.tradeoff)}</dd>
-              </div>
-            </dl>
-          </article>
-        ))
+            <div>
+              <h2>The result</h2>
+              <p set:html={rich(data.brief.result)} />
+            </div>
+          </div>
+        )
+      }
+      {
+        data.contribution.length > 0 && (
+          <div class="built">
+            <h2>What I built</h2>
+            <ul>
+              {data.contribution.map((item) => (
+                <li set:html={rich(item)} />
+              ))}
+            </ul>
+          </div>
+        )
       }
     </div>
   </section>
 
   {
-    data.screens.length > 0 && (
-      <section class="wrap screens" aria-labelledby="ev-title">
-        <h2 id="ev-title" class="lbl st-title ev-title">Evidence</h2>
-        {data.screens.map((screen) => (
-          <figure>
-            {screen.src ? (
-              <img class="shot" src={screen.src} alt={screen.alt ?? ''} loading="lazy" />
-            ) : (
-              <div class="shot">{screen.placeholder}</div>
-            )}
-            <figcaption>{screen.caption}</figcaption>
-          </figure>
-        ))}
+    screens.length > 0 && (
+      <section class="slot path" aria-labelledby="path-h">
+        <h2 id="path-h" class="disp on-mat">
+          The client’s path
+        </h2>
+        <p class="on-mat-p">Real screens, in French, in the order a client meets them.</p>
+        <div class="screens">
+          {screens.map((screen, index) => (
+            <>
+              {index > 0 && (
+                <p class="conn" aria-hidden="true">
+                  <i />
+                  <span>{steps[index - 1]}</span>
+                </p>
+              )}
+              <figure class:list={['shot', { right: index % 2 === 1 }]}>
+                <p class="strip">{screen.caption.split(':')[0]}</p>
+                <img
+                  class="paper"
+                  src={screen.src}
+                  alt={screen.alt ?? screen.caption}
+                  width={screen.src?.includes('catalogue') ? 800 : 1600}
+                  height={screen.src?.includes('catalogue') ? 500 : 1000}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption>{screen.caption}</figcaption>
+              </figure>
+            </>
+          ))}
+        </div>
       </section>
     )
   }
 
-  {
-    data.differently && (
-      <section class="wrap sec" aria-labelledby="diff-title">
-        <h2 id="diff-title" class="lbl st-title">What I'd change</h2>
-        <p class="diff" set:html={rich(data.differently)} />
-      </section>
-    )
-  }
-
-  <section class="wrap sec" aria-labelledby="st-title">
-    <h2 id="st-title" class="lbl st-title">Built with</h2>
-    <ul class="stack">
-      {data.stack.map((item) => <li>{item}</li>)}
-    </ul>
-  </section>
-
-  <section class="wrap next" aria-label="Keep reading">
-    {
-      next &&
-        (next.data.draft ? (
-          <div class="ncard">
-            <span class="lbl">Next case study · soon</span>
-            <span class="t">
-              {nextSlot && <span class="badge">{nextSlot.slot}</span>}
-              {nextSlot?.name ?? next.data.title}
-            </span>
-            <p>{next.data.teaser ?? plain(next.data.summary)}</p>
-          </div>
-        ) : (
-          <a class="ncard" href={`/projects/${next.id}/`}>
-            <span class="lbl">Next case study</span>
-            <span class="t">
-              {nextSlot && <span class="badge">{nextSlot.slot}</span>}
-              {nextSlot?.name ?? next.data.title}
-            </span>
-            <p>{next.data.teaser ?? plain(next.data.summary)}</p>
-          </a>
-        ))
-    }
-    <div class="ncard">
-      <span class="lbl">Building something like this?</span>
-      <p>Tell me what you are building and I'll reply within 48 hours.</p>
-      <div class="cta">
-        <a class="btn btn-gold" href={mailto()}>Email me</a>
-        <a class="btn btn-ghost" href="/#work">All work</a>
+  <section class="slot" aria-labelledby="story-h">
+    <p class="strip">The story</p>
+    <div class="paper sheet">
+      <h2 id="story-h" class="sr-only">The story</h2>
+      <div class="prose">
+        <Content />
       </div>
     </div>
   </section>
+
+  <section class="slot" id="diagram" aria-labelledby="sys-h">
+    <p class="strip">The system<span class="mono">simplified</span></p>
+    <div class="paper sheet">
+      <h2 id="sys-h" class="disp h2">{data.diagram.title.replace(/\.$/, '')}</h2>
+      <p class="sys-p">{data.diagram.description} Yellow marks what the decisions below are about.</p>
+      <div class="sys">
+        <SystemTiles diagram={data.diagram} decisions={data.decisions} edges />
+      </div>
+    </div>
+  </section>
+
+  <section class="slot decisions" aria-labelledby="dec-h">
+    <h2 id="dec-h" class="disp on-mat">
+      {data.decisions.length === 1 ? 'One decision' : `${['', '', 'Two', 'Three', 'Four', 'Five'][data.decisions.length] ?? data.decisions.length} decisions`}
+    </h2>
+    {
+      data.decisions.map((decision, index) => {
+        const node = data.diagram.nodes.find((n) => n.id === decision.node);
+        return (
+          <article class="paper sheet decision" aria-labelledby={`d-${index}`}>
+            {node && <p class="where">On the drawing: {node.label}</p>}
+            <h3 id={`d-${index}`} class="disp">
+              {decision.title}
+            </h3>
+            <aside class="trade" style={`--turn: ${turns[index % turns.length]}`} aria-label="The trade-off">
+              <b>The trade-off</b>
+              <p set:html={rich(decision.tradeoff)} />
+            </aside>
+            <dl class="dec">
+              <div>
+                <dt>I chose</dt>
+                <dd set:html={rich(decision.chose)} />
+              </div>
+              <div>
+                <dt>Over</dt>
+                <dd set:html={rich(decision.over)} />
+              </div>
+              <div>
+                <dt>Why</dt>
+                <dd set:html={rich(decision.why)} />
+              </div>
+            </dl>
+          </article>
+        );
+      })
+    }
+  </section>
+
+  <section class="slot ending" aria-label="Before you go">
+    <div class="ghost">
+      {
+        differently && (
+          <>
+            <h2 class="disp">What I’d do differently</h2>
+            <p set:html={rich(differently)} />
+          </>
+        )
+      }
+      <h2 class="disp">Built with</h2>
+      <p>{data.stack.join(', ')}</p>
+    </div>
+    {
+      nextStop && (
+        <div class="paper sheet next">
+          <p>Next on the board</p>
+          <p class="disp next-name">{nextStop.name}</p>
+          <a class="btn" href={`/#${nextStop.id}`}>
+            Fly there on the board
+            <Icon name="arrow" />
+          </a>
+        </div>
+      )
+    }
+  </section>
 </PageLayout>
 
-<script>
-  // "See it in the diagram": scroll to the drawing and light the decision's box.
-  document.querySelectorAll<HTMLAnchorElement>('[data-locate]').forEach((link) => {
-    link.addEventListener('click', () => {
-      const id = link.dataset.locate;
-      document.querySelectorAll<HTMLElement>('[data-node]').forEach((node) => {
-        node.toggleAttribute('data-on', node.dataset.node === id);
-      });
-    });
-  });
-</script>
-
 <style>
+  .slot {
+    position: relative;
+  }
+
   .hero {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    padding-top: clamp(64px, 8vw, 120px);
-    padding-bottom: 72px;
+    position: relative;
   }
 
-  .kick {
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px 16px;
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--text-muted);
+  .sel {
+    position: absolute;
+    inset: -7px;
+    border: 2px solid var(--yellow);
+    border-radius: 5px;
+    pointer-events: none;
+    animation: sel 520ms var(--ease-out) 200ms both;
   }
 
-  .h1 {
-    font-size: clamp(56px, 9vw, 148px);
+  @keyframes sel {
+    from {
+      opacity: 0;
+      transform: scale(1.015);
+    }
   }
 
-  .lede {
-    margin: 0;
-    max-width: 34em;
-    font-size: clamp(19px, 1.7vw, 24px);
-    line-height: 1.45;
+  .h {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border: 2px solid var(--yellow);
+    background: var(--paper);
+    transform: translate(-50%, -50%);
+  }
+
+  .tl {
+    left: 0;
+    top: 0;
+  }
+
+  .tr {
+    left: 100%;
+    top: 0;
+  }
+
+  .bl {
+    left: 0;
+    top: 100%;
+  }
+
+  .br {
+    left: 100%;
+    top: 100%;
+  }
+
+  .title {
+    font-size: clamp(52px, 9vw, 128px);
+    line-height: 0.86;
+  }
+
+  .lead {
+    margin-top: 24px;
+    max-width: 46ch;
+    font-size: clamp(19px, 2vw, 25px);
+    line-height: 1.4;
   }
 
   .facts {
-    margin: 16px 0 0;
+    margin-top: 40px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
-    gap: 24px 32px;
-    padding-top: 24px;
-    box-shadow: inset 0 1px 0 var(--line);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 0 32px;
+    border-top: 2px solid var(--ink);
   }
 
-  .facts dt,
-  .dl dt {
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--text-faint);
+  .facts div {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .facts dt {
+    color: var(--ink-soft);
+    font-size: 15px;
   }
 
   .facts dd {
-    margin: 6px 0 0;
-    font-size: 17px;
-    line-height: 1.45;
-  }
-
-  .nums {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-    gap: 3px;
-    padding-bottom: 96px;
-  }
-
-  .num {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 28px 24px;
-    background: var(--surface);
-  }
-
-  .num b {
-    font-weight: 700;
-    font-size: clamp(64px, 7vw, 112px);
-    letter-spacing: -0.04em;
-    line-height: 0.9;
-    color: var(--gold);
-  }
-
-  .num span {
-    font-size: 17px;
-    color: var(--text-soft);
+    font-weight: 600;
+    line-height: 1.35;
   }
 
   .brief {
+    margin-top: 40px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
-    gap: 48px;
-    padding-bottom: 120px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 32px;
   }
 
-  .brief div {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+  .brief h2,
+  .built h2 {
+    font-size: var(--text-body);
   }
 
-  .brief p:not(.lbl) {
-    margin: 0;
-    font-size: clamp(20px, 1.8vw, 26px);
-    line-height: 1.4;
-    letter-spacing: -0.01em;
+  .brief p {
+    margin-top: 6px;
+  }
+
+  .built {
+    margin-top: 40px;
+  }
+
+  .built ul {
+    margin-top: 10px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .built li {
+    padding-left: 24px;
+    position: relative;
+  }
+
+  .built li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.55em;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--yellow);
+    box-shadow: 0 0 0 2px var(--ink);
+  }
+
+  .on-mat {
+    color: var(--on-mat);
+    font-size: clamp(36px, 4.4vw, 60px);
+  }
+
+  .on-mat-p {
+    margin-top: 10px;
+    color: var(--on-mat-soft);
   }
 
   .screens {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr));
-    gap: 24px;
-    padding-bottom: 140px;
-  }
-
-  .screens figure {
-    margin: 0;
+    margin-top: 40px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-  }
-
-  .ev-title {
-    grid-column: 1 / -1;
-  }
-
-  .mlist {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
-    gap: 3px;
-  }
-
-  .mlist li {
-    padding: 18px 20px 18px 40px;
-    position: relative;
-    background: var(--surface);
-    font-size: 17px;
-    line-height: 1.5;
-  }
-
-  .mlist li::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    top: 27px;
-    width: 7px;
-    height: 7px;
-    background: var(--gold);
-  }
-
-  .diff {
-    margin: 0;
-    max-width: 40em;
-    font-size: clamp(19px, 1.6vw, 22px);
-    line-height: 1.5;
   }
 
   .shot {
+    width: min(100%, 980px);
+  }
+
+  .shot.right {
+    align-self: flex-end;
+  }
+
+  .shot img {
     width: 100%;
-    aspect-ratio: 16 / 10;
+    height: auto;
+    background: var(--paper-sunk);
+  }
+
+  .shot figcaption {
+    margin-top: 12px;
+    color: var(--on-mat-soft);
+    font-size: var(--text-small);
+  }
+
+  .conn {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: var(--surface-raised);
-    box-shadow: inset 0 0 0 1px var(--line-faint);
+    gap: 12px;
+    height: 88px;
+    padding-left: clamp(24px, 6vw, 64px);
+  }
+
+  .conn i {
+    width: 4px;
+    height: 100%;
+    background: repeating-linear-gradient(var(--yellow) 0 10px, transparent 10px 18px);
+    animation: down 1s linear infinite;
+  }
+
+  .conn span {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--yellow);
+    font-size: 14px;
     font-weight: 600;
-    font-size: 16px;
-    color: var(--text-faint);
-    text-align: center;
-    object-fit: cover;
   }
 
-  img.shot {
-    padding: 0;
-  }
-
-  .screens figcaption {
-    font-size: 15px;
-    color: var(--text-muted);
-  }
-
-  /* The story: each chapter's heading on the left, its paragraphs on the right. */
-  .story {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    gap: 18px 48px;
-    align-items: start;
-    padding-bottom: 140px;
-  }
-
-  .story :global(h2) {
-    grid-column: 1;
-    margin: 0;
-    font-weight: 700;
-    font-size: clamp(28px, 2.6vw, 40px);
-    letter-spacing: -0.02em;
-    line-height: 1.05;
-  }
-
-  .story :global(p) {
-    grid-column: 2;
-    margin: 0;
-    max-width: 40em;
-    font-size: 19px;
-    line-height: 1.6;
-    color: var(--text-body);
-  }
-
-  .story :global(h2:not(:first-child)),
-  .story :global(h2:not(:first-child) + p) {
-    margin-top: 54px;
-  }
-
-  .story :global(p strong) {
-    color: var(--gold);
-  }
-
-  .sec {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding-bottom: 140px;
+  @keyframes down {
+    to {
+      background-position: 0 18px;
+    }
   }
 
   .h2 {
-    font-size: var(--text-h2);
+    font-size: clamp(34px, 4.4vw, 60px);
   }
 
-  .sub {
-    margin: 0;
-    max-width: 40em;
-    font-size: 18px;
-    line-height: 1.55;
-    color: var(--text-soft);
+  .sys-p {
+    margin-top: 14px;
+    max-width: 62ch;
   }
 
-  .decs {
+  .sys {
+    margin-top: 32px;
+  }
+
+  .decisions {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 64px;
+  }
+
+  .decision h3 {
+    max-width: 18ch;
+    margin-top: 6px;
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .where {
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+
+  .trade {
+    position: absolute;
+    right: clamp(16px, 4vw, 48px);
+    top: -28px;
+    width: min(300px, 46%);
+    padding: 20px 22px;
+    background: var(--yellow);
+    box-shadow: var(--shadow-note);
+    transform: rotate(var(--turn));
+    transition: transform 260ms var(--ease-out);
+  }
+
+  .trade:hover {
+    transform: rotate(0deg) translateY(-4px);
+  }
+
+  .trade b {
+    display: block;
+    font: 700 19px/1.1 var(--font-display);
+  }
+
+  .trade p {
+    margin-top: 8px;
+    font-size: var(--text-small);
+    line-height: 1.4;
   }
 
   .dec {
+    margin-top: 28px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-    gap: 20px 48px;
-    padding: 32px 28px;
-    background: var(--surface);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 24px 40px;
   }
 
-  .dhead {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    align-items: flex-start;
-  }
-
-  .dhead h3 {
-    margin: 0;
+  .dec dt {
     font-weight: 700;
-    font-size: clamp(26px, 2.4vw, 36px);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
   }
 
-  .locate {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--target);
-    font-weight: 600;
-    font-size: 15px;
-    text-underline-offset: 4px;
+  .dec dd {
+    margin-top: 4px;
   }
 
-  .dl {
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-    gap: 20px 32px;
-    grid-column: span 2;
+  @media (max-width: 760px) {
+    .trade {
+      position: relative;
+      right: auto;
+      top: auto;
+      width: auto;
+      margin-top: 24px;
+    }
   }
 
-  .dl dd {
-    margin: 6px 0 0;
-    font-size: 17px;
-    line-height: 1.5;
-  }
-
-  .dl .chose dd {
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  .dl .trade dt {
-    color: var(--gold);
-  }
-
-  .st-title {
-    font-size: 15px;
-  }
-
-  .stack {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .ending {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 32px;
   }
 
-  .stack li {
-    padding: 10px 14px;
-    background: var(--surface-raised);
-    box-shadow: inset 0 0 0 1px var(--line);
-    font-weight: 600;
-    font-size: 16px;
+  .ghost {
+    flex: 1 1 380px;
+    min-width: 0;
+    padding: var(--sheet-pad);
+    border: 2px dashed var(--dash);
+    border-radius: 3px;
+    color: var(--on-mat);
+  }
+
+  .ghost h2 {
+    font-size: 28px;
+    letter-spacing: -0.02em;
+  }
+
+  .ghost h2 + p {
+    margin-top: 10px;
+    color: var(--on-mat-soft);
+  }
+
+  .ghost p + h2 {
+    margin-top: 28px;
   }
 
   .next {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
-    gap: 3px;
-    padding-bottom: 120px;
-  }
-
-  .ncard {
+    flex: 1 1 380px;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 32px 28px;
-    background: var(--surface);
-    text-decoration: none;
-    color: var(--text);
-    transition: background-color var(--dur-fast);
+    gap: 18px;
   }
 
-  a.ncard:hover {
-    background: var(--surface-hover);
-    color: var(--text);
+  .next-name {
+    font-size: clamp(34px, 4vw, 56px);
   }
 
-  .ncard .t {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-weight: 700;
-    font-size: clamp(28px, 3vw, 44px);
-    letter-spacing: -0.02em;
+  .next .btn {
+    align-self: flex-start;
+    margin-top: auto;
   }
 
-  .ncard p {
-    margin: 0;
-    font-size: 17px;
-    line-height: 1.5;
-    color: var(--text-muted);
-  }
-
-  .cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 24px;
-    align-items: center;
-  }
-
-  @media (max-width: 700px) {
-    .story {
-      grid-template-columns: minmax(0, 1fr);
+  @media (prefers-reduced-motion: reduce) {
+    .sel,
+    .conn i {
+      animation: none;
     }
 
-    .story :global(p) {
-      grid-column: 1;
-      font-size: 17px;
+    .trade {
+      transition: none;
     }
 
-    .story :global(h2:not(:first-child) + p) {
-      margin-top: 0;
-    }
-
-    .dl {
-      grid-column: auto;
-    }
-
-    .nums,
-    .brief,
-    .screens,
-    .story,
-    .sec,
-    .next {
-      padding-bottom: 88px;
-    }
-
-    .cta .btn-gold {
-      flex: 1;
+    .trade:hover {
+      transform: rotate(var(--turn));
     }
   }
 </style>

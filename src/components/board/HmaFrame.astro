@@ -1,0 +1,147 @@
+---
+/**
+ * HMA4Tech: the two results drawn as before / after bars (relative, before = 100; the
+ * striped end of a bar is the range), and what I built in a short list.
+ */
+import Frame from '@/components/board/Frame.astro';
+import { frames } from '@/config/board';
+
+const results = [
+  { title: 'Average API response time', before: 'Before tuning the queries', after: 'After: 20–30% faster', low: 70, high: 80 },
+  { title: 'Environment-related deployment issues', before: 'Before containers', after: 'With Docker: about 40% fewer', low: 60 },
+];
+---
+
+<Frame frame={frames.hma4tech} id="hma4tech" labelledby="hma-h">
+  <h2 id="hma-h" class="disp title">HMA4Tech</h2>
+  <p class="lead">
+    The Spring Boot back end of an AI platform that finds anomalies in plants. A year in an agile startup team, from
+    December 2024 to December 2025.
+  </p>
+  <div class="body">
+    <div class="charts">
+      {
+        results.map((result) => (
+          <figure class="cmp">
+            <figcaption class="cmp-t">{result.title}</figcaption>
+            <div class="track">
+              <span class="fill before" style="width: 100%">
+                {result.before}
+              </span>
+            </div>
+            <div class="track">
+              <span class="fill after" style={`width: ${result.low}%`}>
+                {result.after}
+              </span>
+              {result.high && <span class="range" style={`left: ${result.low}%; width: ${result.high - result.low}%`} />}
+            </div>
+          </figure>
+        ))
+      }
+      <p class="note">Relative values, before = 100. The striped end is the range.</p>
+    </div>
+    <ul class="facts">
+      <li><b>10+ REST endpoints</b> designed and built</li>
+      <li><b>JWT authentication</b> and role-based access</li>
+      <li><b>Docker images</b>, so what runs on one machine runs on the next</li>
+      <li><b>PostgreSQL</b> queries profiled and tuned</li>
+      <li class="stack">Java, Spring Boot, Spring Security, Docker</li>
+    </ul>
+  </div>
+</Frame>
+
+<style>
+  .title {
+    font-size: clamp(42px, 7.9cqi, 88px);
+  }
+
+  .lead {
+    margin-top: 18px;
+    max-width: 50ch;
+    font-size: clamp(17px, 2cqi, 22px);
+    line-height: 1.4;
+  }
+
+  .body {
+    margin-top: clamp(24px, 4.3cqi, 48px);
+    display: grid;
+    gap: 32px;
+  }
+
+  @container (min-width: 880px) {
+    .body {
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 56px;
+    }
+  }
+
+  .charts {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  .cmp {
+    display: grid;
+    gap: 8px;
+  }
+
+  .cmp-t {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .track {
+    position: relative;
+    height: 38px;
+    border-radius: 6px;
+    background: var(--paper-sunk);
+  }
+
+  .fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .before {
+    background: var(--bar-muted);
+  }
+
+  .after {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .range {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 0 6px 6px 0;
+    background: repeating-linear-gradient(135deg, var(--ink) 0 3px, var(--paper) 3px 7px);
+  }
+
+  .note {
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+
+  .facts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 2px solid var(--ink);
+    line-height: 1.35;
+  }
+
+  .stack {
+    color: var(--ink-soft);
+  }
+</style>

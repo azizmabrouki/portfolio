@@ -1,0 +1,132 @@
+---
+/**
+ * How I work: four sticky notes put straight on the mat, no sheet under them.
+ */
+import Frame from '@/components/board/Frame.astro';
+import { frames } from '@/config/board';
+import { getNotes } from '@/lib/content';
+
+const note = (await getNotes()).find((entry) => entry.id === 'modular-monolith-first');
+const rules = [
+  {
+    title: 'Every layer is mine.',
+    text: 'Screen, API, data, deployment. On StudioLabCloud I built checkout from the cart to Stripe’s webhooks.',
+    tone: 'yellow',
+    turn: '-2deg',
+  },
+  {
+    title: 'Boundaries first.',
+    text: 'Strict modules behind contracts, in one deployable. A module becomes a service only when it has to.',
+    tone: 'white',
+    turn: '1.5deg',
+    link: note ? { label: 'Why I start this way', href: `/notes/${note.id}/` } : undefined,
+  },
+  {
+    title: 'Test where it hurts.',
+    text: '609 automated tests on StudioLabCloud, with replay tests on billing so no client pays twice.',
+    tone: 'yellow',
+    turn: '-1deg',
+  },
+  {
+    title: 'Ship small, often.',
+    text: 'Three releases in six sprints, and every change goes through CI/CD before anyone depends on it.',
+    tone: 'white',
+    turn: '2deg',
+  },
+];
+---
+
+<Frame frame={frames.how} id="how-i-work" kind="loose" labelledby="how-h">
+  <h2 id="how-h" class="disp title">How I work</h2>
+  <p class="lead">Four rules I build by, pinned where I can see them.</p>
+  <ul class="notes">
+    {
+      rules.map((rule) => (
+        <li class:list={['note', rule.tone]} style={`--turn: ${rule.turn}`}>
+          <h3 class="disp">{rule.title}</h3>
+          <p>{rule.text}</p>
+          {rule.link && (
+            <a class="lnk" href={rule.link.href}>
+              {rule.link.label}
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</Frame>
+
+<style>
+  .title {
+    color: var(--on-mat);
+    font-size: clamp(36px, 5.3cqi, 72px);
+  }
+
+  .lead {
+    margin-top: 10px;
+    color: var(--on-mat-soft);
+    font-size: clamp(17px, 1.5cqi, 20px);
+  }
+
+  .notes {
+    margin-top: clamp(24px, 3.5cqi, 48px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    gap: clamp(16px, 3cqi, 40px);
+  }
+
+  .note {
+    min-height: min(300px, 40cqi);
+    padding: clamp(16px, 2cqi, 28px);
+    color: var(--ink);
+    transform: rotate(var(--turn));
+    box-shadow: var(--shadow-note);
+    transition: transform 260ms var(--ease-out);
+  }
+
+  .note:hover {
+    transform: rotate(0deg) translateY(-6px);
+  }
+
+  .yellow {
+    background: var(--yellow);
+  }
+
+  .white {
+    background: var(--paper);
+  }
+
+  .note h3 {
+    font-size: clamp(19px, 2cqi, 27px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+
+  .note p {
+    margin-top: 12px;
+    font-size: clamp(15px, 1.35cqi, 18px);
+    line-height: 1.45;
+  }
+
+  .note .lnk {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 15px;
+  }
+
+  .note :global(a:focus-visible) {
+    outline: 3px solid var(--ink);
+    box-shadow: 0 0 0 7px var(--yellow);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .note {
+      transition: none;
+    }
+
+    .note:hover {
+      transform: rotate(var(--turn));
+    }
+  }
+</style>

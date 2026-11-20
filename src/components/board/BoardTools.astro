@@ -1,0 +1,251 @@
+---
+/**
+ * The design-tool layer of the board, shown only on html.board: rulers (canvas, drawn by
+ * the board script), the tour bar and the minimap. Everything here works by keyboard;
+ * nothing here holds content that the frames do not.
+ */
+import Icon from '@/components/site/Icon.astro';
+import { bounds, frames } from '@/config/board';
+
+const scale = 150 / bounds.w;
+const mini = Object.values(frames).map((frame) => ({
+  stop: frame.stop,
+  name: frame.label,
+  style: [
+    `left: ${((frame.x - bounds.x) * scale).toFixed(1)}px`,
+    `top: ${((frame.y - bounds.y) * scale).toFixed(1)}px`,
+    `width: ${Math.max(3, frame.w * scale).toFixed(1)}px`,
+    `height: ${Math.max(3, frame.h * scale).toFixed(1)}px`,
+  ].join('; '),
+}));
+const miniHeight = Math.round(bounds.h * scale);
+---
+
+<div class="tools" data-tools>
+  <span class="corner" aria-hidden="true"></span>
+  <canvas class="rul rul-x" data-ruler="x" aria-hidden="true"></canvas>
+  <canvas class="rul rul-y" data-ruler="y" aria-hidden="true"></canvas>
+
+  <nav class="tbar" aria-label="Tour">
+    <button type="button" class="tb" data-act="prev" aria-label="Previous frame"><Icon name="prev" /></button>
+    <p class="tb-label" aria-live="polite">
+      <span class="mono" data-num>Overview</span>
+      <span data-name>The whole board</span>
+    </p>
+    <button type="button" class="tb tb-next" data-act="next">
+      <span data-next>Start the tour</span>
+      <Icon name="next" />
+    </button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" class="tb" data-act="out" aria-label="Zoom out"><Icon name="minus" /></button>
+    <span class="zoom mono" data-zoom>100%</span>
+    <button type="button" class="tb" data-act="in" aria-label="Zoom in"><Icon name="plus" /></button>
+    <button type="button" class="tb" data-act="fit"><Icon name="fit" />Whole board</button>
+  </nav>
+
+  <nav class="mini" aria-label="Board overview">
+    <div class="mini-box" style={`height: ${miniHeight}px`}>
+      {
+        mini.map((item) => (
+          <button
+            type="button"
+            class="mini-f"
+            data-stop={item.stop}
+            aria-label={`Go to ${item.name}`}
+            style={item.style}
+          />
+        ))
+      }
+      <span class="mini-v" data-mini-view aria-hidden="true"></span>
+    </div>
+  </nav>
+</div>
+
+<style>
+  .tools {
+    display: none;
+  }
+
+  :global(html.board) .tools {
+    display: block;
+  }
+
+  .corner,
+  .rul {
+    position: fixed;
+    z-index: 15;
+    background: var(--mat-deep);
+  }
+
+  .corner {
+    left: 0;
+    top: var(--bar-h);
+    width: var(--ruler);
+    height: var(--ruler);
+  }
+
+  .rul-x {
+    left: var(--ruler);
+    right: 0;
+    top: var(--bar-h);
+    width: calc(100% - var(--ruler));
+    height: var(--ruler);
+  }
+
+  .rul-y {
+    left: 0;
+    top: calc(var(--bar-h) + var(--ruler));
+    width: var(--ruler);
+    height: calc(100% - var(--bar-h) - var(--ruler));
+  }
+
+  .tbar {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    z-index: 16;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 14px;
+    background: var(--mat-night);
+    box-shadow: var(--shadow-float);
+    color: #eaf3ee;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+
+  .tb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: var(--target);
+    height: var(--target);
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-hover),
+      transform var(--dur-press) var(--ease-out);
+  }
+
+  .tb:hover {
+    background: rgb(255 255 255 / 0.09);
+  }
+
+  .tb:active {
+    transform: scale(0.95);
+  }
+
+  .tb:disabled {
+    background: transparent;
+    color: var(--on-mat-off);
+    cursor: default;
+    transform: none;
+  }
+
+  .tb-next {
+    padding: 0 14px 0 18px;
+    background: var(--yellow);
+    color: var(--ink);
+  }
+
+  .tb-next:hover {
+    background: var(--yellow-hover);
+  }
+
+  .tb-next:disabled {
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  .tb-label {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-width: 300px;
+    padding: 0 10px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .tb-label .mono {
+    color: var(--on-mat-soft);
+    font-size: 11px;
+  }
+
+  .sep {
+    width: 1px;
+    height: 28px;
+    margin: 0 4px;
+    background: rgb(255 255 255 / 0.14);
+  }
+
+  .zoom {
+    min-width: 52px;
+    color: var(--on-mat-soft);
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .mini {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 16;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--mat-night);
+    box-shadow: var(--shadow-float);
+  }
+
+  .mini-box {
+    position: relative;
+    width: 150px;
+    overflow: hidden;
+  }
+
+  .mini-f {
+    position: absolute;
+    padding: 0;
+    border: 0;
+    border-radius: 1px;
+    background: rgb(255 255 255 / 0.62);
+    cursor: pointer;
+    transition: background-color 200ms;
+  }
+
+  .mini-f:hover,
+  .mini-f.on {
+    background: var(--yellow);
+  }
+
+  .mini-v {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1.5px solid var(--yellow);
+    border-radius: 2px;
+    background: var(--yellow-wash);
+    pointer-events: none;
+  }
+
+  /* Small laptops: the minimap would sit on the tour bar. */
+  @media (max-width: 1280px) {
+    .mini {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tb,
+    .mini-f {
+      transition: none;
+    }
+  }
+</style>

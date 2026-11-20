@@ -1,0 +1,22 @@
+---
+/**
+ * The last stop: the contact sheet, on the board's one sheet of yellow paper.
+ */
+import Frame from '@/components/board/Frame.astro';
+import ContactBlock from '@/components/site/ContactBlock.astro';
+import { frames } from '@/config/board';
+---
+
+<Frame frame={frames.contact} id="contact" labelledby="contact-h" class="yellow">
+  <ContactBlock />
+</Frame>
+
+<style>
+  .yellow {
+    background: var(--yellow);
+  }
+
+  .yellow :global(.frame-in) {
+    padding: clamp(24px, 5.6cqi, 80px);
+  }
+</style>

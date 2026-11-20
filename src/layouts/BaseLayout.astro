@@ -3,7 +3,6 @@ import { Font } from 'astro:assets';
 import '@/styles/tokens.css';
 import '@/styles/global.css';
 import { site } from '@/config/site';
-import { WORLD_QUERY } from '@/scripts/world/query';
 
 interface Props {
   title?: string;
@@ -42,7 +41,7 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#07080B" />
+    <meta name="theme-color" content="#0F2F25" />
     <meta name="generator" content={Astro.generator} />
 
     <meta property="og:type" content={type} />
@@ -63,25 +62,16 @@ const imageUrl = new URL(image, Astro.site ?? Astro.url).href;
     <meta name="twitter:image:alt" content={imageAlt} />
     <link rel="sitemap" href="/sitemap.xml" />
 
-    {/* Before first paint: `js` says scripts run (still-page controls can show), `w3d` says
-        this screen gets the 3D home page (see scripts/world/query.ts), and data-theme
-        carries the saved theme. All set here so the CSS picks them without a flash. */}
-    <script is:inline define:vars={{ query: WORLD_QUERY }}>
-      const html = document.documentElement;
-      html.classList.add('js');
-      // The visitor's theme from the sun / crescent switch; dark when they haven't chosen.
-      try {
-        if (localStorage.getItem('theme') === 'light') html.dataset.theme = 'light';
-      } catch {}
-      const world = window.matchMedia(query);
-      const apply = () => html.classList.toggle('w3d', world.matches && !html.classList.contains('w3d-off'));
-      apply();
-      world.addEventListener('change', apply);
-    </script>
+    {/* Before first paint: `js` says scripts run. The home page adds its own script that
+        picks the board, the list or the phone tour (see pages/index.astro). */}
+    <script is:inline>document.documentElement.classList.add('js');</script>
 
-    {/* Preloaded so the font loads at "High" priority. Discovered from CSS instead, it gets
-        "VeryHigh", which Lighthouse's simulation counts as render-blocking. See README. */}
-    <Font cssVariable="--font-archivo" preload />
+    {/* Preloaded so the fonts load at "High" priority. Discovered from CSS instead, they get
+        "VeryHigh", which Lighthouse's simulation counts as render-blocking. See README.
+        Martian Mono only draws measurements, so it is not preloaded. */}
+    <Font cssVariable="--font-funnel-display" preload />
+    <Font cssVariable="--font-funnel-sans" preload />
+    <Font cssVariable="--font-martian-mono" />
     <slot name="head" />
 
     {
