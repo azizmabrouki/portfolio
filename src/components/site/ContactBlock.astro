@@ -1,0 +1,82 @@
+---
+/**
+ * The close of every page: the invitation, the address, and the ways to reach me.
+ * Sits on yellow paper: the Contact frame on the board, the last sheet of other pages.
+ */
+import Icon from '@/components/site/Icon.astro';
+import { footerLine, mailto, site } from '@/config/site';
+
+interface Props {
+  /** Heading level: h2 on the board, where the page has its own h1. */
+  id?: string;
+}
+
+const { id = 'contact-h' } = Astro.props;
+---
+
+<div class="contact">
+  <h2 id={id} class="disp title">Let’s build the next one.</h2>
+  <p class="lead">{site.reply} Open to full-time roles, remote or relocation.</p>
+  <p class="addr"><a href={mailto()}>{site.links.email}</a></p>
+  <div class="foot">
+    <div class="acts">
+      <a class="btn" href={mailto()}>Email me<Icon name="arrow" /></a>
+      {site.links.cv && <a class="lnk" href={site.links.cv}>Download CV (PDF)</a>}
+      {site.links.linkedin && <a class="lnk" href={site.links.linkedin}>LinkedIn</a>}
+      {site.links.github && <a class="lnk" href={site.links.github}>GitHub</a>}
+    </div>
+    <p class="small">{site.workFrom}<br />{footerLine}</p>
+  </div>
+</div>
+
+<style>
+  .contact {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    container-type: inline-size;
+  }
+
+  .title {
+    max-width: 11ch;
+    font-size: clamp(46px, 8.6cqi, 124px);
+    line-height: 0.88;
+  }
+
+  .lead {
+    margin-top: clamp(16px, 2cqi, 28px);
+    max-width: 46ch;
+    font-size: clamp(17px, 1.6cqi, 23px);
+    line-height: 1.4;
+  }
+
+  .addr {
+    margin-top: clamp(16px, 1.8cqi, 26px);
+    font-size: clamp(18px, 2.4cqi, 34px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+  }
+
+  .foot {
+    margin-top: auto;
+    padding-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .acts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+  }
+
+  .small {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+/**
+ * Sofinrec: the first internship, and the one with an Angular front end.
+ */
+import Frame from '@/components/board/Frame.astro';
+import Checks from '@/components/board/Checks.astro';
+import { frames } from '@/config/board';
+---
+
+<Frame frame={frames.sofinrec} id="sofinrec" labelledby="sof-h" class="col">
+  <h2 id="sof-h" class="disp title">Sofinrec</h2>
+  <p class="lead">An internal web app that plans and coordinates meetings, used by 20+ staff.</p>
+  <p class="disp claim">About 30% less manual coordination.</p>
+  <Checks
+    class="list"
+    items={['Business logic in Spring Boot, exposed as REST APIs', 'An Angular front end', 'Invitations and summaries sent by email']}
+  />
+  <p class="meta">Jul – Sep 2023 · full-stack engineer intern</p>
+</Frame>
+
+<style>
+  .col :global(.frame-in) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-size: clamp(42px, 9.5cqi, 72px);
+  }
+
+  .lead {
+    margin-top: 16px;
+    font-size: clamp(17px, 2.8cqi, 21px);
+    line-height: 1.4;
+  }
+
+  .claim {
+    margin-top: clamp(24px, 5cqi, 40px);
+    font-size: clamp(28px, 5.8cqi, 44px);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  .col :global(.list) {
+    margin-top: clamp(22px, 4.7cqi, 36px);
+  }
+
+  .meta {
+    margin-top: auto;
+    padding-top: 24px;
+    color: var(--ink-soft);
+    font-size: var(--text-small);
+  }
+</style>

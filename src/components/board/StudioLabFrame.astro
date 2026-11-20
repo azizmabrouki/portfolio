@@ -1,0 +1,99 @@
+---
+/**
+ * StudioLabCloud at a glance: what it is, my part, the numbers and the system as tiles.
+ * The screens follow in the next stop (ScreensGroup); the case study has the rest.
+ */
+import type { CollectionEntry } from 'astro:content';
+import Frame from '@/components/board/Frame.astro';
+import SystemTiles from '@/components/board/SystemTiles.astro';
+import Icon from '@/components/site/Icon.astro';
+import { frames } from '@/config/board';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const data = project.data;
+---
+
+<Frame frame={frames.studiolabcloud} id="studiolabcloud" labelledby="slc-h">
+  <div class="head">
+    <h2 id="slc-h" class="disp title">StudioLabCloud</h2>
+    {
+      !data.draft && (
+        <a class="btn" href={`/projects/${project.id}/`}>
+          Open the case study
+          <Icon name="arrow" />
+        </a>
+      )
+    }
+  </div>
+  <p class="lead">
+    A SaaS where StudioLab’s clients order cloud services, pay for them every month and get help. I built it alone, {
+      data.period
+    }, and I still run it.
+  </p>
+  <div class="body">
+    <dl class="spec">
+      <div><dt>Role</dt><dd>Sole engineer, from architecture to deployment, with the product owner</dd></div>
+      <div><dt>Shipped</dt><dd>3 releases in 6 Scrum sprints</dd></div>
+      <div><dt>Quality</dt><dd>609 automated tests, 25 OpenAPI specs</dd></div>
+      <div><dt>Stack</dt><dd>Laravel, Stripe, Python RAG, Docker, Kubernetes, Grafana</dd></div>
+      <div><dt>Now</dt><dd>In production, maintained by me as a freelancer</dd></div>
+    </dl>
+    <SystemTiles diagram={data.diagram} decisions={data.decisions} />
+  </div>
+</Frame>
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 32px;
+  }
+
+  .title {
+    font-size: clamp(42px, 7.5cqi, 96px);
+  }
+
+  .lead {
+    margin-top: 20px;
+    max-width: 48ch;
+    font-size: clamp(17px, 1.8cqi, 23px);
+    line-height: 1.4;
+  }
+
+  .body {
+    margin-top: clamp(24px, 3.4cqi, 44px);
+    display: grid;
+    gap: 32px;
+  }
+
+  @container (min-width: 1000px) {
+    .body {
+      grid-template-columns: minmax(0, 1fr) 560px;
+      gap: 56px;
+    }
+  }
+
+  .spec div {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 16px;
+    padding: 11px 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .spec dt {
+    color: var(--ink-soft);
+    font-size: var(--text-small);
+  }
+
+  .spec dd {
+    font-weight: 500;
+    line-height: 1.35;
+  }
+</style>

@@ -11,6 +11,10 @@ updates:
       # @astrojs/check only supports TypeScript 5 and 6 for now; lift this once it accepts 7.
       - dependency-name: typescript
         update-types: ['version-update:semver-major']
+      # Workers Builds runs `npx wrangler preview` on branches. From 4.152.0 it fails with
+      # "A preview with name '<branch>' already exists" (code 100338), because Workers Builds
+      # creates the preview first. Keep 4.151.1 until a release updates existing previews again.
+      - dependency-name: wrangler
 
   - package-ecosystem: github-actions
     directory: /

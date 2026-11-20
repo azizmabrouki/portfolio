@@ -1,75 +1,196 @@
 ---
 /**
- * The top bar of every page but the home page: brand · All work · Contact.
+ * The top bar of every page: the name, the Board / List switch (home page, wide screens),
+ * and the ways to reach me. Other pages show where they are on the board instead.
  */
-import { site } from '@/config/site';
-import ThemeToggle from '@/components/site/ThemeToggle.astro';
+import Icon from '@/components/site/Icon.astro';
+import { mailto, site } from '@/config/site';
 
 interface Props {
-  /** Sticks to the top while reading (case studies and notes, not the 404). */
-  sticky?: boolean;
+  /** The home page: the name flies back to the intro, and the view switch shows. */
+  home?: boolean;
+  /** Pages off the board: "Aziz Mabrouki / <crumb>" and a way back to the board. */
+  crumb?: string;
 }
 
-const { sticky = true } = Astro.props;
+const { home = false, crumb } = Astro.props;
 ---
 
-<header class:list={['bar', { sticky }]}>
-  <div class="wrap bar-in">
-    <a class="brand" href="/">{site.shortName}</a>
-    <nav class="crumbs" aria-label="Site">
-      {site.nav.map((link) => <a href={link.href}>{link.label}</a>)}
-      <ThemeToggle />
-    </nav>
-  </div>
+<header class="top">
+  <p class="brand">
+    <a href={home ? '#intro' : '/'}>{site.shortName}</a>
+    <span>/ {crumb ?? 'Portfolio'}</span>
+  </p>
+
+  {
+    home && (
+      <div class="view" role="group" aria-label="View">
+        <button type="button" data-view="board" aria-pressed="true">
+          <Icon name="board" />
+          Board
+        </button>
+        <button type="button" data-view="list" aria-pressed="false">
+          <Icon name="list" />
+          List
+        </button>
+      </div>
+    )
+  }
+
+  <nav class="links" aria-label="Site">
+    {
+      !home && (
+        <a class="tl back" href="/">
+          <Icon name="back" />
+          <span>Back to the board</span>
+        </a>
+      )
+    }
+    {site.links.cv && <a class="tl" href={site.links.cv}>Download CV</a>}
+    <a class="cta" href={mailto()}>Email me</a>
+  </nav>
 </header>
 
 <style>
-  .bar {
-    background: var(--bar-bg);
-  }
-
-  .sticky {
+  .top {
     position: sticky;
     top: 0;
-    z-index: 5;
-  }
-
-  .bar-in {
+    z-index: 20;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    min-height: var(--bar-h);
+    gap: 8px 16px;
+    height: var(--bar-h);
+    padding: 0 12px 0 18px;
+    background: var(--mat-night);
+    color: var(--on-mat);
   }
 
   .brand {
-    text-decoration: none;
-    font-weight: 800;
-    font-size: 19px;
-    letter-spacing: -0.02em;
-    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    min-width: 0;
     white-space: nowrap;
   }
 
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 24px;
-    font-weight: 600;
-    font-size: 15px;
-  }
-
-  .crumbs a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--target);
-    color: var(--text);
+  .brand a {
+    font: 700 19px/1 var(--font-display);
+    letter-spacing: -0.01em;
     text-decoration: none;
   }
 
-  .brand:hover,
-  .crumbs a:hover {
-    color: var(--gold);
+  .brand span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--on-mat-soft);
+    font-size: 15px;
+  }
+
+  .view {
+    display: none;
+    padding: 3px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  /* The switch needs the board script, and the board needs a wide screen. */
+  :global(html.js:not(.tour)) .view {
+    display: inline-flex;
+  }
+
+  .view button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #eaf3ee;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--dur-hover);
+  }
+
+  .view button:hover {
+    background: rgb(255 255 255 / 0.09);
+  }
+
+  .view button[aria-pressed='true'] {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .tl {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: var(--target);
+    padding: 0 12px;
+    border-radius: 8px;
+    color: #eaf3ee;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color var(--dur-hover);
+  }
+
+  .tl:hover {
+    background: rgb(255 255 255 / 0.09);
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    height: var(--target);
+    margin-left: 6px;
+    padding: 0 16px;
+    border-radius: 8px;
+    background: var(--yellow);
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      transform var(--dur-press) var(--ease-out),
+      background-color var(--dur-hover);
+  }
+
+  .cta:hover {
+    background: var(--yellow-hover);
+  }
+
+  .cta:active {
+    transform: scale(0.96);
+  }
+
+  @media (max-width: 560px) {
+    .brand span {
+      display: none;
+    }
+
+    .back span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta {
+      transition: none;
+    }
   }
 </style>

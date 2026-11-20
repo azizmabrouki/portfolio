@@ -1,0 +1,322 @@
+---
+/**
+ * Experience: school, internships, freelance work and certifications on one timeline
+ * (positions from src/config/experience.ts), then the same roles as a table to read.
+ */
+import Frame from '@/components/board/Frame.astro';
+import { frames } from '@/config/board';
+import { credentials, education, languages, onTimeline, roles, span, tools } from '@/config/experience';
+
+const years = Array.from({ length: span.to - span.from }, (_, i) => span.from + i);
+const bar = (start: string, end: string) => {
+  const left = onTimeline(start);
+  return `left: ${left.toFixed(2)}%; width: ${Math.max(1.2, onTimeline(end) - left).toFixed(2)}%`;
+};
+const lanes = [
+  { name: education.school, sub: `Engineer’s degree · ${education.period}`, style: bar(education.start, education.end), kind: 'edu' },
+  ...[...roles].reverse().map((role) => ({
+    name: role.company,
+    sub: `${role.role} · ${role.period}`,
+    style: bar(role.start, role.end),
+    kind: role.end === 'now' ? 'live' : 'work',
+  })),
+];
+const now = onTimeline('now');
+---
+
+<Frame frame={frames.experience} id="experience" labelledby="exp-h">
+  <h2 id="exp-h" class="disp title">Experience</h2>
+  <p class="lead">School, three internships and the freelance work I do now, on one line.</p>
+
+  <div class="tl" aria-hidden="true">
+    <div class="grid">
+      {
+        years.map((year) => (
+          <span class="yr" style={`left: ${(((year - span.from) / (span.to - span.from)) * 100).toFixed(2)}%`}>
+            <span class="mono">{year}</span>
+          </span>
+        ))
+      }
+      <span class="now" style={`left: ${now.toFixed(2)}%`}><span>Now</span></span>
+    </div>
+    <ol class="lanes">
+      {
+        lanes.map((lane) => (
+          <li class="lane">
+            <p class="ll">
+              <b>{lane.name}</b>
+              <span>{lane.sub}</span>
+            </p>
+            <span class="track">
+              <span class:list={['bar', lane.kind]} style={lane.style} />
+            </span>
+          </li>
+        ))
+      }
+      <li class="lane">
+        <p class="ll">
+          <b>Certifications</b>
+          <span>{credentials.map((c) => `${c.short}, ${c.date}`).join(' · ')}</span>
+        </p>
+        <span class="track">
+          {credentials.map((c) => <span class="dot" style={`left: ${onTimeline(c.month).toFixed(2)}%`} />)}
+        </span>
+      </li>
+    </ol>
+  </div>
+
+  <div class="table">
+    <table>
+      <caption class="sr-only">Roles, newest first</caption>
+      <thead>
+        <tr>
+          <th scope="col">When</th>
+          <th scope="col">Company</th>
+          <th scope="col">Role</th>
+          <th scope="col">What I did</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          roles.map((role) => (
+            <tr>
+              <td class="when">{role.period}</td>
+              <td class="co">{role.company}</td>
+              <td>{role.role}</td>
+              <td>{role.summary}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h3>Education</h3>
+      <p>{education.degree}. {education.school}, {education.period}.</p>
+    </div>
+    <div>
+      <h3>Certifications</h3>
+      <ul>
+        {
+          credentials.map((c) => (
+            <li>
+              {c.href ? <a href={c.href}>{c.title}</a> : c.title}, {c.date}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div>
+      <h3>Languages and tools</h3>
+      <p>{languages.join(' and ')}. {tools}.</p>
+    </div>
+  </div>
+</Frame>
+
+<style>
+  .title {
+    font-size: clamp(36px, 5.3cqi, 72px);
+  }
+
+  .lead {
+    margin-top: 12px;
+    color: var(--ink-soft);
+    font-size: clamp(17px, 1.5cqi, 20px);
+  }
+
+  .tl {
+    position: relative;
+    margin-top: 36px;
+    --label: clamp(120px, 23cqi, 310px);
+  }
+
+  .grid {
+    position: absolute;
+    inset: 0 0 0 var(--label);
+  }
+
+  .yr,
+  .now {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid var(--rule);
+  }
+
+  .yr .mono {
+    position: absolute;
+    left: 6px;
+    top: 0;
+    color: var(--ink-soft);
+    font-size: 11px;
+  }
+
+  .now {
+    border-left: 2px dashed var(--ink);
+  }
+
+  .now span {
+    position: absolute;
+    left: 6px;
+    top: 0;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .lanes {
+    position: relative;
+    padding-top: 28px;
+  }
+
+  .lane {
+    display: grid;
+    grid-template-columns: var(--label) 1fr;
+    align-items: center;
+    min-height: 58px;
+  }
+
+  .ll {
+    padding-right: 16px;
+    line-height: 1.25;
+  }
+
+  .ll b {
+    display: block;
+    font-size: 17px;
+  }
+
+  .ll span {
+    display: block;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .track {
+    position: relative;
+    height: 26px;
+  }
+
+  .bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 6px;
+    background: var(--ink);
+  }
+
+  .edu {
+    background: var(--mat);
+  }
+
+  .live::after {
+    content: '';
+    position: absolute;
+    right: -14px;
+    top: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 0 0 0 2px var(--ink);
+    animation: live 1.6s ease-out infinite;
+  }
+
+  @keyframes live {
+    to {
+      box-shadow:
+        0 0 0 2px var(--ink),
+        0 0 0 10px rgb(255 210 63 / 0);
+    }
+  }
+
+  .dot {
+    position: absolute;
+    top: 4px;
+    width: 18px;
+    height: 18px;
+    margin-left: -9px;
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    background: var(--yellow);
+  }
+
+  /* On a phone the label sits above its bar. */
+  @container (max-width: 560px) {
+    .grid {
+      inset: 0;
+    }
+
+    .lane {
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 8px 0;
+    }
+  }
+
+  .table {
+    margin-top: 40px;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 17px;
+  }
+
+  th {
+    padding: 0 20px 10px 0;
+    border-bottom: 2px solid var(--ink);
+    color: var(--ink-soft);
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  td {
+    padding: 14px 20px 14px 0;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .when {
+    white-space: nowrap;
+  }
+
+  .co {
+    font-weight: 700;
+  }
+
+  .cols {
+    margin-top: 36px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 28px 40px;
+    font-size: 17px;
+    line-height: 1.45;
+  }
+
+  .cols > div {
+    padding-top: 14px;
+    border-top: 2px solid var(--ink);
+  }
+
+  .cols h3 {
+    font-size: 17px;
+  }
+
+  .cols p,
+  .cols ul {
+    margin-top: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live::after {
+      animation: none;
+    }
+  }
+</style>

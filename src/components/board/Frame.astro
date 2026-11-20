@@ -1,0 +1,126 @@
+---
+/**
+ * One frame of the board: a sheet with its name strip. In the List view and on phones it is
+ * a section in the reading column; on the board (html.board) it sits at its rectangle on
+ * the mat. Frames are size containers, so their content scales with the frame's width (cqi)
+ * and reads the same at 342 px on a phone and at 1280 px on the board.
+ */
+import { size, place, stops, type Frame } from '@/config/board';
+
+interface Props {
+  frame: Frame;
+  /** Anchor; frames that start a stop carry the stop's id. */
+  id?: string;
+  kind?: 'paper' | 'ghost' | 'loose' | 'image';
+  /** Element labelling the section (its heading). */
+  labelledby?: string;
+  label?: string;
+  class?: string;
+}
+
+const { frame, id, kind = 'paper', labelledby, label, class: className } = Astro.props;
+const anchor = id ?? stops[frame.stop]?.id ?? 'intro';
+---
+
+<section
+  id={id}
+  class:list={['frame', `frame-${kind}`, { paper: kind === 'paper' || kind === 'image' }, className]}
+  data-stop={frame.stop}
+  style={place(frame)}
+  aria-labelledby={labelledby}
+  aria-label={labelledby ? undefined : label}
+>
+  {
+    kind !== 'loose' && (
+      <a class="strip fstrip" href={`#${anchor}`} tabindex="-1" aria-hidden="true">
+        {frame.label}
+        <span class="mono">{size(frame)}</span>
+      </a>
+    )
+  }
+  <div class="frame-in">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .frame {
+    position: relative;
+    container-type: inline-size;
+  }
+
+  .frame-in {
+    position: relative;
+    height: 100%;
+  }
+
+  .frame-paper > .frame-in {
+    padding: clamp(24px, 5.6cqi, 72px);
+  }
+
+  .frame-ghost {
+    border: 2px dashed var(--dash);
+    border-radius: 3px;
+    color: var(--on-mat);
+  }
+
+  .frame-ghost > .frame-in {
+    padding: clamp(24px, 8cqi, 52px);
+  }
+
+  .frame-image > .frame-in {
+    overflow: hidden;
+    border-radius: 3px;
+  }
+
+  /* The strip names the frame; in the reading column it sits above the sheet. */
+  .fstrip {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    pointer-events: none;
+  }
+
+  .fstrip .mono {
+    display: none;
+  }
+
+  :global(html.board) .fstrip .mono {
+    display: inline;
+  }
+
+  .frame-loose .frame-in {
+    color: var(--on-mat);
+  }
+
+  /* ---- On the board ---- */
+
+  :global(html.board) .frame {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
+  }
+
+  /* Labels keep their size on screen at any zoom, as in a design tool. */
+  :global(html.board) .fstrip {
+    margin-bottom: calc(8px / var(--z, 1));
+    gap: calc(10px / var(--z, 1));
+    font-size: calc(13px / var(--z, 1));
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  :global(html.board) .fstrip .mono {
+    font-size: 0.82em;
+  }
+
+  :global(html.board) .fstrip:hover {
+    color: var(--on-mat);
+  }
+</style>

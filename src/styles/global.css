@@ -1,6 +1,6 @@
 /*
- * Base styles shared by every page: reset, type, links, focus, buttons and the small
- * pieces (badge, label, tag) components reuse. Section styles live in their components.
+ * Base styles shared by every page: reset, type, links, focus, the mat, paper sheets,
+ * buttons and the small pieces components reuse. Section styles live in their components.
  */
 
 *,
@@ -10,20 +10,56 @@
 }
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+  scroll-padding-top: calc(var(--bar-h) + 24px);
   -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: var(--text-body-size);
+  min-height: 100vh;
+  background-color: var(--mat);
+  background-image:
+    linear-gradient(var(--mat-line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-line-soft) 1px, transparent 1px),
+    linear-gradient(var(--mat-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-line) 1px, transparent 1px);
+  background-size:
+    40px 40px,
+    40px 40px,
+    200px 200px,
+    200px 200px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  caret-color: var(--gold);
+  caret-color: var(--ink);
+  scrollbar-color: var(--on-mat-off) var(--mat-night);
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+blockquote {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
 }
 
 img,
@@ -34,38 +70,36 @@ svg {
 
 button {
   font: inherit;
+  color: inherit;
 }
 
 a {
-  color: var(--blue);
-}
-
-a:hover {
-  color: var(--gold);
+  color: inherit;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 0.08em;
 }
 
 ::selection {
-  background: var(--gold-fill);
-  color: var(--text-on-gold);
+  background: var(--yellow);
+  color: var(--ink);
 }
 
+/* On the mat a yellow ring; on paper an ink ring with a yellow halo, so it shows on white. */
 :focus-visible {
-  outline: var(--focus);
-  outline-offset: var(--focus-offset);
+  outline: 3px solid var(--yellow);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.paper :focus-visible {
+  outline: 3px solid var(--ink);
+  box-shadow: 0 0 0 7px var(--yellow);
 }
 
 mark {
-  background: var(--gold-wash);
-  color: inherit;
-  padding: 0 2px;
-}
-
-/* ---- Layout ---- */
-
-.wrap {
-  max-width: var(--wrap);
-  margin-inline: auto;
-  padding-inline: var(--gutter);
+  background: var(--yellow);
+  color: var(--ink);
+  padding: 0 3px;
 }
 
 .sr-only {
@@ -78,270 +112,229 @@ mark {
 }
 
 .skip {
-  position: absolute;
-  left: 16px;
-  top: -120px;
+  position: fixed;
+  left: 12px;
+  top: 12px;
   z-index: 50;
-  padding: 14px 18px;
-  background: var(--gold-fill);
-  color: var(--text-on-gold);
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--yellow);
+  color: var(--ink);
   font-weight: 700;
-  font-size: 16px;
   text-decoration: none;
+  transform: translateY(-160%);
 }
 
 .skip:focus {
-  top: 12px;
+  transform: none;
 }
-
-.skip:hover {
-  color: var(--text-on-gold);
-}
-
-/* A dark ring wherever the background is gold: the blue one is 1.2:1 there. */
-.skip:focus-visible,
-.on-gold :focus-visible,
-.btn-gold:focus-visible {
-  outline-color: var(--text-on-gold);
-}
-
-/* ---- Type ---- */
 
 .disp {
-  margin: 0;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 800;
   letter-spacing: var(--tracking-display);
-  line-height: 0.95;
+  line-height: 0.9;
+  text-wrap: balance;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .tab {
   font-variant-numeric: tabular-nums;
 }
 
-.lbl {
-  margin: 0;
-  font-weight: 600;
-  font-size: var(--text-label);
-  color: var(--text-faint);
+/* ---- Paper ---- */
+
+.paper {
+  background: var(--paper);
+  border-radius: 3px;
+  box-shadow: var(--shadow-paper);
 }
 
-.metric {
-  color: var(--gold);
-  font-weight: 700;
+.sheet {
+  position: relative;
+  padding: var(--sheet-pad);
 }
 
-/* A heading line that rises into view from behind its own edge. */
-.mask {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
-}
-
-.mask > span {
-  display: block;
-}
-
-/* In the 3D world, blocks marked .rv reveal when they scroll in (data-in, set by
-   scripts/world): .mask lines rise, .fd parts fade up, each after its --d delay. */
-html.w3d .rv .mask > span {
-  transform: translateY(110%);
-  transition: transform 950ms var(--ease-out) var(--d, 0ms);
-}
-
-html.w3d .rv[data-in] .mask > span {
-  transform: none;
-}
-
-html.w3d .rv .fd,
-html.w3d .rv.fd {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 700ms var(--ease-out) var(--d, 0ms),
-    transform 700ms var(--ease-out) var(--d, 0ms);
-}
-
-html.w3d .rv[data-in] .fd,
-html.w3d .rv.fd[data-in] {
-  opacity: 1;
-  transform: none;
-}
-
-/* On the still page with motion allowed (html.still-anim, set by scripts/still-motion.ts),
-   the same blocks and the ones marked data-reveal rise into view as they scroll in.
-   Cards and board rows fade up as a whole. */
-html.still-anim :is(.rv, [data-reveal]) .mask > span {
-  transform: translateY(110%);
-  transition: transform 850ms var(--ease-out) var(--d, 0ms);
-}
-
-html.still-anim :is(.rv, [data-reveal])[data-in] .mask > span {
-  transform: none;
-}
-
-html.still-anim :is(.rv, [data-reveal]) .fd,
-html.still-anim .rv.fd,
-html.still-anim :is([data-reveal='card'], [data-reveal='row']) {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 600ms var(--ease-out) var(--d, 0ms),
-    transform 600ms var(--ease-out) var(--d, 0ms);
-}
-
-html.still-anim :is(.rv, [data-reveal])[data-in] .fd,
-html.still-anim .rv.fd[data-in],
-html.still-anim :is([data-reveal='card'], [data-reveal='row'])[data-in] {
-  opacity: 1;
-  transform: none;
-}
-
-/* ---- Small pieces ---- */
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--gold-fill);
-  color: var(--text-on-gold);
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: 0;
-  flex: none;
-}
-
-.wip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
-  border-radius: 13px;
-  box-shadow: inset 0 0 0 1px rgb(255 181 71 / 0.6);
-  color: var(--gold);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0;
+/* The frame name above a sheet, as a design tool labels its artboards. */
+.strip {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 10px;
+  color: var(--on-mat-soft);
+  font: 600 var(--text-label) / 1.25 var(--font-sans);
   white-space: nowrap;
 }
 
-/* Text where a link will be once its page exists: never a dead link. */
-.soon {
-  display: inline-flex;
-  align-items: center;
-  min-height: 52px;
-  padding: 0 4px;
-  font-weight: 600;
-  font-size: 17px;
-  color: var(--text-faint);
+.strip .mono {
+  font-size: 11px;
+  color: var(--on-mat-faint);
 }
 
-.soon-s {
-  font-weight: 600;
-  color: var(--text-faint);
-  white-space: nowrap;
-}
-
-/* ---- Buttons ---- */
+/* ---- Buttons and links ---- */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 52px;
-  padding: 0 26px;
+  min-height: 54px;
+  padding: 0 24px;
   border: 0;
-  font: 600 17px/1 var(--font);
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 700 18px/1 var(--font-sans);
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform 140ms var(--ease-out),
-    background-color var(--dur-fast) ease,
-    color var(--dur-fast) ease;
+    transform var(--dur-press) var(--ease-out),
+    background-color var(--dur-hover);
+}
+
+.btn:hover {
+  background: var(--ink-hover);
 }
 
 .btn:active {
   transform: scale(0.97);
 }
 
-.btn-gold {
-  background: var(--gold-fill);
-  color: var(--text-on-gold);
+.btn-yellow {
+  background: var(--yellow);
+  color: var(--ink);
 }
 
-.btn-gold:hover {
-  background: var(--gold-hover);
-  color: var(--text-on-gold);
+.btn-yellow:hover {
+  background: var(--yellow-hover);
 }
 
-.btn-ghost {
-  background: transparent;
-  color: var(--text);
-  padding: 0 4px;
+.lnk {
+  font-weight: 700;
   text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 2px;
 }
 
-.btn-ghost:hover {
-  color: var(--gold);
+.ic {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.btn-line {
-  background: var(--surface-button);
-  color: var(--text);
-  box-shadow: inset 0 0 0 1px var(--gold-line);
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+
+  .btn:active {
+    transform: none;
+  }
 }
 
-.btn-line:hover {
-  background: var(--surface-button-hover);
-  color: var(--gold);
+/* ---- Long text: case study stories and notes ---- */
+
+.prose {
+  max-width: 68ch;
+  font-size: var(--text-body);
+  line-height: 1.6;
 }
 
-.btn-line[aria-disabled='true'] {
-  cursor: default;
-  color: var(--text-muted);
+.prose > * + * {
+  margin-top: 1em;
 }
 
-/* ---- Glossary terms (notes): a definition opens in place ---- */
+.prose h2 {
+  margin-top: 2em;
+  font: 800 clamp(26px, 2.6vw, 34px) / 1.05 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.prose h2:first-child {
+  margin-top: 0;
+}
+
+.prose h3 {
+  margin-top: 1.6em;
+  font-size: 20px;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.2em;
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li + li {
+  margin-top: 0.4em;
+}
+
+.prose a {
+  font-weight: 600;
+}
+
+.prose blockquote {
+  padding: 18px 22px;
+  border-radius: 6px;
+  background: var(--paper-tint);
+}
+
+.prose code {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--paper-sunk);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.metric {
+  font-weight: 700;
+}
+
+/* ---- Glossary terms: a definition opens in place ---- */
 
 .term {
-  font: inherit;
-  color: var(--text);
-  background: none;
-  border: 0;
   padding: 0;
-  cursor: pointer;
-  text-decoration: underline dotted var(--blue);
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: underline dotted var(--mat);
   text-decoration-thickness: 2px;
   text-underline-offset: 5px;
+  cursor: pointer;
 }
 
 .term:hover,
 .term[aria-expanded='true'] {
-  color: var(--blue);
+  text-decoration-style: solid;
 }
 
 .def {
   display: block;
   margin-top: 10px;
   padding: 14px 16px;
-  background: var(--surface-blue);
-  box-shadow: inset 0 0 0 1px var(--blue-line);
-  font-size: 16px;
+  border-radius: 6px;
+  background: var(--paper-tint);
+  color: var(--ink);
+  font-size: var(--text-small);
   line-height: 1.5;
-  color: var(--text-soft);
 }
 
 .def strong {
   display: block;
   margin-bottom: 4px;
-  color: var(--text);
-  font-size: 15px;
 }
 
 /* Without JavaScript the same definitions open as popovers. */
@@ -350,29 +343,15 @@ html.still-anim :is([data-reveal='card'], [data-reveal='row'])[data-in] {
   margin: auto;
   padding: 16px 18px;
   border: 0;
-  background: var(--surface-blue);
-  box-shadow: inset 0 0 0 1px var(--blue-line);
-  color: var(--text-soft);
-  font-size: 16px;
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: var(--shadow-float);
+  color: var(--ink);
+  font-size: var(--text-small);
   line-height: 1.5;
 }
 
 .term-pop strong {
   display: block;
   margin-bottom: 4px;
-  color: var(--text);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
 }

@@ -1,0 +1,122 @@
+---
+/**
+ * The tour on phones (html.tour): frames scroll as a column; this bar names the current
+ * one, steps to the previous or next, and zooms the column out into the whole board.
+ */
+import Icon from '@/components/site/Icon.astro';
+---
+
+<nav class="tour" aria-label="Tour" data-tour>
+  <button type="button" class="tb" data-act="map" aria-pressed="false">
+    <span class="when-off"><Icon name="board" label="See the whole board" /></span>
+    <span class="when-on"><Icon name="close" label="Close the board" /></span>
+  </button>
+  <p class="label" aria-live="polite">
+    <span class="mono" data-num>1 / 9</span>
+    <span data-name>Intro</span>
+  </p>
+  <button type="button" class="tb" data-act="prev"><Icon name="up" label="Previous frame" /></button>
+  <button type="button" class="tb tb-next" data-act="next"><Icon name="down" label="Next frame" /></button>
+</nav>
+
+<style>
+  .tour {
+    display: none;
+  }
+
+  :global(html.tour) .tour {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 68px;
+    padding: 6px;
+    border-radius: 16px;
+    background: var(--mat-night);
+    box-shadow: var(--shadow-float);
+    color: #eaf3ee;
+  }
+
+  .tb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 52px;
+    height: 56px;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+
+  .tb:active {
+    transform: scale(0.94);
+  }
+
+  .tb:disabled {
+    color: var(--on-mat-off);
+  }
+
+  .tb-next {
+    background: var(--yellow);
+    color: var(--ink);
+  }
+
+  .tb-next:disabled {
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  .tb :global(.ic) {
+    width: 22px;
+    height: 22px;
+  }
+
+  .when-on,
+  :global(html.map) .when-off {
+    display: none;
+  }
+
+  :global(html.map) .when-on {
+    display: contents;
+  }
+
+  .when-off {
+    display: contents;
+  }
+
+  .label {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 0 6px;
+  }
+
+  .label .mono {
+    color: var(--on-mat-soft);
+    font-size: 10px;
+  }
+
+  .label span:last-child {
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tb {
+      transition: none;
+    }
+  }
+</style>

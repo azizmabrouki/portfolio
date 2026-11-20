@@ -1,285 +1,82 @@
 ---
 /**
- * The 404: "This page isn't in the system." The five layers of the home page as stacked
- * plates, with an empty dashed slot where the missing page would be.
- * Served with a real 404 status by Cloudflare (wrangler.jsonc: not_found_handling).
+ * The 404: an empty dashed frame on the mat, the page that was never laid on the board,
+ * with the ways back. Served with a real 404 status by Cloudflare (wrangler.jsonc:
+ * not_found_handling).
  */
 import PageLayout from '@/layouts/PageLayout.astro';
-import { layers } from '@/config/home';
+import Icon from '@/components/site/Icon.astro';
 import { mailto } from '@/config/site';
 import { getNotes, getProjects } from '@/lib/content';
 
 const projects = (await getProjects()).filter((project) => !project.data.draft);
 const notes = await getNotes();
 const routes = [
-  ...projects.slice(0, 1).map((project) => ({ label: `${project.data.title} case study`, href: `/projects/${project.id}/` })),
+  ...projects.map((project) => ({ label: `${project.data.title} case study`, href: `/projects/${project.id}/` })),
   ...notes.slice(0, 1).map((note) => ({ label: note.data.title, href: `/notes/${note.id}/` })),
   { label: 'Report a broken link', href: mailto('Broken link on your site') },
 ];
-
-// Labels top to bottom: the top layer, the missing slot, then the rest downwards.
-const [runs, scales, ships, users, stays] = layers;
-const labels = [
-  { ...stays, top: 70 },
-  { name: 'The page you asked for', text: 'Not on any layer', top: 146, miss: true },
-  { ...users, top: 222 },
-  { ...ships, top: 278 },
-  { ...scales, top: 334 },
-  { ...runs, top: 390 },
-];
 ---
 
-<PageLayout title="Page not found" description="This page isn't in the system." lost>
-  <div class="wrap lost">
-    <div class="txt">
-      <p class="kick"><span class="code tab">404</span><span>Page not found</span></p>
-      <h1 class="disp h1">This page isn't in the system.</h1>
-      <p class="lede">
-        Every layer is accounted for, except the one you asked for. The link may be old, or the page moved when the
-        site was rebuilt.
+<PageLayout title="Page not found" description="This page isn't on the board." crumb="Page not found" lost>
+  <section class="slot" aria-labelledby="lost-h">
+    <p class="strip">Untitled frame<span class="mono">404</span></p>
+    <div class="ghost">
+      <h1 id="lost-h" class="disp title">This page isn’t on the board.</h1>
+      <p class="lead">
+        The link may be old, or the page moved when the site was rebuilt. Everything that exists is one frame away.
       </p>
-      <div class="cta">
-        <a class="btn btn-gold" href="/">Back to the home page</a>
-        <a class="btn btn-ghost" href="/#work">See the work</a>
-      </div>
-      <nav class="routes" aria-labelledby="r-title">
-        <p id="r-title" class="lbl">Or go straight to</p>
+      <a class="btn btn-yellow" href="/">Back to the board<Icon name="arrow" /></a>
+      <nav class="routes" aria-labelledby="r-h">
+        <h2 id="r-h">Or go straight to</h2>
         <ul>
-          {routes.map((route) => <li><a href={route.href}>{route.label}</a></li>)}
+          {
+            routes.map((route) => (
+              <li>
+                <a class="lnk" href={route.href}>
+                  {route.label}
+                </a>
+              </li>
+            ))
+          }
         </ul>
       </nav>
     </div>
-
-    <div
-      class="draw"
-      role="img"
-      aria-label="The five layers of the system drawn as stacked plates, with an empty dashed slot between what users touch and how it stays up, marked with a question mark: the missing page."
-    >
-      <div class="stack" aria-hidden="true">
-        <div class="pl" style="top: 310px"></div>
-        <div class="pl" style="top: 254px"></div>
-        <div class="pl" style="top: 198px"></div>
-        <div class="pl" style="top: 142px"></div>
-        <div class="pl miss" style="top: 66px"></div>
-        <div class="q" style="top: 144px">?</div>
-        <div class="pl" style="top: -10px"></div>
-      </div>
-      <div class="labs" aria-hidden="true">
-        {
-          labels.map((label) => (
-            <div class:list={['lab', { miss: label.miss }]} style={`top: ${label.top}px`}>
-              <i />
-              <span>
-                <b>{label.name}</b>
-                <span>{label.text}</span>
-              </span>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </div>
+  </section>
 </PageLayout>
 
 <style>
-  .lost {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
-    gap: 56px 64px;
-    align-items: center;
-    width: 100%;
-    padding-top: 72px;
-    padding-bottom: 96px;
+  .ghost {
+    min-height: 60vh;
+    padding: var(--sheet-pad);
+    border: 2px dashed var(--dash);
+    border-radius: 3px;
+    color: var(--on-mat);
   }
 
-  .txt {
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
+  .title {
+    max-width: 14ch;
+    font-size: clamp(44px, 7vw, 104px);
   }
 
-  .kick {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--text-muted);
-  }
-
-  .code {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 56px;
-    height: 30px;
-    padding: 0 10px;
-    background: var(--gold-fill);
-    color: var(--text-on-gold);
-    font-weight: 800;
-    font-size: 14px;
-  }
-
-  .h1 {
-    font-size: clamp(48px, 6.6vw, 104px);
-    max-width: 9em;
-  }
-
-  .lede {
-    margin: 0;
-    max-width: 28em;
-    font-size: clamp(19px, 1.7vw, 23px);
-    line-height: 1.45;
-    color: var(--text-body);
-  }
-
-  .cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 24px;
-    align-items: center;
+  .lead {
+    margin: 24px 0 32px;
+    max-width: 46ch;
+    color: var(--on-mat-soft);
+    font-size: clamp(18px, 1.8vw, 22px);
   }
 
   .routes {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-top: 22px;
-    box-shadow: inset 0 1px 0 var(--line);
+    margin-top: 48px;
+  }
+
+  .routes h2 {
+    font-size: var(--text-body);
   }
 
   .routes ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 28px;
-  }
-
-  .routes a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--target);
-    font-weight: 600;
-    font-size: 16px;
-    text-underline-offset: 4px;
-  }
-
-  .draw {
-    position: relative;
-    width: 100%;
-    max-width: 560px;
-    height: 520px;
-    justify-self: center;
-  }
-
-  .stack {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 300px;
-    height: 520px;
-  }
-
-  .pl {
-    position: absolute;
-    left: 50px;
-    width: 200px;
-    height: 200px;
-    transform: rotateX(62deg) rotateZ(-45deg);
-    background: var(--surface-plate);
-    box-shadow:
-      inset 0 0 0 1px var(--plate-edge),
-      0 18px 30px var(--plate-drop);
-  }
-
-  .pl.miss {
-    border: 2px dashed var(--gold);
-    background: var(--surface-gold);
-    box-shadow: none;
-    animation: hover 3.6s ease-in-out infinite;
-  }
-
-  .q {
-    position: absolute;
-    left: 0;
-    width: 300px;
-    text-align: center;
-    font-weight: 800;
-    font-size: 44px;
-    line-height: 1;
-    color: var(--gold);
-  }
-
-  @keyframes hover {
-    0%,
-    100% {
-      translate: 0 0;
-    }
-    50% {
-      translate: 0 -6px;
-    }
-  }
-
-  .labs {
-    position: absolute;
-    left: 300px;
-    top: 0;
-    right: 0;
-    height: 520px;
-  }
-
-  .lab {
-    position: absolute;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 15px;
-    line-height: 1.3;
-    white-space: nowrap;
-  }
-
-  .lab i {
-    flex: none;
-    width: 36px;
-    height: 0;
-    border-top: 1px solid var(--text-faint);
-  }
-
-  .lab b {
-    display: block;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .lab span span {
-    color: var(--text-muted);
-  }
-
-  .lab.miss i {
-    border-top: 2px dashed var(--gold);
-  }
-
-  .lab.miss b {
-    color: var(--gold);
-  }
-
-  @media (max-width: 620px) {
-    .draw {
-      height: 400px;
-      transform: scale(0.78);
-      transform-origin: top left;
-      margin-bottom: -88px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .pl.miss {
-      animation: none;
-    }
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
   }
 </style>

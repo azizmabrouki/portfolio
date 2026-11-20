@@ -19,8 +19,10 @@ export interface SiteConfig {
   description: string;
   locale: string;
   city: string;
-  /** IANA time zone of the clock in the top bar and on the departures board. */
-  timeZone: string;
+  /** Where I work from, as said next to the contact details. */
+  workFrom: string;
+  /** How fast I answer, said wherever the visitor is about to write. */
+  reply: string;
   /** Public repository of this site. */
   repo: string;
   links: {
@@ -33,7 +35,7 @@ export interface SiteConfig {
   };
   /** Subject line of every "Email me" link. */
   emailSubject: string;
-  /** The top bar of every page but the home page: brand · All work · Contact. */
+  /** Links of the top bar, after the Board / List switch. */
   nav: SiteLink[];
   /**
    * Cloudflare Web Analytics: cookie-free, no consent banner needed. Paste the token from
@@ -45,13 +47,14 @@ export interface SiteConfig {
 export const site: SiteConfig = {
   name: 'Mohamed Aziz Mabrouki',
   shortName: 'Aziz Mabrouki',
-  role: 'Software engineer, heading for platform engineering',
+  role: 'Full-stack engineer',
   degree: 'Software architecture engineer',
   description:
-    'Mohamed Aziz Mabrouki, software engineer in Tunis, heading for platform engineering. I build backend and product systems, with clear boundaries, tested delivery and cloud services.',
+    'Mohamed Aziz Mabrouki, full-stack engineer in Tunis. I design and build whole products, from the interface people click to the servers that keep it running.',
   locale: 'en',
   city: 'Tunis',
-  timeZone: 'Africa/Tunis',
+  workFrom: 'Tunis, GMT+1 · open to remote work and relocation',
+  reply: 'I reply within 48 hours, in French or English.',
   repo: 'https://github.com/azizmabrouki/portfolio',
 
   links: {
@@ -62,10 +65,7 @@ export const site: SiteConfig = {
   },
   emailSubject: "Let's talk",
 
-  nav: [
-    { label: 'All work', href: '/#work' },
-    { label: 'Contact', href: '/#contact' },
-  ],
+  nav: [{ label: 'Contact', href: '/#contact' }],
 
   analytics: { cloudflareToken: '' },
 };
@@ -75,5 +75,5 @@ export function mailto(subject: string = site.emailSubject): string {
   return `mailto:${site.links.email}?subject=${encodeURIComponent(subject).replace(/'/g, '%27')}`;
 }
 
-/** "© 2026 Mohamed Aziz Mabrouki · Software architecture engineer · Tunis": the degree title. */
-export const footerLine = `© ${new Date().getFullYear()} ${site.name} · ${site.degree} · ${site.city}`;
+/** "© 2026 Mohamed Aziz Mabrouki · Full-stack engineer · Tunis". */
+export const footerLine = `© ${new Date().getFullYear()} ${site.name} · ${site.role} · ${site.city}`;

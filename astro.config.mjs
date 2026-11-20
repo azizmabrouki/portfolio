@@ -8,6 +8,9 @@ export default defineConfig({
   site: 'https://aziz-mabrouki.mabrouki.workers.dev',
 
   output: 'static',
+  // Scope component styles with a class, which Astro also passes down through `class`
+  // props: a section styling the frame it wraps (e.g. the yellow Contact sheet) works.
+  scopedStyleStrategy: 'class',
   build: {
     // /notes/foo/index.html style URLs, served by Cloudflare without redirects.
     format: 'directory',
@@ -15,20 +18,37 @@ export default defineConfig({
     inlineStylesheets: 'always',
   },
 
-  // Downloaded from Fontsource at build time and self-hosted from /_astro/fonts.
-  // Archivo is one variable file with both axes (weight 100–900, width 62–125%), so every
-  // weight and width the design uses costs a single download. Astro generates a
-  // metric-matched fallback, so text paints at once in the fallback and swaps with no
-  // layout shift. The family becomes the --font-archivo variable in tokens.css.
+  // Downloaded from Fontsource at build time and self-hosted from /_astro/fonts. Each family
+  // is one variable file; Astro generates metric-matched fallbacks, so text paints at once in
+  // the fallback and swaps with no layout shift. Martian Mono is only used for measurements
+  // (rulers, frame sizes), so it ships a single weight.
   fonts: [
     {
       provider: fontProviders.fontsource(),
-      name: 'Archivo',
-      cssVariable: '--font-archivo',
-      weights: ['100 900'],
+      name: 'Funnel Display',
+      cssVariable: '--font-funnel-display',
+      weights: ['300 800'],
       styles: ['normal'],
       subsets: ['latin'],
       fallbacks: ['Helvetica Neue', 'Arial', 'sans-serif'],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: 'Funnel Sans',
+      cssVariable: '--font-funnel-sans',
+      weights: ['300 800'],
+      styles: ['normal'],
+      subsets: ['latin'],
+      fallbacks: ['Helvetica Neue', 'Arial', 'sans-serif'],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: 'Martian Mono',
+      cssVariable: '--font-martian-mono',
+      weights: ['500'],
+      styles: ['normal'],
+      subsets: ['latin'],
+      fallbacks: ['ui-monospace', 'Menlo', 'monospace'],
     },
   ],
 });
